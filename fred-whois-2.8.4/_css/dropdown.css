@@ -1,0 +1,40 @@
+/* common  */
+.menu {
+	position: relative;
+	margin: 0; padding: 0;
+}
+.menu ul li a {
+	padding: 6px 5px 6px 22px; margin: 0;
+	font-weight: bold;
+	font-size: 100%;
+	color: white;
+	display:block;
+	text-decoration:none;
+}
+
+.block-domeny .menu ul li a {background: #C8C1AD url(/media/_clip/01.gif) left center no-repeat;}
+.block-domeny .menu ul li a:hover {color: #8A7F5E;}
+.block-registratori .menu ul li a {background: #B9C333 url(/media/_clip/02.gif) left center no-repeat;}
+.block-registratori .menu ul li a:hover {color: #F2FD81;}
+.block-o-nas .menu ul li a {background: #33879C url(/media/_clip/03.gif) left center no-repeat;}
+.block-o-nas .menu ul li a:hover {color: #6AD3ED;}
+
+.menu ul {padding:0; margin:0; list-style-type: none; }
+.menu ul li {}
+.menu ul li ul {display: none;}
+.menu ul li ul li a {padding: 0 5px 0 22px; font-weight: normal;}
+
+/* non IE  */
+.menu ul li:hover ul {display: block;}
+.menu ul li:hover ul li.first {padding-top: 10px;}
+.menu ul li:hover ul li a {display: block; color: white; background: none;}
+.menu ul li:hover ul li a:hover {text-decoration: underline;}
+
+.block-domeny .menu ul li:hover ul li a:hover {color: #8A7F5E;}
+.block-registratori .menu ul li:hover ul li a:hover {color: #F2FD81;}
+.block-o-nas .menu ul li:hover ul li a:hover {color: #6AD3ED;}
+
+
+
+
+

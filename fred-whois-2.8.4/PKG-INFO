@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: fred-whois
+Version: 2.8.4
+Summary: Fred Whois
+Home-page: http://www.nic.cz/
+Author: David Pospisilik, Zdenek Bohm, CZ.NIC
+Author-email: zdenek.bohm@nic.cz
+License: GNU GPL
+Description: The part of the CZ.NIC CMS web framework.
+Platform: posix

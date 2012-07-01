@@ -1,0 +1,409 @@
+#ifndef MOJEID_IDL_
+#define MOJEID_IDL_
+
+module Registry {
+module MojeID {
+
+    struct Date {
+        short day;
+        short month;
+        short year;
+    };
+
+    valuetype NullableString string;
+    valuetype NullableBoolean boolean;
+    valuetype NullableDate Date;
+    valuetype NullableULongLong unsigned long long;
+
+
+    struct Address {
+        string type;
+        string street1;
+        NullableString street2;
+        NullableString street3;
+        string city;
+        NullableString state;
+        string postal_code;
+        string country;
+    };
+
+    typedef sequence<Address> AddressList;
+
+    struct Email {
+        string type;
+        string email_address;
+    };
+
+    typedef sequence<Email> EmailList;
+
+    struct IMAccount {
+        string type;
+        string username;
+    };
+
+    typedef sequence<IMAccount> IMAccountList;
+
+    struct Phone {
+        string type;
+        string number;
+    };
+
+    typedef sequence<Phone> PhoneList;
+
+    struct URLAddress {
+        string type;
+        string url;
+    };
+
+    typedef sequence<URLAddress> URLAddressList;
+
+    struct Contact {
+        NullableULongLong id;
+        string username;
+        string first_name;
+        string last_name;
+        NullableString organization;
+        NullableString vat_reg_num;
+        NullableDate birth_date;
+        NullableString id_card_num;
+        NullableString passport_num;
+        NullableString ssn_id_num;
+        NullableString vat_id_num;
+        NullableString ssn_type;
+        NullableString auth_info;
+        NullableBoolean disclose_name;
+        NullableBoolean disclose_organization;
+        NullableBoolean disclose_vat;
+        NullableBoolean disclose_ident;
+        NullableBoolean disclose_email;
+        NullableBoolean disclose_notify_email;
+        NullableBoolean disclose_address;
+        NullableBoolean disclose_phone;
+        NullableBoolean disclose_fax;
+
+        AddressList addresses;
+        EmailList emails;
+        IMAccountList imaccounts;
+        PhoneList phones;
+        URLAddressList urladdresses;
+    };
+
+    enum IdentificationMethod {
+        LETTER,
+        SMS,
+        CERTIFICATE
+    };
+
+    enum ContactState {
+        NOT_IDENTIFIED,
+        CONDITIONALLY_IDENTIFIED,
+        IDENTIFIED,
+        VALIDATED
+    };
+
+    struct ContactStateInfo {
+        unsigned long long contact_id;
+        ContactState state;
+        Date valid_from;
+    };
+
+    typedef sequence<ContactStateInfo> ContactStateInfoList;
+
+    typedef sequence<octet> Buffer;
+
+    typedef sequence<string> ContactHandleList;
+
+    interface Server {
+
+        exception INTERNAL_SERVER_ERROR
+        {
+            string message;
+        };
+
+        enum ValidationError
+        {
+            NOT_AVAILABLE,
+            INVALID,
+            REQUIRED
+        };
+
+        struct DataFieldError
+        {
+            string name;
+            ValidationError error;
+        };
+
+        typedef sequence<DataFieldError> ValidationErrorList;
+
+        exception DATA_VALIDATION_ERROR
+        {
+            ValidationErrorList errors;
+        };
+
+        exception OBJECT_EXISTS { };
+
+        exception OBJECT_NOT_EXISTS { };
+
+        exception IDENTIFICATION_FAILED { };
+
+        exception IDENTIFICATION_ALREADY_PROCESSED
+        {
+            boolean success;
+        };
+
+        exception VALIDATION_ALREADY_PROCESSED { };
+
+        exception OBJECT_CHANGED { };
+
+        /*
+         * TEMP - for nicms, otherwise prepare version should be used
+         * create contact and identification request based on ident. method
+         * chosen
+         *
+         * \param c             contact data structure
+         * \param m             identification method (SMS, LETTER, CERT)
+         * \param request_id    associated request id in logger
+         * \return              contact id
+         */
+        unsigned long long contactCreate(
+                in Contact c,
+                in IdentificationMethod m,
+                in unsigned long long request_id)
+            raises (INTERNAL_SERVER_ERROR, DATA_VALIDATION_ERROR);
+
+
+        /*
+         * create contact and identification request based on ident. method
+         * chosen
+         *
+         * \param c             contact data structure
+         * \param m             identification method (SMS, LETTER, CERT)
+         * \param trans_id      database transaction identifier
+         *                      for 2-phase commit
+         * \param request_id    associated request id in logger
+         * \param ident         (output) unique identificator of created identification request
+         * \return              contact id
+         */
+        unsigned long long contactCreatePrepare(
+                in Contact c,
+                in IdentificationMethod m,
+                in string trans_id,
+                in unsigned long long request_id,
+                out string ident)
+            raises (INTERNAL_SERVER_ERROR, DATA_VALIDATION_ERROR);
+
+
+        /*
+         * create identification request based on ident. method. After
+         * successfully processing request contact is transfered to
+         * mojeid registrar
+         *
+         * \param handle        contact handle
+         * \param m             identification method
+         * \param request_id    associated request id in logger
+         * \return              contact id
+         */
+        unsigned long long contactTransfer(
+                in string handle,
+                in IdentificationMethod m,
+                in unsigned long long request_id)
+            raises (INTERNAL_SERVER_ERROR, DATA_VALIDATION_ERROR, OBJECT_NOT_EXISTS);
+
+
+        /*
+         * create identification request based on ident. method. After
+         * successfully processing request contact is transfered to
+         * mojeid registrar
+         *
+         * \param handle        contact handle
+         * \param m             identification method
+         * \param trans_id      transaction identifier
+         * \param request_id    associated request id in logger
+         * \param ident         (output) unique identificator of created identification request
+         * \return              contact id
+         */
+        unsigned long long contactTransferPrepare(
+                in string handle,
+                in IdentificationMethod m,
+                in string trans_id, 
+                in unsigned long long request_id,
+                out string ident)
+            raises (INTERNAL_SERVER_ERROR, DATA_VALIDATION_ERROR, OBJECT_NOT_EXISTS);
+
+
+
+        /* prepares contact which was deleted in MojeID - it has to be stripped of these states:
+          1 | serverDeleteProhibited
+          3 | serverTransferProhibited
+          4 | serverUpdateProhibited
+         21 | conditionallyIdentifiedContact
+         22 | identifiedContact
+         23 | validatedContact
+
+         * \param contact_id    ID of the contact to be unidentified
+         * \param trans_id      database transaction identifier
+         *                      for 2-phase commit
+         * \param request_id    associated request id in logger
+         */
+
+        void contactUnidentifyPrepare(
+                in unsigned long long contact_id,
+                in string trans_id,
+                in unsigned long long request_id)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_NOT_EXISTS);
+
+
+        /*
+         * prepares contact for update (2-phase commit)
+         *
+         * \param c             contact data structure
+         * \param trans_id      database transaction identifier
+         *                      for 2-phase commit
+         * \param request_id    associated request id in logger
+         */
+        void contactUpdatePrepare(
+                in Contact c,
+                in string trans_id,
+                in unsigned long long request_id)
+            raises (INTERNAL_SERVER_ERROR, DATA_VALIDATION_ERROR, OBJECT_NOT_EXISTS);
+
+
+        /*
+         * contact data getter
+         *
+         * \param contact_id    contact id
+         * \return              contact data
+         */
+        Contact contactInfo(
+                in unsigned long long contact_id)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_NOT_EXISTS);
+
+
+        /*
+         * identification request processing
+         *
+         * \param ident_request   request identifier
+         *                        (see getIdentificationInfo() method)
+         * \param password        passwords sent to user joined together
+         * \param request_id      associated request id in logger
+         * \return                contact id
+         */
+        unsigned long long processIdentification(
+                in string ident_request_id,
+                in string password,
+                in unsigned long long request_id)
+            raises (INTERNAL_SERVER_ERROR, IDENTIFICATION_FAILED,
+                    IDENTIFICATION_ALREADY_PROCESSED, DATA_VALIDATION_ERROR,
+                    OBJECT_CHANGED);
+
+
+        /*
+         * get request identifier for given contact
+         *
+         * \param contact_id      contact id
+         * \return                request string identifier
+         */
+        string getIdentificationInfo(
+                in unsigned long long contact_id)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_NOT_EXISTS);
+
+
+        /*
+         * commit prepared update contact transaction
+         *
+         * \param trans_id        transaction identifier
+         */
+        void commitPreparedTransaction(
+                in string trans_id)
+            raises (INTERNAL_SERVER_ERROR);
+
+
+        /*
+         * rollback prepared update contact transaction
+         *
+         * \param trans_id        transaction identifier
+         */
+        void rollbackPreparedTransaction(
+                in string trans_id)
+            raises (INTERNAL_SERVER_ERROR);
+
+
+        /*
+         * return buffer with pdf content generated from contact
+         * validation request
+         *
+         * \param contact_id      contact id
+         * \return                validation pdf
+         */
+        Buffer getValidationPdf(
+                in unsigned long long contact_id)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_NOT_EXISTS);
+
+
+        /*
+         * create validation request
+         *
+         * \param contact_id      contact id
+         * \param request_id      associated request id in logger
+         */
+        void createValidationRequest(
+                in unsigned long long contact_id,
+                in unsigned long long request_id)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_EXISTS, OBJECT_NOT_EXISTS,
+                    VALIDATION_ALREADY_PROCESSED);
+
+
+        /*
+         * get contacts states list
+         *
+         * \param last_hours      number of hours to search in past
+         * \return                list of contacts and its states which
+         *                        was gained/changed in last <last_hours> hours
+         */
+         ContactStateInfoList getContactsStates(
+                in unsigned long last_hours)
+            raises (INTERNAL_SERVER_ERROR);
+
+
+        /*
+         * specific contact state getter
+         *
+         * \param contact_id      contact id
+         * \return                actual (mojeid) state
+         */
+        ContactStateInfo getContactState(
+                in unsigned long long contact_id)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_NOT_EXISTS);
+
+
+        /*
+         * get contact id by its handle
+         *
+         * \param handle          contact handle
+         * \return                contact id
+         */
+        unsigned long long getContactId(
+                in string handle)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_NOT_EXISTS);
+
+        /*
+         * get contact handles
+         * \return list of mojeid enabled contact handles in string sequence
+         */
+        ContactHandleList getUnregistrableHandles()
+            raises (INTERNAL_SERVER_ERROR);
+
+        /*
+         * get auth info for given contact
+         *
+         * \param contact_id          contact_id
+         * \return auth_info
+         */
+        string contactAuthInfo(in unsigned long long contact_id)
+            raises (INTERNAL_SERVER_ERROR, OBJECT_NOT_EXISTS);
+    };
+
+};
+};
+
+#endif

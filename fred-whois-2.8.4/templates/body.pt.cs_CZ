@@ -1,0 +1,918 @@
+<div xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal" id="whois">
+
+<pre class="error" tal:condition="result/proxy_errors">
+    <div tal:omit-tag="" tal:repeat="error result/proxy_errors">
+        <div tal:omit-tag="" tal:content="error">Some ccregproxy error.</div><br tal:condition="not:repeat/error/end" />
+    </div>
+</pre>
+
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+    <h1 tal:condition="python:result['qtype'] == 'query'" tal:content="default">Vyhledávání v registru ENUM</h1>
+    <h1 tal:condition="python:result['qtype'] == 'registrars'" tal:content="default">Doména nenalezena</h1>
+    <h1 tal:condition="python:result['qtype'] == 'notfound'" tal:content="default">Identifikátor nenalezen</h1>
+    <h1 tal:condition="python:result['qtype'] == 'invalid_gid'" tal:content="default">Skupina registrátorů nenalezena</h1>	
+</div>
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+    <h1 tal:condition="python:result['qtype'] == 'query'" tal:content="default">Vyhledávání v registru (Whois)</h1>
+    <h1 tal:condition="python:result['qtype'] == 'notfound'" tal:content="default">Záznam nenalezen</h1>
+    <h1 tal:condition="python:result['qtype'] == 'invalid_gid'" tal:content="default">Skupina registrátorů nenalezena</h1>	
+</div>
+<h1 tal:condition="python:result['qtype'] == 'publicrequest'" tal:content="default">Žádost o zaslání hesla k transferu, blokování a odblokování objektu</h1>
+<h1 tal:condition="python:result['qtype'] == 'error_proxy'" tal:content="default">Dočasně mimo provoz</h1>
+
+<div tal:omit-tag="" tal:condition="python:result['qtype'] in ('enum', 'domain','registrar', 'contact', 'nsset', 'keyset', 'multiple', 'invalid')"
+     tal:content="default">
+    <h1>Vyhledávání v registru (Whois)</h1>
+    <p>Výsledek vyhledávání <strong tal:content="result/query/queryHandle">$query</strong>.</p>
+    <h2 tal:condition="python:result['qtype'] == 'enum'" tal:content="default">Prohlížení ENUM domény</h2>
+    <h2 tal:condition="python:result['qtype'] == 'domain'" tal:content="default">Prohlížení doménového jména</h2>
+    <h2 tal:condition="python:result['qtype'] == 'registrar'" tal:content="default">Prohlížení registrátora</h2>
+    <h2 tal:condition="python:result['qtype'] == 'contact'" tal:content="default">Prohlížení kontaktu</h2>
+    <h2 tal:condition="python:result['qtype'] == 'nsset'" tal:content="default">Prohlížení seznamu jmenných serverů (DNS)</h2>
+    <h2 tal:condition="python:result['qtype'] == 'keyset'" tal:content="default">Prohlížení sady klíčů</h2>
+    <h2 tal:condition="python:result['qtype'] == 'multiple'" tal:content="default">Nalezeno více záznamů</h2>
+    <h2 tal:condition="python:result['qtype'] == 'invalid'" tal:content="default">Neplatný zápis</h2>
+</div>
+
+<div tal:omit-tag="" tal:condition="result/redirected_error">
+Služba vyhledávání v registru je dočasně mimo provoz. Zkuste se prosím vrátit později. Pokud problém přetrvává obraťte se na <a href="/page/357/kontakt/">zákaznickou linku</a>.
+</div>
+
+<div tal:condition="python:result['qtype'] == 'query'" tal:omit-tag="">
+<!-- /* SELECT ACTION START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_searchform_top">Extra content whois form - top</div>
+
+<p tal:condition="python:result['apptype'] == 'enum'">Hledá v doménových jménech ENUM, kontaktech a sadách nameserverů. Právo k užití poskytovaných služeb vymezuje dokument:<br /><a href="#" tal:attributes="href common/who_is_disclaimer/url" tal:content="common/who_is_disclaimer/text">Účel použití poskytovaných dat a informací</a></p>
+<p tal:condition="python:result['apptype'] == 'whois'">Hledá v doménových jménech, kontaktech a sadách nameserverů. 
+Doménová jména vkládejte ve tvaru domenovejmeno.cz s .cz na konci a bez úvodního www (např. nic.cz). 
+Identifikátory kontaktu nebo sady jmenných serverů vkládejte jako běžný text. 
+Právo k užití poskytovaných služeb vymezuje dokument:<br /><a href="#" tal:attributes="href common/who_is_disclaimer/url" tal:content="common/who_is_disclaimer/text">Účel použití poskytovaných dat a informací</a></p>
+
+<div tal:omit-tag="" tal:content="structure result/extra_content_searchform_above">Extra content whois form - above</div>
+
+<form class="enum-util" name="request" method="post" action="?" onsubmit="return checkFormWhois()">
+<fieldset>
+<input type="hidden" tal:condition="result/captchakey" id="captchakey" name="captchakey" tal:attributes="value result/captchakey" />
+
+<p class="error" tal:condition="result/errors">
+    <span tal:omit-tag="" tal:condition="python:'missing_handle' in result.get('errors')">Nebyl zadán identifikátor.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'captcha' in result.get('errors')">Kontrolní kód nesouhlasí nebo platnost kódu již vypršela, opište z obrázku nový kód.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'missing_captcha' in result.get('errors')">Pro zobrazení je třeba vyplnit kontrolní kód.<br/></span>
+</p>
+
+<table>
+<tr>
+    <th>
+        <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+                <label tal:omit-tag="" for="request_name">Číslo&nbsp;/&nbsp;identifikátor&nbsp;<small>*</small></label>
+            </div>
+            <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+                <label tal:omit-tag="" for="request_name">Doména&nbsp;/&nbsp;identifikátor</label>
+            </div>
+    </th>
+    <td id="missing_handle" 
+        tal:attributes="class python:'missing_handle' in result.get('errors') and 'missing' or None"><input 
+        tal:attributes="value result/query;type python:('text', 'hidden')[result.get('hidehandle',0)]" class="inline" id="q" name="q" maxlength="66" type="text" /> <span tal:condition="result/hidehandle" tal:content="result/query">domain</span></td>
+</tr>
+<div tal:omit-tag="" tal:condition="result/captchakey">
+    <tr>
+        <th></th>
+        <td id="captcha_frame"><div id="captcha_updating" style="visibility:hidden"><img src="/media/img/mozilla_blu.gif" width="16" height="16" /><br/>Obrázek se načítá.<br/>Prosím vyčkejte...</div><img 
+            id="captcha_img" tal:attributes="src string:/whois/captcha.py?id=${result/captchakey};width result/form/captcha_img/width;height result/form/captcha_img/height" /></td>
+    </tr>
+    <tr>
+        <th>Kontrolní kód (opište z obrázku):</th>
+        <td id="missing_captcha" 
+            tal:attributes="class python:('missing_captcha' in result.get('errors') or 'captcha' in result.get('errors')) and 'missing' or None"><input 
+            type="text" id="captcha" class="inline" name="captcha" /></td>
+    </tr>
+</div>
+<tr>
+    <th></th>
+    <td><button id="submit_button" type="submit">Vyhledat</button></td>
+</tr>
+</table>
+
+    </fieldset>
+</form>
+
+        <p tal:condition="python:result['apptype'] == 'enum'"><small>
+          * Čísla zadávejte v národním tvaru (např. 222745111), v jednom z mezinárodních tvarů (např. +420222745111,  00420222745111), nebo jako ENUM doménu (např. 1.1.1.5.4.7.2.2.2.0.2.4.e164.arpa). Identifikátory zadávejte ve tvaru <em>NSSID:XXXXX</em> (sada nameserverů), <em>CID:XXXXXX</em> (kontaktní osoba), <em>KEYID:XXXXXX</em> (sada klíčů) a <em>REG-XXX</em> (registrátor).
+        </small></p>
+
+<div tal:omit-tag="" tal:content="structure result/extra_content_searchform_bottom">Extra content whois form - bottom</div>
+<!-- /* SELECT ACTION END */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'multiple'" tal:omit-tag="" class="debugframe">
+<!-- /* MULTIPLE CHOICE START */ -->
+<p>
+Zadaný identifikátor je shodný pro několik záznamů. Pokračujte výběrem požadovaného typu.
+</p>
+<div tal:condition="result/links/domain">
+Doména: <a href="#" tal:attributes="href string:?d=${result/links/domain}" tal:content="result/links/domain">&lt;domena&gt;</a>
+</div>
+<div tal:condition="result/links/enum">
+ENUM: <a href="#" tal:attributes="href string:?e=${result/links/enum}" tal:content="result/links/enum">&lt;enum&gt;</a>
+</div>
+
+<div tal:condition="result/links/contact">
+Kontaktní osoba: <a href="#" tal:attributes="href string:?c=${result/links/contact}" tal:content="result/links/contact">&lt;contact&gt;</a>
+</div>
+
+<div tal:condition="result/links/nsset">
+NSSet: <a href="#" tal:attributes="href string:?n=${result/links/nsset}" tal:content="result/links/nsset">&lt;nsset&gt;</a>
+</div>
+<div tal:condition="result/links/keyset">
+KeySet: <a href="#" tal:attributes="href string:?k=${result/links/keyset}" tal:content="result/links/keyset">&lt;keyset&gt;</a>
+</div>
+<div tal:condition="result/links/registrar">
+Registrátor: <a href="#" tal:attributes="href string:?r=${result/links/registrar}" tal:content="result/links/registrar">&lt;registrar&gt;</a>
+</div>
+<!-- /* MULTIPLE CHOICE END */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'domain'" tal:omit-tag="" class="debugframe">
+<!-- /* DOMAIN DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_domain_top">Extra content domain - top</div>
+
+<table class="result">
+<tbody><tr>
+<th>Doménové jméno</th>
+<td tal:content="result/domain/fqdn">&lt;domain name&gt;</td>
+</tr>
+
+<span tal:omit-tag="" tal:condition="not:result/omit_domain_data">
+
+	<tr>
+	<th>Registrace od</th>
+	<td tal:content="python:localtime(result['domain']['createDate'], short=1)">01.01.1970</td>
+	</tr>
+	<tr>
+	<th>Poslední aktualizace</th>
+	<td tal:content="python:localtime(result['domain']['updateDate'])">01.01.1970</td>
+	</tr>
+	<tr>
+	    <th>Datum expirace</th>
+	    <td tal:content="python:localtime(result['domain']['expirationDate'])">01.01.1970</td>
+	</tr>
+	
+	<tr>
+	    <th>Držitel</th>
+	    <td>
+	    <a href="#" tal:attributes="href python:'?c=%s' % result['domain']['registrant']['handle']" tal:content="result/domain/registrant/handle">&lt;registrant handle&gt;</a>
+	    <span tal:content="python:(result['domain']['registrant'].get('discloseName') and [result['domain']['registrant'].get('name')] or [result['domain']['registrant'].get('handle')])[0]">&lt;registrant name&gt;</span>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th>Administrativní kontakt</th>
+	    <td>
+	        <div tal:repeat="admin result/domain/admins">
+	        <a href="#" tal:attributes="href python:'?c=%s' % admin['handle']" tal:content="admin/handle">&lt;admin handle&gt;</a>
+	        <span tal:content="python:(admin['discloseName'] and [admin['name']] or [admin['handle']])[0]">&lt;admin name&gt;</span><span
+	                tal:omit-tag="" tal:condition="not:repeat/admin/end">, </span>
+	        </div>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th>Dočasný kontakt</th>
+	    <td>
+	        <div tal:repeat="temp result/domain/temps">
+	        <a href="#" tal:attributes="href python:'?c=%s' % temp['handle']" tal:content="temp/handle">&lt;temp handle&gt;</a>
+	        <span tal:content="python:(temp['discloseName'] and [temp['name']] or [temp['handle']])[0]">&lt;temp name&gt;</span><span
+	                tal:omit-tag="" tal:condition="not:repeat/temp/end">, </span>
+	        </div>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th>Určený registrátor</th>
+	    <td>
+	        <a href="#" tal:attributes="href python:'?r=%s' % result['domain']['registrar']['handle']" tal:content="result/domain/registrar/handle">&lt;registrator handle&gt;</a>
+	        <span tal:content="result/domain/registrar/name">&lt;registrar name&gt;</span><span tal:omit-tag="" tal:condition="result/domain/registrar/name"> od</span>
+	        <span tal:content="python:(result['domain']['transferDate'] and [localtime(result['domain']['transferDate'])] or [localtime(result['domain']['createDate'])])[0]">01.01.1970</span>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th>Zabezpečeno pomocí <a href="http://www.nic.cz/dnssec/">DNSSEC</a></th>
+	    <td>
+	        <img tal:condition="result/domain/keyset" src="/media/img/icon-yes.gif" alt="Ano"/>
+	        <img tal:condition="not:result/domain/keyset" src="/media/img/icon-no.gif" alt="Ne"/>
+	    </td>
+	</tr>
+
+</span>
+	
+<tr>
+    <th>Stav</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/status_names">
+            <span tal:omit-tag="" tal:content="name">stav</span><br tal:condition="not:repeat/name/end" />
+        </div>
+    </td>
+</tr>
+
+</tbody>
+</table>
+
+<div id="nsset_record" tal:condition="result/domain/nsset">
+<div metal:use-macro="macropage/macros/nsset">Nsset macro here</div>
+</div>
+
+<div id="keyset_record" tal:condition="result/domain/keyset">
+<div metal:use-macro="macropage/macros/keyset">Keyset macro here</div>
+</div>
+<div tal:omit-tag="" tal:content="structure result/extra_content_domain_bottom">Extra content domain - bottom</div>
+<!-- /* DOMAIN DATA END */ -->
+</div>
+
+
+<div tal:condition="python:result['qtype'] == 'enum'" tal:omit-tag="" class="debugframe">
+<!-- /* ENUM DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_enum_top">Extra content enum - top</div>
+
+<p tal:condition="python:(result['query']['resultHandleType'] == 'ENUM_NUMBER') and (result['query']['resultHandleClass'] == 'REGISTRED')">Číslu <strong tal:content="result/query/queryHandle">123</strong> odpovídá ENUM doména <strong tal:content="result/handle">3.2.1.0.2.4.e164.arpa</strong></p>
+<p tal:condition="python:(result['query']['resultHandleType'] == 'ENUM_NUMBER') and (result['query']['resultHandleClass'] == 'REGISTRED_PARENT')">Doména <strong tal:content="result/query/queryTranslatedHandle">3.2.1.0.2.4.e164.arpa</strong> odpovídající číslu <strong tal:content="result/query/queryHandle">123</strong> spadá pod registrovaný blok ENUM domény <strong tal:content="result/handle">3.2.1.0.2.4.e164.arpa</strong></p>
+<table class="result">
+<tbody><tr>
+<th>Doménové jméno</th>
+<td tal:content="result/domain/fqdn">&lt;domain name&gt;</td>
+</tr>
+<tr>
+<th>Registrace od</th>
+<td tal:content="python:localtime(result['domain']['createDate'], short=1)">01.01.1970</td>
+</tr>
+<tr>
+<th>Poslední aktualizace</th>
+<td tal:content="python:localtime(result['domain']['updateDate'])">01.01.1970</td>
+</tr>
+<tr>
+<th>Expirace</th>
+<td tal:content="python:localtime(result['domain']['expirationDate'])">01.01.1970</td>
+</tr>
+<tr>
+<th>Validováno do</th>
+<td tal:content="python:localtime(result['domain']['valExDate'])">01.01.1970</td>
+</tr>
+
+<tr>
+    <th>Zabezpečeno pomocí <a href="http://www.nic.cz/dnssec/">DNSSEC</a></th>
+    <td>
+        <img tal:condition="result/domain/keyset" src="/media/img/icon-yes.gif" alt="Ano"/>
+        <img tal:condition="not:result/domain/keyset" src="/media/img/icon-no.gif" alt="Ne"/>
+    </td>
+</tr>
+
+<tr>
+    <th>Stav</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/status_names">
+            <span tal:omit-tag="" tal:content="name">stav</span><br tal:condition="not:repeat/name/end" />
+        </div>
+    </td>
+</tr>
+
+</tbody></table>
+<table tal:condition="result/domain/registrar">
+<tbody><tr>
+<th>Určený registrátor</th>
+<th>Identifikátor</th>
+<th>Od</th>
+</tr>
+<tr>
+<td tal:content="result/domain/registrar/name">&lt;registrar name&gt;</td>
+<td><a href="#" tal:attributes="href python:'?r=%s' % result['domain']['registrar']['handle']" tal:content="result/domain/registrar/handle">&lt;registrator handle&gt;</a></td>
+<td tal:content="python:(result['domain']['transferDate'] and [localtime(result['domain']['transferDate'])] or [localtime(result['domain']['createDate'])])[0]">01.01.1970</td>
+</tr>
+</tbody></table>
+<div tal:omittag="" tal:condition="result/nsset">
+<div metal:use-macro="macropage/macros/nsset">NSset macro here</div>
+</div>
+<div tal:omittag="" tal:condition="result/keyset">
+<div metal:use-macro="macropage/macros/keyset">Keyset macro here</div>
+</div>
+<!-- /* ENUM DATA END */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_enum_bottom">Extra content enum - bottom</div>
+</div>
+
+<div tal:condition="python:result['qtype'] == 'nsset'" tal:omit-tag="" class="debugframe">
+<!-- /* NSSET DATA START / MACRO */ -->
+<div metal:use-macro="macropage/macros/nsset">NSset macro here</div>
+<!-- /* NSSET DATA END / MACRO */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'keyset'" tal:omit-tag="" class="debugframe">
+<!-- /* KEYSET DATA START / MACRO */ -->
+<div metal:use-macro="macropage/macros/keyset">Keyset macro here</div>
+<!-- /* KEYSET DATA END / MACRO */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'contact' and not result.get('mojeID')" tal:omit-tag="" class="debugframe">
+<!-- /* CONTACT DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_contact_top">Extra contact content - top</div>
+
+<table class="result">
+<tr>
+<th>Identifikátor</th>
+<td>
+    <span tal:omit-tag="" tal:content="result/contact/handle">&lt;contact handle&gt;</span>
+    <div tal:omit-tag="" tal:condition="result/mojeid_transfer_endpoint">
+        <div metal:use-macro="macropage/macros/mojeid_forms">MojeID forms macro here</div>
+    </div>
+</td>
+</tr>
+<tr>
+<th>Organizace</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseOrganization')]" tal:content="python:(result['contact']['discloseOrganization'] and [result['contact']['organization']] or [common['private']])[0]">&lt;organization&gt;</td>
+</tr>
+<tr>
+<th>Jméno</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseName')]" tal:content="python:(result['contact']['discloseName'] and [result['contact']['name']] or [common['private']])[0]">&lt;name&gt;</td>
+</tr>
+<tr>
+<th>DIČ</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseVat')]">
+    <div tal:omit-tag="" tal:content="python:(result['contact'].get('discloseVat') and [result['contact'].get('vat')] or [common['private']])[0]">&lt;vat&gt;</div>
+</td>
+</tr>
+
+<tr>
+<th>Typ identifikace</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseIdent')]">
+    <div tal:omit-tag="" tal:content="python:(result['contact'].get('discloseIdent') and [result['contact'].get('ssnType')] or [common['private']])[0]">&lt;ssnType&gt;</div>
+</td>
+</tr>
+
+<tr>
+<th>Identifikační údaj</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseIdent')]">
+    <div tal:omit-tag="" tal:content="python:(result['contact'].get('discloseIdent') and [result['contact'].get('ssn')] or [common['private']])[0]">&lt;ssn&gt;</div>
+</td>
+</tr>
+
+<tr>
+<th>E-mail</th>
+<td>
+    <div tal:omit-tag="" tal:condition="result/contact/discloseEmail">
+        <div tal:omit-tag="" tal:repeat="email result/contact/emails">
+            <a href="#" tal:attributes="href python:'mailto:%s'%email" tal:content="email">email</a><span
+                tal:omit-tag="" tal:condition="not:repeat/email/end">, </span>
+        </div>
+    </div>
+    <div tal:omit-tag="" tal:condition="not:result/contact/discloseEmail">
+        <span class="private" tal:content="common/private">private</span>
+    </div>
+</td>
+</tr>
+
+<tr>
+<th>E-mail pro oznámení</th>
+<td>
+    <div tal:omit-tag="" tal:condition="result/contact/discloseNotifyEmail">
+        <div tal:omit-tag="" tal:repeat="email result/contact/notifyEmails">
+            <a href="#" tal:attributes="href python:'mailto:%s'%email" tal:content="email">email</a><span
+                tal:omit-tag="" tal:condition="not:repeat/email/end">, </span>
+        </div>
+    </div>
+    <div tal:omit-tag="" tal:condition="not:result/contact/discloseNotifyEmail">
+        <span class="private" tal:content="common/private">private</span>
+    </div>
+</td>
+</tr>
+
+<tr>
+<th>Telefon</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseTelephone')]" tal:content="python:(result['contact'].get('discloseTelephone') and [result['contact'].get('telephone')] or [common['private']])[0]">&lt;telephone no.&gt;</td>
+</tr>
+<tr>
+<th>Fax</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseFax')]" tal:content="python:(result['contact'].get('discloseFax') and [result['contact'].get('fax')] or [common['private']])[0]">&lt;fax no.&gt;</td>
+</tr>
+<tr>
+<th>Registrace od</th>
+<td tal:content="python:localtime(result['contact']['createDate'], short=1)">01.01.1970</td>
+</tr>
+<tr>
+<th>Vytvořeno registrátorem</th>
+<td>
+    <a tal:attributes="href python:'?r=%s' % result['contact']['createRegistrar']['handle']" tal:content="result/contact/createRegistrar/handle">&lt;createRegistrar&gt;</a>
+    <span tal:content="result/contact/createRegistrar/name">&lt;createRegistrar_name&gt;</span>
+</td>
+</tr>
+<tr>
+<th>Poslední aktualizace</th>
+<td tal:content="python:localtime(result['contact']['updateDate'])">&lt;updateDate&gt;</td>
+</tr>
+<tr>
+<th>Poslední transfer</th>
+<td tal:content="python:localtime(result['contact']['transferDate'])">&lt;transferDate&gt;</td>
+</tr>
+<tr>
+    <th>Adresa</th>
+    <td tal:attributes="class python:('private', None)[result['contact'].get('discloseAddress')]"><div tal:omit-tag="" tal:content="structure python:(result['contact']['discloseAddress'] and [', '.join([ x for x in [result['contact']['street1'], result['contact']['street2'], result['contact']['street3'], result['contact']['postalcode'], result['contact']['city'], result['contact']['province'], result['contact']['country']] if x ])] or [common['private']])[0]">&lt;postal address&gt;</div></td>
+</tr>
+<tr>
+    <th>Určený registrátor</th>
+    <td>
+    <a tal:attributes="href python:'?r=%s' % result['contact']['registrar']['handle']" tal:content="result/contact/registrar/handle">&lt;registrar&gt;</a>
+    <span tal:content="result/contact/registrar/name">&lt;registrar_name&gt;</span>
+    </td>
+</tr>
+<tr>
+    <th>Stav</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/status_names">
+            <span tal:omit-tag="" tal:content="name">stav</span><br tal:condition="not:repeat/name/end" />
+        </div>
+    </td>
+</tr>
+
+</table>
+<div tal:omit-tag="" tal:content="structure result/extra_content_contact_bottom">Extra contact content - bottom</div>
+<!-- /* CONTACT DATA END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'contact' and result.get('mojeID')" tal:omit-tag="" class="debugframe">
+Kontakt <strong tal:content="result/contact/handle">&lt;contact handle&gt;</strong> je použit pro mojeID.
+</div>
+
+<div tal:condition="python:result['qtype'] == 'invalid'" tal:omit-tag="" class="debugframe">
+<!-- /* INVALID ENTRY START */ -->
+
+<div tal:condition="python:result['query']['resultHandleClass'] != 'UNREGISTRABLE'">
+    <p>Zadaný výraz <strong tal:content="result/query/queryHandle">string</strong> neodpovídá pravidlům pro tvorbu čísla, názvu domény, kontaktu ani sady nameserverů.</p>
+    <p tal:condition="python:result['apptype'] == 'enum'"><small>Čísla zadávejte v národním tvaru (např. 222745111), v jednom z mezinárodních tvarů (např. +420222745111, 00420222745111), nebo jako ENUM doménu (např. 1.1.1.5.4.7.2.2.2.0.2.4.e164.arpa). Identifikátory zadávejte ve tvaru NSSID:XXXXX (sada nameserverů), CID:XXXXXX (kontaktní osoba), KEYID:XXXXXX (sada klíčů) a REG-XXX (registrátor).</small></p>
+</div>
+
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+    <p tal:condition="python:result['query']['resultHandleClass'] == 'UNREGISTRABLE'">
+        <span tal:omit-tag="" tal:condition="python:result['query']['resultHandleType'] == 'ENUM_NUMBER'">Registr obsahuje pouze údaje o doménách <strong>.0.2.4.e164.arpa</strong> (ENUM). Pro vyhledání informací o doméně <strong tal:content="result/query/queryTranslatedHandle">domain</strong> vyhledejte příslušného správce domény na <a href="http://www.ripe.net/enum/request-archives/">http://www.ripe.net/enum/request-archives/</a></span>
+        <span tal:omit-tag="" tal:condition="python:result['query']['resultHandleType'] == 'ENUM_DOMAIN'">Registr obsahuje pouze údaje o doménách <strong>.0.2.4.e164.arpa</strong> (ENUM). Pro vyhledání informací o doméně <strong tal:content="result/query/queryHandle">domain</strong> vyhledejte příslušného správce domény na <a href="http://www.ripe.net/enum/request-archives/">http://www.ripe.net/enum/request-archives/</a></span>
+    </p>
+</div>
+
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+    <p tal:condition="python:result['query']['resultHandleClass'] in ('UNREGISTRABLE', 'UNREGISTRABLE_LONG')">
+    Registr obsahuje pouze údaje o doménách <strong>.cz</strong> a <strong>.0.2.4.e164.arpa</strong> 
+    (<a href="http://enum.nic.cz">ENUM</a>). 
+    Pro vyhledání informací o jiných doménách vyhledejte příslušného správce domény na stránkách 
+    <a href="http://www.iana.org/cctld/cctld-whois.htm">IANA</a> nebo <a href="http://www.ripe.net/enum/request-archives/">RIPE</a>.
+    </p>
+</div>
+
+<!-- /* INVALID ENTRY END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'notfound'" tal:omit-tag="" class="debugframe">
+<!-- /* NOTFOUND DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_notfound_top">Extra content Not found - top</div>
+
+<p>Nenalezeno. Jménu <strong tal:content="result/query/queryHandle">$query</strong> neodpovídá žádná doména, kontakt ani sada jmenných serverů.</p>
+
+<h1>Registrovat tuto doménu?</h1>
+<p>Postup jak tuto doménu registrovat krok za krokem najdete v návodu <a href="http://www.dobradomena.cz/setlang/?language=cs&amp;next=/dobradomena/manual.pdf" title="Dokument v PDF, 590kB">Jak registrovat Dobrou doménu</a>.</p>
+<tal:comment replace="nothing"><!-- EN {data file,786}, CZ {data file,787} --></tal:comment>
+<p>Pokud už víte jak na to, začněte rovnou výběrem registrátora ze seznamu registrátorů:</p>
+<a href="/whois/registrars/"><button>Seznam registrátorů</button></a>
+
+<div tal:omit-tag="" tal:content="structure result/extra_content_notfound_bottom">Extra content Not found - bottom</div>
+<!-- /* NOTFOUND DATA END */-->
+</div>
+
+
+<div tal:condition="python:result['qtype'] == 'invalid_gid'" tal:omit-tag="" class="debugframe">
+<!-- /* INVALID GID */ -->
+<p>Neplatný identifikátor skupiny: <strong tal:content="result/query/queryHandle">$query</strong>.</p>
+<!-- /* INVALID GID END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'xxx'" tal:omit-tag="" class="debugframe">
+<!-- /* XXX DATA START */ -->
+<!-- /* XXX DATA END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'registrar'" tal:omit-tag="" class="debugframe">
+<!-- /* REGISTRAR DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrar_top">Extra content Registrar - top</div>
+<table class="result">
+<tr>
+<th>Identifikátor</th>
+<td tal:content="result/registrar/handle">&lt;registrar handle&gt;</td>
+</tr>
+<tr>
+<th>Jméno</th>
+<td tal:content="result/registrar/name">&lt;name&gt;</td>
+</tr>
+
+<tal:comment replace="nothing">
+<tr>
+    <th>E-mail</th>
+    <td><a href="#" tal:attributes="href python: 'mailto:%s' % result['registrar']['email']" tal:content="result/registrar/email">&lt;email&gt;</a></td>
+</tr>
+</tal:comment>
+
+<tr>
+<th>Telefon</th>
+<td tal:content="result/registrar/telephone">&lt;telephone no.&gt;</td>
+</tr>
+<tr>
+<th>Fax</th>
+<td tal:content="result/registrar/fax">&lt;fax no.&gt;</td>
+</tr>
+<tr>
+<th>URL</th>
+<td><a href="#" tal:attributes="href result/registrar/url" tal:content="result/registrar/url">&lt;registrar url&gt;</a></td>
+</tr>
+<tr>
+    <th>Adresa</th>
+    <td>
+        <div tal:omit-tag="" tal:content="structure python:', '.join([ x for x in [result['registrar']['street1'], result['registrar']['street2'], result['registrar']['street3'], result['registrar']['postalcode'], result['registrar']['city'], result['registrar']['stateorprovince']] if x ])">&lt;postal address&gt;</div>
+    </td>
+</tr>
+</table>
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrar_bottom">Extra content Registrar - bottom</div>
+<!-- /* REGISTRAR DATA END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] in ['registrars', 'registrars-list']" tal:omit-tag="" class="debugframe">
+<!-- /* REGISTRARS LINKS START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrarslinks_top">Extra content Registrars links - top</div>
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+<p tal:condition="not:result/query | nothing">ENUM domény je možné registrovat u následujících registrátorů:</p>
+<div tal:condition="result/query">
+<div tal:condition="python:result['query']['resultHandleClass'] == 'FREE'">
+<p tal:condition="python:result['query']['resultHandleType'] == 'ENUM_NUMBER'">ENUM doména <strong tal:content="result/query/queryTranslatedHandle">domain</strong> odpovídající číslu <strong tal:content="result/query/queryHandle">number</strong> není v systému registrována. V případě zájmu o její registraci kontaktuje některého z akreditovaných registrátrů z následujícího seznamu.</p>
+<p tal:condition="python:result['query']['resultHandleType'] == 'ENUM_DOMAIN'">ENUM doména <strong tal:content="result/query/queryHandle">domain</strong> není v systému registrována. V případě zájmu o její registraci kontaktuje některého z akreditovaných registrátrů z následujícího seznamu.</p>
+</div>
+<div tal:condition="python:result['query']['resultHandleClass'] == 'REGISTRED_CHILD'">
+<p>ENUM doména pro tento blok čísel není registrována, ale jsou registrovány domény pro některá čísla z tohoto bloku. Pokud  přesto chcete tento blok registrovat, kontaktuje některého z akreditovaných registrátrů z následujícího seznamu.</p>
+</div>
+</div>
+</div>
+
+
+<div tal:condition="python: result.get('registrars') and (result.get('technology') or result.get('show_certifications'))" style="padding-bottom: 1.5em;">
+    <div tal:condition="python: 'dnssec' in result['technology']">
+        <img src="/media/img/technology/dnssec.png" style="vertical-align: middle" /> Registrátor podporuje bezpečné domény <a href="http://www.dnssec.cz/">DNSSEC</a>
+    </div>
+    <div tal:condition="python: 'mojeid' in result['technology']">
+        <img src="/media/img/technology/mojeid.png"  style="vertical-align: middle" /> Registrátor podporuje <a href="http://www.mojeid.cz/">mojeID</a>
+    </div>
+    <div tal:condition="python: 'ipv6' in result['technology']">
+        <img src="/media/img/technology/ipv6.png" style="vertical-align: middle" /> Registrátor podporuje IPv6
+    </div>
+    <div tal:condition="result/show_certifications">
+        <img src="/media/img/smooth-star.png" style="vertical-align: middle" /> Registrátor <a href="https://www.nic.cz/page/928/">certifikovaný</a> pro maloobchod
+    </div>
+</div>
+
+<table tal:condition="python: result.get('registrars')">
+<tbody>
+<tr>
+    <th>Registrátor</th>
+    <th>Webové stránky</th>
+    <th tal:condition="result/technology" class="regtech">Technologie</th>
+    <th tal:condition="result/show_certifications">Certifikace</th>
+    <th tal:condition="result/show_certifications">Certifikační protokol</th>
+    <th tal:condition="result/goodomain">Jak registrovat <a href="http://www.dobradomena.cz/" title="Jak registrovat Dobrou doménu">Dobrou doménu</a></th>
+</tr>
+<span tal:repeat="reg result/registrars" tal:omit-tag="">
+<tr tal:define="odd repeat/reg/odd" tal:attributes="class python:test(odd, 'odd')">
+    <td tal:content="reg/name">&lt;registrar&gt;</td>
+    <td><a href="#" tal:content="reg/url" tal:attributes="href reg/url">&lt;url&gt;</a></td>
+    <td tal:condition="result/technology" class="regtech" style="white-space: nowrap;">
+        <img tal:repeat="tech reg/technology" 
+             tal:attributes="src python: '/media/img/technology/%s.png' % tech; alt tech" />
+    </td>
+    <td tal:condition="result/show_certifications"><div style="white-space: nowrap;"><tal:loop tal:repeat="item/number python: [] if not reg.get('certification') else range(0,int(reg.get('certification').get('score', 0)))"><img src="/media/img/smooth-star.png"/></tal:loop></div></td>
+    <td tal:condition="result/show_certifications"><a href="#" tal:condition="python:reg.get('certification') and reg.get('certification').get('evaluation_file_id')" tal:attributes="href python: '/whois/registrars/list/download_eval/%s/' % reg.get('id')"><img src="/media/img/mimetypes/ico_pdf.gif" alt="PDF" /></a></td>
+    <td tal:condition="result/goodomain"><a href="#" tal:condition="python:result['goodomain'].get(reg['goodomain'])" tal:attributes="href python:result['goodomain'][reg['goodomain']]['href']"><img src="/media/img/mimetypes/ico_pdf.gif" alt="PDF" /></a></td>
+</tr></span>
+</tbody>
+</table>
+
+
+<div tal:omit-tag="" tal:condition="python:common['become_registrar']['url'] != '#'">
+    <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+        <p>Chcete-li se stát registrátorem ENUM domén, postupujte dle návodu <a href="#" tal:attributes="href python:'http://www.nic.cz%s' % common['become_registrar']['url']">zde</a></p>
+    </div>
+    <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+        <p>Chcete-li se stát registrátorem .cz domén, postupujte dle návodu <a href="#" tal:attributes="href common/become_registrar/url">zde</a></p>
+    </div>
+</div>
+
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrarslinks_bottom">Extra content Registrars links - bottom</div>
+<!-- /* REGISTRARS LINKS END */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'publicrequest'" tal:omit-tag="" class="debugframe">
+<!-- /* PUBLICREQUEST START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_publicrequest_top">Extra content Public request - top</div>
+<div tal:condition="not:result/handle">
+
+<h2>Formulář k odeslání žádosti o poskytnutí hesla</h2>
+<p>Tento formulář slouží k odeslání <a href="#request_form" onclick="setRequestType('authinfo');">žádosti o poskytnutí hesla</a> pro změnu určeného registrátora objektu v registru (domény, kontaktu nebo sady jmenných serverů). Formulář použijte v případě, že toto heslo nemůžete získat přímo od současného určeného registrátora.</p>
+
+<h2>Žádost o zvýšené zabezpečení objektu v databázi CZ.NIC</h2>
+<p>Pomocí tohoto formuláře je možné požádat o <a href="#request_form" onclick="setRequestType('block_transfer');">zablokování možnosti změnit určeného registrátora</a> domény, kontaktu nebo sady jmenných serverů 
+nebo o <a href="#request_form" onclick="setRequestType('block_changes');">zablokování možností provádět jakékoliv změny údajů</a> u domény, kontaktu nebo sady jmenných serverů.</p>
+<p>V případě, že bude aktivována blokace změny určeného registrátora, nebude možné daný objekt přesunout k jinému registrátorovi a nebude možné požádat o zaslání hesla ke změně na e-mail uvedený v centrálním registru.</p>
+<p>V případě, že bude aktivována blokace změn údajů, nebude možné provést žádnou změnu údajů vedených v centrálním registru k danému objektu.
+Pokud budete chtít výše uvedené blokace zrušit, pokračujte na následující odstavec.</p>
+
+<h2>Žádost o zrušení zvýšeného zabezpečení objektu v databázi CZ.NIC</h2>
+<p>Pomocí tohoto formuláře je možné požádat o <a href="#request_form" onclick="setRequestType('unblock_transfer');">zrušení již provedeného zablokování změny určeného registrátora</a> 
+či <a href="#request_form" onclick="setRequestType('unblock_changes');">zablokování jakýchkoliv změn</a> u domén, kontaktů nebo sad jmenných serverů.</p>
+
+<form class="enum-util" name="request" method="post" action="?" onsubmit="return checkFormPublicRequest()">
+    <fieldset>
+<p class="error" tal:condition="result/errors">
+    <span tal:omit-tag="" tal:condition="python:'missing_handle' in result.get('errors')">Nebyl zadán identifikátor.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'mail_missing' in result.get('errors')">Nebyl zadán email. Pokud je "Způsob zaslání" nastaven na "na zadaný email..." je email povinný.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'reason_missing' in result.get('errors')">Chybí Jiný důvod. Je-li Důvod požadavku: "Jiný (uveďte níže)" je zadání hodnoty "Jiný důvod" povinné.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'captcha' in result.get('errors')">Kontrolní kód nesouhlasí nebo platnost kódu již vypršela, opište z obrázku nový kód.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'missing_captcha' in result.get('errors')">Pro zobrazení je třeba vyplnit kontrolní kód.<br/></span>
+</p>
+
+<table id="request_form">
+<tr>
+    <th>Požadavek:</th>
+    <td><select class="inline" id="requestType" name="requestType" onchange="switchRequestType(this);">
+            <option value="authinfo" tal:attributes="selected python:result['form']['requestType']=='authinfo' and 'selected' or None">Zaslat heslo pro transfer</option>
+            <option value="block_transfer" tal:attributes="selected python:result['form']['requestType']=='block_transfer' and 'selected' or None">Blokovat pouze transfer</option>
+            <option value="unblock_transfer" tal:attributes="selected python:result['form']['requestType']=='unblock_transfer' and 'selected' or None">Odblokovat transfer</option>
+            <option value="block_changes" tal:attributes="selected python:result['form']['requestType']=='block_changes' and 'selected' or None">Blokovat všechny změny</option>
+            <option value="unblock_changes" tal:attributes="selected python:result['form']['requestType']=='unblock_changes' and 'selected' or None">Odblokovat všechny změny</option>
+            </select></td>
+</tr>
+<tr>
+    <th>Typ objektu:</th>
+    <td><select class="inline" id="objtype" name="objectType">
+            <option value="domain" tal:attributes="selected python:result['form']['objectType']=='domain' and 'selected' or None">Doména</option>
+            <option value="contact" tal:attributes="selected python:result['form']['objectType']=='contact' and 'selected' or None">Kontakt</option>
+            <option value="nsset" tal:attributes="selected python:result['form']['objectType']=='nsset' and 'selected' or None">Sada nameserverů</option>
+            <option value="keyset" tal:attributes="selected python:result['form']['objectType']=='keyset' and 'selected' or None">Sada klíčů</option>
+            </select></td>
+</tr>
+<tr>
+    <th>Identifikátor:<small tal:condition="python:result['apptype'] == 'enum'">*</small></th>
+    <td id="missing_handle" tal:attributes="class python:'missing_handle' in result.get('errors') and 'missing' or None"><input class="inline" type="text" id="handle" name="handle" tal:attributes="value result/form/handle"/></td>
+</tr>
+<tr id="confirmMethodTR">
+    <th>Způsob potvrzení:</th>
+    <td><select class="inline" id="confirmMethod" name="confirmMethod">
+            <option value="signedemail" tal:attributes="selected python:result['form']['confirmMethod']=='signedemail' and 'selected' or None">Email podepsaný kvalifikovaným certifikátem</option>
+            <option value="snailmail" tal:attributes="selected python:result['form']['confirmMethod']=='snailmail' and 'selected' or None">Úředně ověřený podpis</option>
+            </select></td>
+</tr>
+<tr id="sendingMethodTR">
+    <th>Způsob zaslání:</th>
+    <td><select class="inline" id="sendingMethod" name="sendingMethod" onchange="switchReplymail(this);">
+            <option value="auto" tal:attributes="selected python:result['form']['sendingMethod']=='auto' and 'selected' or None">na email v registru</option>
+            <option value="signedemail" tal:attributes="selected python:result['form']['sendingMethod']=='signedemail' and 'selected' or None">na zadaný email - použiji elektronický podpis</option>
+            <option value="snailmail" tal:attributes="selected python:result['form']['sendingMethod']=='snailmail' and 'selected' or None">na zadaný email - použiji úředně ověřený podpis</option>
+            </select></td>
+</tr>
+<tr id="replymailTR">
+    <th>Email k zaslání hesla:</th>
+    <td id="mail_missing"
+        tal:attributes="class python:'mail_missing' in result.get('errors') and 'missing' or None">
+        <input class="inline" type="text" id="replymail" name="replyMail"
+            tal:attributes="disabled python:result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'auto' and 'disabled' or None;value result/form/replyMail" /></td>
+</tr>
+<tr id="reasonTR">
+    <th>Důvod požadavku:</th>
+    <td><select class="inline" id="reason" name="reason" onchange="switchReason(this);">
+            <option value="1" tal:attributes="selected python:result['form']['reason']=='1' and 'selected' or None">Nemohu tuto informaci získat od svého registrátora</option>
+            <option value="2" tal:attributes="selected python:result['form']['reason']=='2' and 'selected' or None">Zapomenuté heslo</option>
+            <option value="3" tal:attributes="selected python:result['form']['reason']=='3' and 'selected' or None">Jiný (uveďte níže)</option>
+            </select></td>
+</tr>
+<tr id="txtreasonTR">
+    <th>Jiný důvod:</th>
+    <td id="reason_missing"
+        tal:attributes="class python:'reason_missing' in result.get('errors') and 'missing' or None"><input class="inline" type="text" id="txtreason" name="txtreason" 
+        tal:attributes="disabled python:result['form']['reason']!='3' and 'disabled' or None; value result/form/txtreason" /></td>
+</tr>
+<div tal:omit-tag="" tal:condition="result/captchakey">
+    <tr>
+        <th></th>
+        <td id="captcha_frame"><div id="captcha_updating" style="visibility:hidden"><img src="/media/img/mozilla_blu.gif" width="16" height="16" /><br/>Obrázek se načítá.<br/>Prosím vyčkejte...</div><img 
+            id="captcha_img" tal:attributes="src string:/whois/captcha.py?id=${result/captchakey};width result/form/captcha_img/width;height result/form/captcha_img/height" /></td>
+    </tr>
+    <tr>
+        <th>Kontrolní kód (opište z obrázku):</th>
+        <td id="missing_captcha" 
+            tal:attributes="class python:('missing_captcha' in result.get('errors') or 'captcha' in result.get('errors')) and 'missing' or None">
+            <input class="inline" type="text" id="captcha" name="captcha" />
+            <input type="hidden" id="captchakey" name="captchakey" tal:attributes="value result/captchakey" />
+        </td>
+    </tr>
+</div>
+<tr>
+    <th></th>
+    <td><button id="submit_button" type="submit">Odeslat</button></td>
+</tr>
+
+</table>
+
+    </fieldset>
+</form>
+<p tal:condition="python:result['apptype'] == 'enum'"><small>
+  * Čísla zadávejte jako ENUM doménu (např. 1.1.1.5.4.7.2.2.2.0.2.4.e164.arpa), identifikátory zadávejte ve tvaru <em>NSSID:XXXXX</em> (sada nameserverů), <em>CID:XXXXXX</em> (kontaktní osoba), <em>KEYID:XXXXXX</em> (sada klíčů) a <em>REG-XXX</em> (registrátor).
+</small></p>
+
+</div>
+<div tal:condition="result/handle">
+<div tal:condition="python: result.get('reply') and result.get('reply') != 'error' and result.get('found')">
+
+    <div tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'auto'">
+        <div tal:condition="python: result['form']['objectType'] == 'domain'">
+        Žádost o zaslání hesla pro změnu určeného registrátora domény <strong tal:content="result/handle">$domain</strong> byla úspěšně přijata. Email s tímto heslem bude odeslán na emailovou adresu držitele domény a administrativnich kontaktů.
+        </div>
+
+        <div tal:condition="python: result['form']['objectType'] == 'contact'">
+        Žádost o zaslání hesla pro změnu určeného registrátora kontaktu <strong tal:content="result/handle">$contact</strong> byla úspěšně přijata. Email s tímto heslem bude odeslán na emailovou adresu uvedenou v registru.
+        </div>
+        
+        <div tal:condition="python: result['form']['objectType'] == 'nsset'">
+        Žádost o zaslání hesla pro změnu určeného registrátora sady jmenných serverů <strong tal:content="result/handle">$nsset</strong> byla úspěšně přijata. Email s tímto heslem bude odeslán na emailové adresy technických kontaktů sady.
+        </div>
+
+        <div tal:condition="python: result['form']['objectType'] == 'keyset'">
+        Žádost o zaslání hesla pro změnu určeného registrátora sady klíčů <strong tal:content="result/handle">$keyset</strong> byla úspěšně přijata. Email s tímto heslem bude odeslán na emailové adresy technických kontaktů sady.
+        </div>
+    </div>
+
+	<div tal:omit-tag="" tal:condition="python: (result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'signedemail') or (result['form']['requestType'] != 'authinfo' and result['form']['confirmMethod'] == 'signedemail') ">
+	<p>Následující text prosím zkopírujte a vložte do těla emailu, email podepište Vaším digitálním podpisem 
+	a zašlete na adresu <a href="mailto:podpora@nic.cz">podpora@nic.cz</a>.</p>
+	</div>
+
+	<div tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'signedemail'">
+<pre class="confirmation">
+Potvrzuji tímto žádost o poskytnutí hesla k <span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'" tal:replace="default">doménovému jménu</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">kontaktu</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">sadě nameserverů</span><span
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">sadě klíčů</span> <span 
+    tal:omit-tag="" tal:replace="result/handle">handle</span>,
+která byla podána prostřednictvím webového formuláře na stránce
+<span tal:omit-tag="" tal:replace="result/url">URL</span> dne <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>, s přiděleným 
+identifikačním číslem <span tal:omit-tag="" tal:replace="result/id">id</span> a žádám o poskytnutí příslušného hesla 
+na adresu <span tal:omit-tag="" tal:replace="result/form/replyMail">mail</span>
+</pre>
+	</div>
+
+	<div tal:condition="python: result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'snailmail'">
+	<!--
+	<pre>
+	Věc : Potvrzení žádosti o poskytnutí hesla k <span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'domain'" tal:replace="default">doménovému jménu</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'contact'" tal:replace="default">kontaktu</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'nsset'" tal:replace="default">sadě nameserverů</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span>.
+	
+	Potvrzuji tímto žádost o poskytnutí hesla k <span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'domain'" tal:replace="default">doménovému jménu</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'contact'" tal:replace="default">kontaktu</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'nsset'" tal:replace="default">sadě nameserverů</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span>,
+	podanou prostřednictvím webového formuláře na stránce
+	<span tal:omit-tag="" tal:replace="result/url">URL</span> dne <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>,
+	které bylo přiděleno identifikační číslo <span tal:omit-tag="" tal:replace="result/id">id</span> a žádám o poskytnutí 
+	příslušného hesla na adresu <span tal:omit-tag="" tal:replace="result/form/replyMail">mail</span>
+	
+	Jméno a úředně ověřený podpis zodpovědné osoby :
+	
+	
+	 ..................................
+	
+	</pre>
+	-->
+	
+	Vytiskněte tuto <a href="/whois/pdf.py" title="Otevřít nebo uložit žádost."><strong>žádost o zaslání hesla</strong></a> (PDF), podepište ji (je nutný úředně ověřený podpis) a podepsaný originál zašlete na adresu:<br />
+	<blockquote>
+	<address>
+	Zákaznická podpora<br />
+	CZ.NIC, z. s. p. o.
+	Americká 23<br />
+	120 00 Praha 2
+	</address>
+	</blockquote>
+	V případě, že podepisující osoba není uvedena v Centrálním registru doménových jmen, je k této žádosti potřeba přiložit originál nebo úředně ověřenou kopii dokumentu, který zmocňuje tuto osobu k uvedenému požadavku.
+	Pokud nemůžete dokument otevřít nebo se vám nezobrazuje správně, stáhněte si aktuální verzi PDF prohlížeče <a href="http://www.amsoft.cz/produkty/adobe/acrobat/readstep.html">Adobe Reader</a>.
+	</div>
+
+    <div tal:condition="python: result['form']['requestType'].startswith('block') and result['form']['confirmMethod'] == 'signedemail'">
+<pre class="confirmation">Věc: Potvrzení žádosti o blokaci <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'"
+    tal:replace="default">domény</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">kontaktu</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">sady jmenných serverů</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">sady klíčů</span> <span 
+    tal:omit-tag="" tal:replace="result/handle">handle</span>:
+
+Potvrzuji tímto žádost o zablokování <span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_transfer'">změny určeného registrátora</span><span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_changes'">všech změn u</span>
+<span
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'" tal:replace="default">domény</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">kontaktu</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">sady jmenných serverů</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">sady klíčů</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span>, která byla podána prostřednictvím webového formuláře
+na stránce <span tal:omit-tag="" tal:replace="result/url">URL</span> dne <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>,
+s přiděleným identifikačním číslem <span tal:omit-tag="" tal:replace="result/id">id</span> a žádám o provedení příslušné blokace.
+Souhlasím s tím, že u <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'"
+    tal:replace="default">domény</span><span
+        tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">kontaktu</span><span 
+        tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">sady jmenných serverů</span><span 
+        tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">sady klíčů</span> <span 
+            tal:omit-tag="" tal:replace="result/handle">handle</span> nebude možné provést <span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_transfer'">změnu určeného registrátora</span><span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_changes'">žádnou změnu</span>
+až do okamžiku, kdy tuto blokaci zruším pomocí příslušného formuláře na www.nic.cz.
+
+Zodpovědná osoba:
+</pre>
+    </div>
+
+	<div tal:condition="python: result['form']['requestType'].startswith('block') and result['form']['confirmMethod'] == 'snailmail'">
+        Vytiskněte tuto <a href="/whois/pdf.py" title="Otevřít nebo uložit žádost."><strong>žádost o blokaci</strong></a> (PDF), podepište ji (je nutný úředně ověřený podpis) a podepsaný originál zašlete na adresu:
+        <blockquote>
+    <address>
+    Zákaznická podpora<br />
+    CZ.NIC, z. s. p. o.
+    Americká 23<br />
+    120 00 Praha 2
+    </address>
+    </blockquote>
+    
+    V případě, že podepisující osoba není uvedena v Centrálním registru doménových jmen, je k této žádosti potřeba přiložit originál nebo úředně ověřenou kopii dokumentu, který zmocňuje tuto osobu k uvedenému požadavku. Pokud nemůžete dokument otevřít nebo se vám nezobrazuje správně, stáhněte si aktuální verzi PDF prohlížeče <a href="http://www.amsoft.cz/produkty/adobe/acrobat/readstep.html">Adobe Reader</a>. 
+	</div>
+
+    <div tal:condition="python: result['form']['requestType'].startswith('unblock') and result['form']['confirmMethod'] == 'signedemail'">
+<pre class="confirmation">Věc: Potvrzení žádosti o zrušení blokace <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'"
+    tal:replace="default">domény</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">kontaktu</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">sady jmenných serverů</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">sady klíčů</span> <span 
+    tal:omit-tag="" tal:replace="result/handle">handle</span>:
+
+Potvrzuji tímto žádost o zrušení zablokování <span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'unblock_transfer'">změny určeného registrátora</span><span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'unblock_changes'">všech změn u</span>
+<span
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'" tal:replace="default">domény</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">kontaktu</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">sady jmenných serverů</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">sady klíčů</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span>, která byla podána prostřednictvím webového formuláře
+na stránce <span tal:omit-tag="" tal:replace="result/url">URL</span> dne <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>,
+s přiděleným identifikačním číslem <span tal:omit-tag="" tal:replace="result/id">id</span> a žádám o odstranění příslušné blokace.
+
+Zodpovědná osoba:
+</pre>
+    </div>
+    
+    <div tal:condition="python: result['form']['requestType'].startswith('unblock') and result['form']['confirmMethod'] == 'snailmail'">
+        Vytiskněte tuto <a href="/whois/pdf.py" title="Otevřít nebo uložit žádost."><strong>žádost o odblokování</strong></a> (PDF), podepište ji (je nutný úředně ověřený podpis) a podepsaný originál zašlete na adresu:
+        <blockquote>
+    <address>
+    Zákaznická podpora<br />
+    CZ.NIC, z. s. p. o.
+    Americká 23<br />
+    120 00 Praha 2
+    </address>
+    </blockquote>
+    
+    V případě, že podepisující osoba není uvedena v Centrálním registru doménových jmen, je k této žádosti potřeba přiložit originál nebo úředně ověřenou kopii dokumentu, který zmocňuje tuto osobu k uvedenému požadavku. Pokud nemůžete dokument otevřít nebo se vám nezobrazuje správně, stáhněte si aktuální verzi PDF prohlížeče <a href="http://www.amsoft.cz/produkty/adobe/acrobat/readstep.html">Adobe Reader</a>. 
+    </div>
+
+</div>
+
+<div tal:condition="python: result['form']['requestType'] == 'error' or result.get('reply') == 'error'">
+    <div tal:condition="not:result/error_type">
+        Při zpracování požadavku se vyskytla neočekávaná chyba. Zkuste to prosím později.
+    </div>
+    <div tal:condition="python: result.get('error_type') in ('error_request_blocked', 'error_request_not_blocked')">
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'" tal:replace="default">Doména</span>
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">Kontakt</span>
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">Sada jmenných serverů</span>
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">Sada klíčů</span>
+        <strong tal:content="result/handle">handle</strong>
+        <span tal:condition="python: result.get('error_type') == 'error_request_blocked'">je</span>
+        <span tal:condition="python: result.get('error_type') == 'error_request_not_blocked'">není</span>
+        zablokován<span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain' or result['form'].get('objectType') == 'nsset' or result['form'].get('objectType') == 'keyset'" tal:replace="default">a</span>, žádost nelze přijmout.
+    </div>
+</div>
+
+<div tal:condition="not:result/found">
+    <p tal:condition="not:result/error">Nelze odeslat. Objekt <strong tal:content="result/handle">objekt</strong> není v registru domén evidován.</p>
+</div>
+
+</div>
+<div tal:omit-tag="" tal:content="structure result/extra_content_publicrequest_bottom">Extra content Public request - bottom</div>
+<!-- /* PUBLICREQUEST END */ -->
+</div>
+
+<!-- /* BACK LINK START */ -->
+<div tal:condition="python:result['qtype'] != 'query'" tal:omit-tag="" class="debugframe">
+<div tal:condition="python:result['apptype'] in ('enum', 'whois')">
+<p tal:condition="python:result['qtype'] not in ('publicrequest', 'registrars-list')">
+<div class="goback"><a href="/whois" title="Nové vyhledávání v registru">Nové vyhledávání v registru</a></div>
+</p>
+</div>
+<!-- /* BACK LINK END */ -->
+
+</div>
+</div>

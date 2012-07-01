@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<invoice>
+<!--
+    !DOCTYPE invoice SYSTEM  "file:///$FRED2PDFPATH/templates/fred_invoice.dtd"
+    !DOCTYPE invoice SYSTEM  "file:///home/zdenek/enum/fred2pdf/trunk/templates/fred_invoice.dtd"
+
+    These data serve as a standard for generating RML sheet with help of XSL sheets.
+    Create: Zdeněk Böhm <zdenek.bohm@nic.cz>; 10.1.2007
+    Modification: 25.1.2007, 26.1.2007
+
+    It is neccesity set up full path to DTD file for validity control.
+    You need replaced $FRED2PDFPATH variable for real path to file. Then you can validate it:  
+
+    ~/enum/fred2pdf/trunk$ sed 's|$FRED2PDFPATH|'`pwd`'|' examples/invoice.xml | xmllint -:-noout -:-valid -
+    (cancel colons between dashes)
+-->
+<client>
+    <name>IPEX a.s.</name>
+    <address>
+        <street>Široká 37</street>
+        <city>České Budějovice</city>
+        <zip>370 01</zip>
+    </address>
+    <ico>45021295</ico>
+    <vat_number>CZ45021295</vat_number>
+</client>
+
+<supplier>
+    <name>CZ.NIC, z.s.p.o.</name>
+    <fullname>CZ.NIC, zájmové sdružení právnických osob</fullname>
+    <address>
+        <street>Americká 23</street>
+        <city>Praha 2</city>
+        <zip>120 00</zip>
+    </address>
+    <ico>67985726</ico>
+    <vat_number>CZ67985726</vat_number>
+    <registration>SpZ: odb. občanskopr. agend Magist. hl. m. Prahy, č. ZS/30/3/98</registration>
+    <reclamation>CZ.NIC, z.s.p.o., Americká 23, 120 00 Praha 2</reclamation>
+    <url>www.nic.cz</url>
+    <email>podpora@nic.cz</email>
+    <phone>+420 222 745 111</phone>
+    <fax>+420 222 745 112</fax>
+</supplier>
+
+<payment>
+    <invoice_number>2406000590</invoice_number>
+    <previous_invoice_number>2406000589</previous_invoice_number>
+    <invoice_date>2006-10-03</invoice_date>
+    <tax_point>2006-10-02</tax_point>
+    <vs>45021295</vs>
+    <period_from>2006-06-01</period_from>
+    <period_to>2007-01-10</period_to>
+</payment>
+
+<delivery>
+    <vat_rates>
+        <entry>
+            <vatperc>19</vatperc>
+            <basetax>42017</basetax>
+            <vat>4000450</vat>
+            <total>50000</total>
+            <totalvat>50</totalvat>
+            <paid>40000</paid>
+            <paidvat>40</paidvat>
+            <years>
+              <entry>
+                <year>2007</year>
+                <price>1.10</price>
+                <vat>0.20</vat>
+                <total>1.30</total>
+              </entry>
+              <entry>
+                <year>2008</year>
+                <price>3.90</price>
+                <vat>0.74</vat>
+                <total>4.64</total>
+              </entry>
+            </years>
+        </entry>
+    </vat_rates>
+    <sumarize>
+        <total>111900</total>
+        <paid>-111900</paid>
+        <paid_vat>-21261</paid_vat>
+        <to_be_paid>8888888888</to_be_paid>
+        <total_with_vat>133161</total_with_vat>
+    </sumarize>
+</delivery>
+
+
+<advance_payment>
+    <applied_invoices>
+        <consumed>
+            <number>110700004</number>
+            <price>5.00</price>
+            <balance>40.00</balance>
+            <vat>0.95</vat>
+            <vat_rate>19</vat_rate>
+            <pricevat>5.95</pricevat>
+            <total>100.00</total>
+            <total_vat>19.00</total_vat>
+            <total_with_vat>119.00</total_with_vat>
+            <crtime>2007-01-23 10:11:37</crtime>
+        </consumed>
+        <consumed>
+            <number>2006112</number>
+            <invoice_date>2007-01-23 14:15:16.760</invoice_date>
+            <price>80000</price>
+            <price_with_vat>95200</price_with_vat>
+            <vat>15200</vat>
+            <balance>0</balance>
+            <vat_rate>19</vat_rate>
+            <total>200</total>
+        </consumed>
+        <consumed>
+            <number>2006111</number>
+            <invoice_date>2007-01-22 14:15:16.760</invoice_date>
+            <price>6000</price>
+            <price_with_vat>7140</price_with_vat>
+            <vat>1140</vat>
+            <balance>0</balance>
+            <vat_rate>19</vat_rate>
+            <total>200</total>
+        </consumed>
+        <consumed>
+            <number>2006113</number>
+            <invoice_date>2007-01-21 14:15:16.760</invoice_date>
+            <price>21900</price>
+            <price_with_vat>26061</price_with_vat>
+            <vat>4161</vat>
+            <balance>28100</balance>
+            <vat_rate>19</vat_rate>
+            <total>200</total>
+        </consumed>
+        <consumed>
+            <number>2006110</number>
+            <invoice_date>2007-01-20 14:15:16.760</invoice_date>
+            <price>4000</price>
+            <price_with_vat>4760</price_with_vat>
+            <vat>760</vat>
+            <balance>0</balance>
+            <vat_rate>19</vat_rate>
+            <total>200</total>
+        </consumed>
+    </applied_invoices>
+</advance_payment>
+
+<appendix>
+
+    <items>
+        <item>
+            <subject>gaad.cz</subject>
+            <code>RUDR</code>
+            <timestamp>2007-01-12 11:12:00.469754</timestamp>
+            <expiration>2009-01-12</expiration>
+            <count>2</count>
+            <price>300</price>
+            <total>600</total>
+            <vat_rate>19</vat_rate>
+        </item>
+        <item>
+            <subject>jindrizska.cz</subject>
+            <code>RREG</code>
+            <timestamp>2007-01-12 11:10:00.469754</timestamp>
+            <price>10800</price>
+            <total>10800</total>
+            <vat_rate>19</vat_rate>
+        </item>
+        <item>
+            <subject>snih.cz</subject>
+            <code>RUDR</code>
+            <timestamp>2007-01-12 10:12:00.469754</timestamp>
+            <expiration>2008-01-12</expiration>
+            <count>1</count>
+            <price>100500</price>
+            <total>100500</total>
+            <vat_rate>19</vat_rate>
+        </item>
+        <item>
+            <subject>snih.cz</subject>
+            <code>RREG</code>
+            <timestamp>2007-01-12 10:12:00.469754</timestamp>
+            <expiration>2008-01-12</expiration>
+            <count>1</count>
+            <price>100500</price>
+            <total>100500</total>
+            <vat_rate>19</vat_rate>
+        </item>
+        <item>
+            <subject>abc.cz</subject>
+            <code>RPOZ</code>
+            <timestamp>2007-01-12 09:12:00.469754</timestamp>
+            <expiration>2009-01-12</expiration>
+            <count>300000000</count>
+            <price>300</price>
+            <total>20000000</total>
+            <vat_rate>19</vat_rate>
+        </item>
+        <item>
+            <subject>1.1.1.7.4.5.2.2.2.0.2.4.e164.arpa</subject>
+            <code>RUDR</code>
+            <timestamp>2007-01-12 08:10:00.469754</timestamp>
+            <expiration>2009-01-12</expiration>
+            <count>2</count>
+            <price>300</price>
+            <total>600</total>
+            <vat_rate>19</vat_rate>
+        </item>
+    </items>
+
+    <sumarize_items>
+        <total>111900</total>
+    </sumarize_items>
+
+</appendix>
+
+</invoice>

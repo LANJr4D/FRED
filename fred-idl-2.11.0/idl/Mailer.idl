@@ -1,0 +1,190 @@
+#ifndef MAILER_IDL_
+#define MAILER_IDL_
+
+#include "_dataTypes.idl"
+
+module ccReg {
+
+  /// List of identifiers of attachments.
+  typedef sequence < long > Attachment_seq;
+
+  /// Item in code list of email types.
+  struct MailTypeCode
+  {
+    long id;     ///< Numeric ID of email type.
+    string name; ///< Name of email type.
+  };
+  /// Code list of email types (pairs of code and email type name).
+  typedef sequence < MailTypeCode > MailTypeCodes;
+
+  /** Structure for specification of email headers (for some of them are
+   *  provided default values.
+   */
+  struct MailHeader
+  {
+    string h_to;           ///< Email header 'To'.
+    string h_from;         ///< Email header 'From'.
+    string h_cc;           ///< Email header 'Cc'.
+    string h_bcc;          ///< Email header 'Bcc'.
+    string h_reply_to;     ///< Email header 'Reply-To'.
+    string h_errors_to;    ///< Email header 'Errors-To'.
+    string h_organization; ///< Email header 'Organization'.
+  };
+
+  /// Structure representing key-value pair.
+  struct KeyValue
+  {
+    string key;   ///< Key.
+    string value; ///< Value.
+  };
+
+  /// List of key-value pairs used for templating.
+  typedef sequence <KeyValue> KeyValues;
+
+  /// Structure describing sent email.
+  struct Mail
+  {
+    long mailid;      ///< Numeric ID of the email.
+    long mailtype;    ///< Numeric ID of email type.
+    timestamp crdate; ///< Date of insertion in archive (= date of submission).
+    timestamp moddate;///< Date of last modification of email status.
+    long status;      ///< Email status (sent, not sent, wait for confirmation).
+    Lists handles;    ///< List of associated object handles.
+    /** Content of the email including headers excluding file attachments and
+     *  signature.
+     */
+    string content;
+    Attachment_seq attachments; ///< List of file attachments' IDs.
+  };
+
+  /// Definition of search filter, which is used for looking up emails.
+  struct MailFilter
+  {
+    long mailid;     ///< ID of the email (inactive if -1).
+    long mailtype;   ///< Numeric ID of type of the email (inactive if -1).
+    long status;     ///< Email status (inactive if -1).
+    string handle;   ///< Associated handle (inactive if empty string).
+    long attachid;   ///< File attachment's ID (inactive if -1).
+    /** Full-text search on email content including headers excluding file
+     *  attachments (inactive if empty string).
+     */
+    string fulltext;
+    /** Date of email archivation (=submission).
+     *  Is inactive if filled with zeros.
+     */
+    DateTimeInterval crdate;
+  };
+  /// List of email descriptive structures.
+  typedef sequence < Mail > MailList;
+
+  /// Object making accessible results of email search.
+  interface MailSearch
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /** Exception thrown if search object is no more active (not used for
+     *  a long time.
+     */
+    exception NotActive {
+    };
+
+    /** Returns specified number of items from result of search.
+     *  If empty list is returned it means that all results have been already
+     *  retrieved.
+     *
+     *  \param count   Number of items which should be retrieved.
+     *  \return        List of results of search. The list might be actually
+     *                 shorter than specified by count parameter in case that
+     *                 there is not so many results.
+     */
+    MailList getNext(in long count) raises (InternalError, NotActive);
+
+    /** Destroy the search object at server-side.
+     *  This SHOULD be called whenever client finishes download of results,
+     *  allthough server has mechanism for cleaning of not used objects.
+     */
+    void destroy() raises (InternalError);
+  };
+
+  /// Interface of mailer.
+  interface Mailer
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message;    ///< Textual description of error.
+    };
+
+    /// Exception thrown if unknown email type was specified.
+    exception UnknownMailType {
+        string typename; ///< Name of unknown email type.
+    };
+
+    /// Exception thrown if sendmail command failed.
+    exception SendMailError {
+    };
+
+    /// Exception thrown if resend is called with mailid which doesn't exist.
+    exception UnknownMailid {
+        long mailid;   ///< The unknown mailid.
+    };
+
+    /// Invalid header (currently has only one meaning: header 'to' is empty).
+    exception InvalidHeader {
+        string header;   ///< Name of header which caused the error.
+    };
+
+    /** Method returns mapping between email type names and their IDs.
+     *  \return          Code list of email types.
+     */
+    MailTypeCodes getMailTypes() raises (InternalError);
+
+    /** Resend an email.
+     *  This function may be called on any email which is stored in
+     *  mail archive no matter if it was already sent or not.
+     *
+     *  \param mailid    ID of email in mail archive.
+     */
+    void resend(in long mailid) raises (UnknownMailid, InternalError);
+
+    /** Basic method for generating and sending of email.
+     *
+     *  \param mailtype  Type of generated email.
+     *  \param header    Email headers.
+     *  \param data      Key-value pairs specifying input data for templates.
+     *  \param handles   Object handles somehow associated with the email.
+     *  \param attachs   Numeric IDs of file attachments.
+     *  \param preview   If true, the email is not send but only generated
+     *                   and returned to caller in output parameter msgPreview.
+     *  \param msgPreview If preview is true, then here is stored generated
+     *                   email including signature.
+     *  \return          Numeric ID of generated email.
+     */
+    long mailNotify(
+                    in string mailtype,
+                    in MailHeader header,
+                    in KeyValues data,
+                    in Lists handles,
+                    in Attachment_seq attachs,
+                    in boolean preview,
+                    out string msgPreview
+                    ) raises (
+                       InternalError,
+		       InvalidHeader,
+                       UnknownMailType,
+                       SendMailError
+                    );
+
+    /** Search in email archive based on a filter.
+     *  Returned object is used to retrieved results of the search.
+     *
+     *  \param filter Constraints which must be fulfilled by emails.
+     *  \return       Object through which are accessible results of the search.
+     */
+    MailSearch createSearchObject(in MailFilter filter) raises (InternalError);
+  };
+};
+
+#endif

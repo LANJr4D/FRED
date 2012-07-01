@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<invoice>
+<!-- 
+    !DOCTYPE invoice SYSTEM  "file:///$FRED2PDFPATH/templates/fred_advance_invoice.dtd"
+    !DOCTYPE invoice SYSTEM  "file:///home/zdenek/enum/fred2pdf/trunk/templates/fred_advance_invoice.dtd"
+
+    These data serve as a standard for generating RML sheet with help of XSL sheets.
+    Create: Zdeněk Böhm <zdenek.bohm@nic.cz>; 10.1.2007
+    Modification: 25.1.2007, 26.1.2007
+
+    It is neccesity set up full path to DTD file for validity control.
+    You need replaced $FRED2PDFPATH variable for real path to file. Then you can validate it:  
+
+    ~/enum/fred2pdf/trunk$ sed 's|$FRED2PDFPATH|'`pwd`'|' examples/advance_invoice.xml | xmllint -:-noout -:-valid -
+    (cancel colons between dashes)
+-->
+<client>
+    <name>IPEX a.s.</name>
+    <address>
+        <street>Široká 37</street>
+        <city>České Budějovice</city>
+        <zip>370 01</zip>
+    </address>
+    <ico>45021295</ico>
+    <vat_number>CZ45021295</vat_number>
+    <vat_not_apply>1</vat_not_apply>
+</client>
+
+<supplier>
+    <name>CZ.NIC, z.s.p.o.</name>
+    <fullname>CZ.NIC, zájmové sdružení právnických osob</fullname>
+    <address>
+        <street>Americká 23</street>
+        <city>Praha 2</city>
+        <zip>120 00</zip>
+    </address>
+    <ico>67985726</ico>
+    <vat_number>CZ67985726</vat_number>
+    <registration>SpZ: odb. občanskopr. agend Magist. hl. m. Prahy, č. ZS/30/3/98</registration>
+    <reclamation>CZ.NIC, z.s.p.o., Americká 23, 120 00 Praha 2</reclamation>
+    <url>www.nic.cz</url>
+    <email>podpora@nic.cz</email>
+    <phone>+420 222 745 111</phone>
+    <fax>+420 222 745 112</fax>
+</supplier>
+
+<payment>
+    <invoice_number>2406000590</invoice_number>
+    <invoice_date>2006-10-03</invoice_date>
+    <advance_payment_date>2006-10-03</advance_payment_date>
+    <vs>45021295</vs>
+</payment>
+
+<delivery>
+    <vat_rates>
+        <entry>
+            <vatperc>5</vatperc>
+            <basetax>13027</basetax>
+            <vat>983</vat>
+            <total>3000</total>
+        </entry>
+        <entry>
+            <vatperc>19</vatperc>
+            <basetax>42017</basetax>
+            <vat>7983</vat>
+            <total>50000</total>
+        </entry>
+    </vat_rates>
+
+    <sumarize>
+        <to_be_paid>0</to_be_paid>
+    </sumarize>
+
+</delivery>
+
+
+</invoice>

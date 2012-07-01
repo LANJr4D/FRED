@@ -1,0 +1,39 @@
+body { color: #606D70; }
+
+h1 { color: #A8986D; }
+
+h2 { color: #A8986D; border-top: 1px solid #C0C0C0; border-bottom: 1px solid #C0C0C0; }
+
+#content { border-top: 5px solid #BAB198; }
+
+#left-column a, #content a { text-decoration: none; color: #A8986D; }
+
+#left-column a:hover, #content a:hover { text-decoration: underline; color: #A0ABB3; }
+
+.cite { color: #BAB198; }
+
+th { background: #BAB198; color: white; }
+
+table.dialog { border-top: 1px solid #BAB198; }
+
+table.dataset tr.history th { background-color: #C0C0C0; /* #AAA188; */ }
+
+input.btn-submit { border: 1px solid #BAB198; background: #BAB198; }
+
+#left-column .news-block .link a, #content .link a, #middle-column h2 a, #left-column h2 a {
+	padding: 0 0 0 12px;
+	background: url(/media/_clip/sipka-bez.gif) 0px 4px no-repeat;
+}
+
+.debugframe {
+    border: 1px solid black;
+    background-color: rgb(250, 250, 250);
+    margin-bottom: 20px;
+}
+.debugframe:before {
+    content: "Template content";
+    border: 1px solid black;
+    padding: 0em 1em 0.1em 1em;
+    margin-left: 20px;
+    margin-top: -10px;
+}

@@ -1,0 +1,149 @@
+2011-06-21 Tomas Divis (2.7.2)
+
+    * Finished registrars certifications
+
+2011-06-21 Juraj Vicenik (2.7.1)
+
+    * logging end of requests fixed
+    * config update
+
+2011-05-30 Tomas Divis, Zdenek Bohm, Juraj Vicenik, Vit Vomacko (2.7.0)
+
+    * fixed english template (excessive line)
+    * dnssec algorithms translation table update
+    * removed django dependency
+    * public request logging (added object handle)
+    * install - removed local freddist
+
+2011-03-01 (2.6.0)
+    * Added support for supported technologies by registrar (DNSSEC,IPv6,mojeID) in registrar list.
+    * Some missing translations added
+
+2010-10-18 Jan Zima (2.5.0)
+    * Implemented refactored logging interface
+	 
+2010-07-29 Jiri Sadek (2.4.2)
+
+    * Compatibility with new nicms and old backend
+
+2010-07-22 Tomas Brambora (2.4.1)
+    * Certification and group implementation fixes
+
+2010-06-22 Tomas Brambora (2.4.0)
+    * Support for registrar certifications.
+
+2010-01-18 Tomas Divis (2.3.0)
+
+    * BugFix: Now works even when Logger crashes
+    * Added other count to simple_stats.py (domains secured by DNSSEC)
+
+2010-01-18 Tomas Divis (2.2.1)
+
+    * Public request template typo fix
+
+2010-01-08 Juraj Vicenik (2.2.0)
+
+    * fix createPublicRequest call due to idl interface change
+
+2009-08-25 Juraj Vicenik, Zdenek Bohm (2.1.3)
+
+    * Added support of dobradomena.cz 
+    * Fixing UTF8 <-> Python unicode conversion to support full character set
+      in handles of all objects in whois
+    * Added logging using Logger (optional) 
+
+2008-11-11 Ales Dolezal (2.1.1, 2.1.2)
+
+   * Fixing installation process (MANIFEST.in)
+
+2008-10-18 Tomas Divis (2.1.0)
+
+    * Adding DNSKEY record to keyset detail
+
+2008-09-21 Tomas Divis (2.0.1)
+
+    * Adding create registrar name to details 
+
+    * DNSSEC handling update
+       - adding max.sig.life (ttl)
+       - changeing format of dsrecord
+       - moving DNSSEC line in domain
+
+    * Captcha handling
+       - captcha is visible in public request but in whois is driven by IP monitor
+
+2008-08-18 Tomas Divis (2.0.0)
+
+    * DNSSEC implementation
+
+2008-06-24 Jaromir Talir (1.10.4)
+
+    * fixed rpm building properties
+	- dependencies
+	- installation and deinstallation scripts
+
+2008-06-17 Ales Dolezal, Jaromir Talir (1.10.3)
+
+    * fix typo in check template
+
+    * small fixes in installation script
+
+2008-06-02 Ales Dolezal, Tomas Divis
+
+    * install --no-check-deps option fixed
+
+    * fix czech translation in public request form 
+
+2008-06-02 Ales Dolezal, Tomas Divis, Jaromir Talir
+
+    * minor build system update
+
+    * blockation web fixes
+	- javascript handling
+	- response messages
+
+    * release 1.10.1
+
+2008-05-30 Jaromir Talir
+    
+    * release 1.10.0
+
+2008-05-29 Ales Dolezal 
+
+    * new build system freddist
+	
+2008-05-28 Tomas Divis
+
+    * Replacing authinfo request forms with more generic public request system
+
+2008-05-16 Jaromír Talíř
+
+    * Fixing UTF8 <-> Python unicode conversion to support full character set
+      in domain handles
+      
+    * Release 1.9.2
+
+2008-03-19 Zdenek Böhm
+
+    * Corrections of the typing errors and a form behavoir
+
+
+2008-02-09 Jaromir Talir
+
+	* Release 1.9.0
+
+
+2008-02-04 Zdenek Böhm
+
+    * Fix path in setup
+
+    * Fix authinfo form
+
+    * Setup is enabled for command parameters
+
+
+2008-01-31 Zdenek Böhm
+
+    * Modification for fedora bdit
+
+

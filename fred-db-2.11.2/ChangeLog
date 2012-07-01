@@ -1,0 +1,299 @@
+2012-06-18 Jan Zima (2.11.2)
+
+    * fix update notification mail template (disclose address changes)
+
+2012-06-11 Jan Zima (2.11.1)
+
+    * fix whois reminder template (removed temporary contact)
+
+2012-05-11 Jiri Sadek, Juraj Vicenik, Jan Zima (2.11.0)
+
+    * bank_payment account.number type to text - was too short for IBAN format
+
+    * refactoring of invoice type and invoice prefix tables
+
+    * drop epp_info_buffer_content foreign key to object_registry for better
+      performance of epp list commands
+
+2012-04-27 Jiri Sadek, Juraj Vicenik, Jan Zima (2.10.0)
+
+    * epp action removed from fred
+
+2011-10-26 Jan Zima (2.9.2)
+
+    * fix upgrade script
+        - price_list.enable_postpaid_operation init
+        - unique constraint for (registrar_id, zone_id) in registrar_credit table
+
+    * better support for creating logger partitions
+
+2011-10-24 Jan Zima (2.9.1)
+
+    * fix migration of invoice_operation.date_from
+
+    * transactions added to upgrade scripts
+
+2011-10-11 Jiri Sadek, Juraj Vicenik, Jan Zima (2.9.0)
+
+    * invoicing module rework
+
+    * added credit related tables - separation from invoicing
+
+2011-10-17 Jiri Sadek (2.8.5)
+
+    * whois reminder template fixes
+
+    * deleteCandidate status changed to external, description update
+
+    * object regular procedure enum_parameters update
+          - regular_day_outzone_procedure_period (14)
+          - regular_day_procedure_period (0)
+          - domain_states view
+          - status_update_domain
+
+2011-08-11 Jiri Sadek, Juraj Vicenik (2.8.4)
+
+    * whois reminder template fixes
+
+2011-07-12 Juraj Vicenik (2.8.3)
+
+    * request_fee_parameter table initialization date conv. fix
+
+2011-07-04 Jiri Sadek (2.8.2)
+
+    * poll_request_fee primary key
+
+2011-07-04 Jiri Sadek (2.8.1)
+
+    * poll request fee - parameters adjusted
+
+2011-07-04 Jiri Sadek (2.8.0)
+
+    * poll request fee tables
+
+    * enum object states typo fix
+
+2011-06-14 Jiri Sadek (2.7.2)
+
+    * notify_request primary key fixed
+
+    * mail templates format fixes
+
+2011-05-25 Jan Zima (2.7.1)
+
+    * price_vat.koef column type changed to numeric
+
+2011-05-13 Jiri Sadek, Juraj Vicenik (2.7.0)
+
+    * whois contact reminder tables
+
+    * public request types added to logger
+
+2011-03-17 Jiri Sadek (2.6.3)
+
+    * history.request_id index cond. on not null values
+
+2011-03-16 Jiri Sadek (2.6.2)
+
+    * primary key, unique message_id on notify_request table
+
+    * template typo fix
+
+    * create_tmp_table with bigint id columnt added to upgrade scripts
+
+2011-03-02 Jiri Sadek (2.6.1)
+
+    * index for history.request_id
+
+2011-02-28 Jiri Sadek, Juraj Vicenik, Jan Zima (2.6.0)
+
+    * Logger reference ids changed in public_request (added resolve_request_id
+      column, renamed logd_request_id to create_request_id)
+
+    * Datatype of logger id-sequence changed to bigint
+
+    * notify_request table
+
+    * message_status table dropped, all moved to enum_send_status
+
+    * Logger partition indexes
+
+    * Logger request_property_name.name attribute expanded to varchar(256) and
+      fixed bad values
+
+2010-08-10 Jiri Sadek, Juraj Vicenik (2.4.1)
+
+    * Logger property renaming - upgrade script
+
+2010-07-22 Jiri Sadek, Juraj Vicenik, Jan Zima (2.4.0)
+
+    * New tables for registrar group and certification management
+
+    * Notification of expiration letters refactoring
+
+    * New enumeration tables for message send status
+
+    * Logger procedures fixes
+
+    * Schema cleaning (unused tables deleted)
+
+2010-03-29 Jiri Sadek (2.3.2)
+
+    * banking data migration fixes
+
+2010-03-22 Jiri Sadek (2.3.1)
+
+    * Banking changes:
+	    - payment type default value
+		- migration fixes
+
+2010-02-16 Jiri Sadek, Juraj Vicenik, Jan Zima (2.3.0)
+
+    * Audit (Logger) tables added
+
+    * New tables for banking refactoring (constraint changes)
+
+    * Registrars
+	    - 'regex' column added for payment pairing by memo message
+		- access to zone limited by 'todate' column in registrarinvoice
+
+    * Typo in messages and mail templates fixes
+
+    * Separation of upgrade script (schema modification, data modification)
+
+    * Dropped constrains to action table (except action_xml table)
+
+2010-01-08 Jiri Sadek, Juraj Vicenik (2.2.0)
+
+    * public request <-> action tables dependency refactoring started
+
+    * Enum directory implementation - publish flag
+
+2009-06-30 Jiri Sadek, Ales Dolezal, Jaroslav Benkovsky (2.1.4)
+    * fixing minor manager, configure scripts issues
+
+    * fixing tables initialization (bank_account, price_list)
+
+    * fixing authinfo mail template
+
+    * technical test mail template update due to dnssec test
+
+    * added new enum parameters:
+        - handle_registration_protection_period
+        - roid_suffix
+
+2009-05-05 Jiri Sadek, Ales Dolezal (2.1.3)
+    * mail templates update
+      - added zone paramater to invoice emails
+      - added object handle to subject of notification and expiratjon emails
+      - added object changes to notifiaction about epp update command
+      - line wrap fixes
+
+    * all initial values (except constants) removed
+
+2009-03-26 Tomas Divis (2.1.2)
+
+    * Added columns into table history (valid_from, valid_to and next) and 
+      corrseponding triggers and update scripts.
+
+2008-08-14 Jaromir Talir, Ales Dolezal
+
+    * release 2.0.0
+
+    * DNSSEC implementation, new keyset object attached to domain
+
+2008-05-30 Jaromir Talir, Jiri Sadek
+
+    * release 1.9.0
+	
+    * new tables for public request
+	- public_request
+	- public_request_objects_map
+	- public_request_state_request_map
+	
+    * update default values in object_state_request table
+	
+    * exdate changed to date from datetime
+	
+    * new mail template for blocking request
+
+2008-04-30  Jaromir Talir <jaromir.talir@nic.cz>
+
+    * release 1.8.2
+
+    * fixing fred-dbmanager uninstallation process
+    
+    * fixing mail_template with notification about delete of contact and nsset
+
+    * new indexes (poll)
+
+2008-04-17  Jaromir Talir <jaromir.talir@nic.cz>
+
+    * better user detection in fred-dbmanager
+
+    * new indexes (mail,epp_info)
+
+2008-04-03  Jaromir Talir <jaromir.talir@nic.cz>
+
+    * new indexes into history tables
+	
+    * new table for stored filters
+	
+    * release 1.8.1
+
+2008-03-25  Jaromir Talir <jaromir.talir@nic.cz>
+
+    * upgrade deleteCandidate state update procedure for contacts/nssets
+	
+2008-03-12  Jaromir Talir <jaromir.talir@nic.cz>
+
+    * few indexes added
+
+2008-03-12  Ales Dolezal <ales.dolezal@nic.cz>
+
+    * configuration process enhancement
+
+    * adding sql comments
+
+2008-02-09  Jaromir Talir <jaromir.talir@nic.cz> 
+
+    * release 1.8.0
+    
+    * adding action_elements table
+    
+    * setting of sequences for tables registrar,registraracl,
+      zone,registrarinvoice
+
+2008-02-01  Jaromír Talíř <jaromir.talir@nic.cz>
+
+    * new directory with distinct upgrade sql files for every change
+
+    * new table with top level domains
+
+    * refactoring and fixing state.sql
+        - states setting parameters moved to parameters table
+        - exdate states dependant on serverRenewProhibited
+        - proper handling of shared linked state updates (locking)
+
+    * new parameter table with system configuration
+
+2008-01-19	Jaromír Talíř <jaromir.talir@nic.cz>
+
+	* autotooling package with a lot of structural changes
+
+2007-05-24	Jaromír Talíř <jaromir.talir@nic.cz>
+
+	* ccreg.sql (domain_contact_map)
+	Adding role of contact - 1=admin, 2=temp and 
+
+	* history.sql (domain_contact_map_history)
+	Adding role of contact - 1=admin, 2=temp and 
+
+	* reason.sql
+	Fixing typo
+
+	* ChangeLog
+	Adding this changelog
+
+	* UPGRADE
+	Updating alter script

@@ -1,0 +1,208 @@
+#ifndef _DATATYPES_IDL_
+#define _DATATYPES_IDL_
+
+module ccReg {
+ 
+  /// Types of filters
+  enum FilterType {
+    FT_FILTER, 
+    FT_REGISTRAR,
+    FT_OBJ,
+    FT_CONTACT,
+    FT_NSSET,
+    FT_KEYSET,
+    FT_DOMAIN,
+    FT_INVOICE,
+    FT_PUBLICREQUEST,
+    FT_MAIL,
+    FT_FILE,
+    FT_LOGGER,
+    FT_SESSION,
+    FT_STATEMENTITEM,
+    FT_ZONE,
+    FT_STATEMENTHEAD,
+    FT_MESSAGE
+  };
+
+  /// type for setting langugage of output text messages
+  enum Languages  
+  { 
+    EN, ///< english (default)
+    CS ///< czech
+  };
+
+  /// ID type for objects
+  typedef unsigned long long TID;
+
+  /// types for logd
+  /// enum RequestServiceType {LC_UNIX_WHOIS, LC_WEB_WHOIS, LC_PUBLIC_REQUEST, LC_EPP, LC_WEBADMIN, LC_INTRANET, LC_MAX_SERVICE };
+  /// this enum is now defined in the database
+
+  struct RequestProperty {
+	string name;
+	string value;
+	boolean output; 
+	boolean child;
+  };
+  
+  typedef long RequestType;
+
+  struct RequestTypeListItem {
+  	RequestType id;
+  	string name;
+  };
+
+  typedef sequence <RequestTypeListItem> RequestTypeList;  
+  
+  typedef sequence <RequestProperty> RequestProperties;
+
+  typedef long RequestServiceType;
+
+  struct RequestServiceListItem {
+    RequestServiceType id;
+    string name;
+  };
+
+  typedef sequence <RequestServiceListItem> RequestServiceList;
+
+  //ResultCodeList
+  typedef long ResultCode;
+  struct ResultCodeListItem 
+  {
+  	ResultCode result_code;
+  	string name;
+  };
+  typedef sequence <ResultCodeListItem> ResultCodeList;  
+
+  struct ObjectReference {
+      string type;
+      TID id;
+  };
+  
+  typedef sequence< ObjectReference > ObjectReferences;
+
+  struct RequestCountInfoItem {
+      string user_handle;
+      unsigned long long count;
+  };
+
+  typedef sequence< RequestCountInfoItem > RequestCountInfo;
+
+  /// definition of stringu that prepare SQL update and insert NULL value
+  const string SET_NULL_VALUE = "$$SET_NULL_VALUE$$" ; 
+
+  /// Types for expresion of date and time according to rfc3339
+  /** YYYY-MM-DD  (just date)
+   *  YYYY-MM-DDTHH:MM:SS.ssZ 
+   *  (date and time in UTC zulu time, sec. with 2 decimal places)
+   *  YYYY-MM-DDTHH:MM:SS.ss(+/-)HH:MM 
+   *  (date and time plus timezone offset, sec. with 2 decimal places)  
+   */
+  typedef string timestamp;
+  /// Type for date in format YYYY-MM-DD  
+  typedef string date;
+  /// Type for a list of nameservers
+  typedef sequence < string > NameServers;
+  /// Type for a list of handles of technical contacts
+  typedef sequence < string > TechContact;
+  /// Type for common list of strings
+  typedef sequence < string > Lists;
+  /// Type for a list of IP addresses
+  typedef sequence < string > InetAddress;
+  /// Type for an element of list of records about individual nameservers
+  struct DNSHost_str
+  {
+    string fqdn; ///< Fqdn of DNS server
+    InetAddress inet; ///< List of IP addresses
+  };
+  /// Type for a list  of records about individual nameservers
+  typedef sequence < DNSHost_str > DNSHost;
+
+  /// Type for an element of list of DS records
+  struct DSRecord_str
+  {
+      long keyTag;
+      long alg;
+      long digestType;
+      string digest;
+      long maxSigLife;
+  };
+  /// Type for a list of DS records
+  typedef sequence <DSRecord_str> DSRecord;
+
+  /// Type for an element of list of DNSKey records
+  struct DNSKey_str
+  {
+      unsigned short flags;
+      unsigned short protocol;
+      unsigned short alg;
+      string         key;
+  };
+  /// Type for a list of DNSKey records
+  typedef sequence <DNSKey_str> DNSKey;
+
+  /// Structure for handling day
+  struct DateType {
+    short day; ///< day of month (1..31)
+    short month; ///< month in year (1..12)
+    short year; ///< year (i.e. 2006)
+  };
+  
+  /// Structure for handling date and time
+  struct DateTimeType {
+    DateType date;
+    short hour; ///< hour (0..23)
+    short minute; ///< minute (0..59)
+    short second; ///< second (0..59)
+  };
+  
+  enum DateTimeIntervalType {
+    NONE, ///< filter is empty
+    DAY, ///< take just from part as interval
+    INTERVAL, ///< take both from and to as interval
+    LAST_HOUR, ///< hour that current time belongs to (- offset)
+    LAST_DAY, ///< day that current time belongs to (- offset)
+    LAST_WEEK, ///< week that current time belongs to (- offset)
+    LAST_MONTH, ///< month that current time belongs to (- offset)
+    LAST_YEAR, ///< year that current time belongs to (- offset)
+    PAST_HOUR, ///< hour from current time backward (* offset)
+    PAST_DAY, ///< day from current time backward (* offset)
+    PAST_WEEK, ///< week from current time backward (* offset)
+    PAST_MONTH, ///< month from current time backward (* offset)
+    PAST_YEAR ///< year from current time backward (* offset)
+  };
+
+  /// Structure for handling interval of days
+  struct DateInterval {
+    DateType from; ///< start of interval - Date(0,0,0) means ignore this field
+    DateType to; ///< end of interval - Date(0,0,0) means ignore this field 
+    DateTimeIntervalType type; ///< interval type (_HOUR has no meaning)
+    short offset; ///< offset for 
+  };
+  
+  /// Structure for handling interval of times
+  struct DateTimeInterval {
+    DateTimeType from; ///< start of interval 
+    DateTimeType to; ///< end of interval
+    DateTimeIntervalType type; ///< interval type
+    short offset; ///< offset for 
+  };
+
+  struct IntInterval {
+    short from;
+    short to;
+  };
+
+  // requests fee information
+  struct RequestFeeInfoData
+  {
+    string periodFrom;
+    string periodTo;
+    unsigned long long totalFreeCount;
+    unsigned long long usedCount;
+    string price;
+  };
+
+};
+
+#endif

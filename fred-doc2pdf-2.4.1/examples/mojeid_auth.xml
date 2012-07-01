@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mojeid_auth>
+    <user>
+        <actual_date>2011-08-09</actual_date>
+
+        <name>Tomasz Hatlapa</name>
+        <organization>CZ.NIC s.p.z.o.</organization>
+        <street>Americká 23</street>
+        <city>Praha</city>
+        <postal_code>120 00</postal_code>
+        
+        <account>
+            <username>thatlapa</username>
+            <first_name>Tomasz</first_name>
+            <last_name>Hatlapa</last_name>
+            <email>tomasz.hatlapa@nic.cz</email>
+        </account>
+        <auth>
+            <codes>
+                <pin2>cW2DqJTv</pin2>
+                <pin3>vTJqD2Wc</pin3>
+            </codes>
+            <link>www.mojeid.cz</link>
+        </auth>
+    </user>
+</mojeid_auth>

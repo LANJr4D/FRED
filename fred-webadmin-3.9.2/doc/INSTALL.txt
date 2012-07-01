@@ -1,0 +1,13 @@
+
+DEPENDENCIES:
+
+cherrypy >= 3.0.2
+simplejson
+omniorbpy >= 3.0
+
+# following are not required, but recommended:
+python-xml
+pygments
+
+# if you need LDAP authentication
+python-ldap

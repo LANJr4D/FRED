@@ -1,0 +1,111 @@
+# FRED server sample configuration
+# New version for use with boost::program_option library
+# This file should be in @PREFIX@/etc/fred/server.conf
+
+##
+# DATABASE
+##
+
+[database]
+host = @DBHOST@
+port = @DBPORT@
+name = @DBNAME@
+user = @DBUSER@
+password = @DBPASS@
+timeout = 2
+
+
+##
+# CORBA NAMESERVICE
+##
+
+[nameservice]
+host = @NSHOST@
+port = @NSPORT@
+context = @NSCONTEXT@
+
+##
+# LOGGING
+#
+# supported log types:
+#   0 ... console
+#   1 ... file    (parameter `file' for filename (with path) where to log)
+#   2 ... syslog  (parameter `syslog_facility' for syslog local settings) 
+#
+#
+# supported log levels:
+#   0 ... LL_EMERG
+#   1 ... LL_ALERT
+#   2 ... LL_CRIT
+#   3 ... LL_ERR
+#   4 ... LL_WARNING
+#   5 ... LL_NOTICE
+#   6 ... LL_INFO
+#   7 ... LL_DEBUG
+#   8 ... LL_TRACE (special level for really detailed output)
+##
+
+[log]
+type = 1
+level = 8
+file = @LOCALSTATEDIR@/log/fred.log
+syslog_facility = 1
+
+##
+# GENERAL REGISTRY settings
+##
+
+[registry]
+restricted_handles = false
+disable_epp_notifier = false
+lock_epp_commands = true
+nsset_level = 3
+
+docgen_path = @BINDIR@/fred-doc2pdf
+docgen_template_path = @DATAROOTDIR@/fred-doc2pdf/
+docgen_domain_count_limit = 100
+
+fileclient_path = @BINDIR@/filemanager_client
+
+
+##
+# RIFD specific settings
+##
+
+[rifd]
+session_max = 200
+session_timeout = 300
+session_registrar_max = 5
+# clear keyset when update domain command is changing nsset
+epp_update_domain_keyset_clear = true
+
+##
+# ADIFD specific settings
+##
+
+[adifd]
+session_max = 0
+session_timeout = 3600
+session_garbage = 150
+
+## 
+# LOGD specific settings
+##
+
+[logd]
+monitoring_hosts_file = @MONITORINGIPS@
+
+[sms]
+command = LOGIN=login PASSWORD=pass sms_send.bash
+
+
+##
+# MIFD specific settings
+##
+[mojeid]
+registrar_handle = REG-MOJEID
+hostname = demo.mojeid.cz
+notify_commands = false 
+# demo mode true - send both passwords via email
+demo_mode = false
+

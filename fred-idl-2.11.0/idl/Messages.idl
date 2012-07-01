@@ -1,0 +1,61 @@
+module Registry 
+{
+    interface Messages 
+    {
+    
+        //report a problem
+        exception ErrorReport 
+        {
+            string reason;
+        };
+        
+        unsigned long long saveSmsToSend(
+            in string contact_handle 
+            ,in string phone
+            ,in string content
+            ,in string message_type
+            ,in unsigned long long contact_object_registry_id
+            ,in unsigned long long contact_history_historyid
+        ) raises (ErrorReport);
+    
+	    struct PostalAddress 
+	    {
+	        string name;
+	        string org;
+	        string street1;
+	        string street2;
+	        string street3;
+	        string city;
+	        string state;
+	        string code;
+	        string country;
+	    };
+	    
+	    typedef sequence<octet> ByteBuffer;
+	    
+	    unsigned long long saveLetterToSend(
+	        in string contact_handle 
+	        ,in PostalAddress address
+	        ,in ByteBuffer file_content
+	        ,in string file_name
+	        ,in string file_type
+	        ,in string message_type
+            ,in unsigned long long contact_object_registry_id
+            ,in unsigned long long contact_history_historyid
+            ,in string comm_type
+	    ) raises (ErrorReport);
+	    
+	      //enum type for status, comm_type, message_type 
+		  struct EnumListItem 
+		  {
+		  	unsigned long long id;
+		  	string name;
+		  };
+		  typedef sequence <EnumListItem> EnumList;
+			    
+		EnumList getStatusList();
+		EnumList getCommTypeList();
+		EnumList getMessageTypeList();
+	    
+    };
+};

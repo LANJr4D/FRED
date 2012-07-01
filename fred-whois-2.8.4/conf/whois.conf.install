@@ -1,0 +1,102 @@
+# Mandatory options
+#
+[app]
+basedir: ROOT_BASEDIR
+# type is modified by settings.SITE_ID in django nicms
+#type: whois, enum
+type: whois
+captcha: False
+#captcha: True
+# Disable captcha for these IP:
+#omit_ip: 172.20.20.95 172.20.20.96 172.20.21
+
+[log]
+basedir: LOCALSTATEDIR/log
+log_path: %(basedir)s/fred-whois.log
+
+[corba]
+basedir: ROOT_BASEDIR
+idl: CORBA_IDL
+# host[:port]
+host: CORBA_HOST
+context: CORBA_CONTEXT
+# Don't display errors on the screen, but into log file.
+# On the screen display outoforder message instead.
+# Enable this redirect for release version.
+#redirect_errors: %(basedir)s/corba_errors.log
+
+# file for save result of statistic call
+statistic_path: %(basedir)s/statistic.log
+
+[templates]
+basedir: TEMPLATES_BASEDIR
+content_menu: %(basedir)s/content_menu.pt
+inset: %(basedir)s/body.pt
+index: %(basedir)s/internal-example.pt
+macros: %(basedir)s/body_macros.pt
+# location can be: internal / external
+location: internal
+
+#~[extra_content_processor]
+#~# Watch out! Use dots instead spaces for intendation of lines.
+#~line1:handle = content.get('contact', {}).get('handle')
+#~line2:if handle and re.match('^[A-Za-z0-9](-?[A-Za-z0-9])*$', handle) and not content.get('contact', {}).get('mojeID'):
+#~line3:....content['contact']['is_valid_mojeid_handler'] = True
+
+#~[extra_content]
+#~# all avalilable keys:
+#~#   contact_top contact_bottom contact_handle
+#~#   searchform_top searchform_above searchform_bottom
+#~#   domain_top domain_bottom
+#~#   enum_top enum_bottom
+#~#   notfound_top notfound_bottom
+#~#   registrar_top registrar_bottom
+#~#   registrarslinks_top registrarslinks_bottom
+#~#   publicrequest_top publicrequest_bottom
+#~keys: contact_handle searchform_above
+#~contact_handle.en_us: <li><a href="http://www.mojeid.cz/page/805/vyhody-mojeid/" title="What are the benefits of mojeID?">Why mojeID</a></li>
+#~contact_handle.cs_cz: <li><a href="http://www.mojeid.cz/page/805/vyhody-mojeid/" title="Jaké jsou výhody mojeID?">Proč mojeID</a></li>
+#~searchform_above.en_us: <p tal:condition="python:result['apptype'] == 'enum'" style="text-align:center"><object width="745" height="100"><param name="movie" value="/files/mojeid/banner-mojeid-bdete.swf"><embed src="/files/mojeid/banner-mojeid-bdete.swf" width="745" height="100"></embed></object></p>
+#~searchform_above.cs_cz: <p tal:condition="python:result['apptype'] == 'enum'" style="text-align:center"><object width="745" height="100"><param name="movie" value="/files/mojeid/banner-mojeid-bdete.swf"><embed src="/files/mojeid/banner-mojeid-bdete.swf" width="745" height="100"></embed></object></p>
+
+# Logical path in URL (eg: http://<server>/whois/registrars.py)
+[registrars]
+location: /whois/registrars.py
+# Groups that will be displayed with/without certifications. Example:
+# certified_group_ids: 1,2,42
+# uncertified_group_ids: 5,9,11
+# Default values are 1 for certified group, 2 for uncertified.
+certified_group_ids: 1
+uncertified_group_ids: 2
+# comma separated group names displayed in technologies
+#  column of registrars view (choices: dnssec,ipv6,mojeid)
+technologies: dnssec,ipv6,mojeid
+
+# Logical path in URL (eg: http://<server>/whois/publicrequest.py)
+[publicrequest]
+location: /whois/publicrequest.py
+
+# Logical path in URL (eg: http://<server>/whois/captcha.py)
+[captcha]
+location: /whois/captcha.py
+
+# Logical path in URL (eg: http://<server>/whois/pdf.py)
+[pdf]
+location: /whois/pdf.py
+
+[whois]
+# url.cs_cz: http://mysite.cz/path?
+basedir: TEMPLATES_BASEDIR
+url.cs_cz: %(basedir)s/external-example.pt.cs_CZ
+url.en_us: %(basedir)s/external-example.pt.en_US
+mojeid_registrar_handle: REG-MOJEID
+
+[gettext]
+basedir: SHARE_PACKAGE
+domain: whois
+localedir: %(basedir)s/locale
+
+#~[mojeid]
+#~mojeid_hostname: https://mojeid.cz
+#~registry_endpoint: %(mojeid_hostname)s/registry/endpoint/
+#~transfer_endpoint: %(mojeid_hostname)s/transfer/endpoint/

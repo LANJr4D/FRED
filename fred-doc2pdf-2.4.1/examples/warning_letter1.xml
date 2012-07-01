@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<messages>
+  <holder>
+    <name><![CDATA[CZ.NIC - zájmové sdružení právnických osob (z.s.p.o.), Správce internetové domény CZ ]]></name>
+    <organization><![CDATA[CZ.NIC - zájmové sdružení právnických osob (z.s.p.o.), Správce internetové domény CZ ]]></organization>
+    <street><![CDATA[Americká 23]]></street>
+    <city><![CDATA[Praha]]></city>
+    <stateorprovince><![CDATA[Praha - hlavní město]]></stateorprovince>
+    <postal_code><![CDATA[120 00]]></postal_code>
+    <country><![CDATA[CZECH REPUBLIC]]></country>
+    <actual_date><![CDATA[2010-05-25]]></actual_date>
+    <termination_date><![CDATA[2011-06-11 00:00:00]]></termination_date>
+    <expiring_domain>
+      <domain><![CDATA[5.7.2.2.0.2.4.e164.arpa]]></domain>
+      <registrar><![CDATA[Telefónica OO2 Czech Republic, a.s.]]></registrar>
+      <registrar_web><![CDATA[www.nic.cz]]></registrar_web>
+    </expiring_domain>
+    <expiring_domain>
+      <domain><![CDATA[tmp50900.cz]]></domain>
+      <registrar><![CDATA[Telefónica OO2 Czech Republic, a.s.]]></registrar>
+      <registrar_web><![CDATA[www.nic.cz]]></registrar_web>
+    </expiring_domain>
+  </holder>
+</messages>

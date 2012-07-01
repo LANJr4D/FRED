@@ -1,0 +1,58 @@
+handle NSSID:HANDLE-NSSETU
+ticket 127864857
+checkdate 23.2.2006
+
+tests.1.name existance
+tests.1.type error
+tests.1.ns.1 ns1.nameserver.cz
+tests.1.ns.2 ns2.nameserver.cz
+tests.1.ns.3 ns3.nameserver.cz
+
+tests.2.name recursive
+tests.2.type warning
+tests.2.ns.1 ns1.nameserver.cz
+tests.2.ns.2 ns2.nameserver.cz
+tests.2.ns.3 ns3.nameserver.cz
+
+tests.3.name heterogenous
+tests.3.type notice
+
+tests.4.name presence
+tests.4.type error
+tests.4.ns.1 ns1.nameserver.cz
+tests.4.ns.1.fqdn.1 domain.cz
+tests.4.ns.1.fqdn.2 blaha.cz
+tests.4.ns.1.fqdn.3 hroznedlouhynazevdomeny.cz
+tests.4.ns.1.overfull 1
+tests.4.ns.2 ns2.nameserver.cz
+tests.4.ns.2.fqdn.1 domain.cz
+tests.4.ns.2.fqdn.2 blaha.cz
+tests.4.ns.2.fqdn.3 hroznedlouhynazevdomeny.cz
+tests.4.ns.3 ns3.nameserver.cz
+tests.4.ns.3.fqdn.1 domain.cz
+
+tests.5.name authoritative
+tests.5.type error
+tests.5.ns.1 ns1.nameserver.cz
+tests.5.ns.1.fqdn.1 domain.cz
+tests.5.ns.1.fqdn.2 blaha.cz
+tests.5.ns.1.fqdn.3 hroznedlouhynazevdomeny.cz
+tests.5.ns.1.overfull 1
+tests.5.ns.2 ns2.nameserver.cz
+tests.5.ns.2.fqdn.1 domain.cz
+tests.5.ns.2.fqdn.2 blaha.cz
+tests.5.ns.2.fqdn.3 hroznedlouhynazevdomeny.cz
+tests.5.ns.3 ns3.nameserver.cz
+tests.5.ns.3.fqdn.1 domain.cz
+
+tests.6.name recursive4all
+tests.6.type warning
+tests.6.ns.1 ns1.nameserver.cz
+tests.6.ns.2 ns2.nameserver.cz
+tests.6.ns.3 ns3.nameserver.cz
+tests.6.ns.4 ns4.nameserver.cz
+tests.6.ns.5 ns5.nameserver.cz
+tests.6.ns.6 ns6.nameserver.cz
+
+tests.7.name autonomous
+tests.7.type notice

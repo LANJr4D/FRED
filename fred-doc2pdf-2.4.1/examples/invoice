@@ -1,0 +1,32 @@
+#!/bin/bash
+
+STEPS=$1
+if [ -z "$STEPS" ]; then
+    echo "Create invoice.xml with NNN items.
+Usage:
+    invoice 400 > invoice400.xml (add more 400 items into the list of appendix items)
+"
+    exit 1
+fi
+
+EXAMPLES=$(dirname $(readlink -f $0))
+SOURCE=$EXAMPLES/invoice.xml
+
+# Split at tag:  </items>
+LINENUM=`grep -n '</items>' $SOURCE | awk -F: '{print $1}'`
+LINES=`wc -l $SOURCE | awk '{print $1}'`
+
+head -n $((LINENUM-1)) $SOURCE
+for INDEX in `seq $STEPS`; do
+    echo "        <item>
+            <subject>`base64 /dev/urandom | tr -d '+/\r\n0-9' | head -c 8`.cz</subject>
+            <code>RUDR-$INDEX</code>
+            <timestamp>`date +"%Y-%m-%d %H:%M:%S.%N"`</timestamp>
+            <expiration>`date +"%Y-%m-%d"`</expiration>
+            <count>$((RANDOM%20+1))</count>
+            <price>$((RANDOM%1600+100))</price>
+            <total>$((RANDOM%12000+600))</total>
+            <vat_rate>19</vat_rate>
+        </item>"
+done
+tail -n $((LINES - LINENUM + 1)) $SOURCE

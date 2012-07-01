@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<enum_whois>
+<auth_info>
+<!--
+    handle type:
+
+    1 - contact
+    2 - NSSET
+    3 - domain
+-->
+    <handle type="3">1.1.1.5.4.7.2.2.2.0.2.4.e164.arpa</handle>
+    <webform_url>http://whois.localhost/whois/authinfo.py</webform_url>
+    <transaction_date>01.02.2007</transaction_date>
+    <transaction_id>7</transaction_id>
+    <replymail>hokus@pokus.cz</replymail>
+
+</auth_info>
+</enum_whois>

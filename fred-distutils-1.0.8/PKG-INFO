@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: fred-distutils
+Version: 1.0.8
+Summary: Fred Distutils
+Home-page: http://www.nic.cz/
+Author: Aleš Doležal, CZ.NIC
+Author-email: ales.dolezal@nic.cz
+License: GNU GPL
+Description: Fred Distutils, utilities for easier way to build packages.
+Platform: posix

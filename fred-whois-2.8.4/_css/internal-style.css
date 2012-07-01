@@ -1,0 +1,23 @@
+h1 {
+	padding-bottom:.6em;
+}
+#main-content {
+	float:none;
+	padding:1em;
+}
+#main-content table tr th {
+	background:#F5F9FF;
+	height:auto;
+}
+#main-content table tr td {
+	height:auto;
+}
+input.inline {
+	border:solid lightgray 1px;
+	font-size:140%;
+
+}
+#submit_button, #reset_button {
+	border-style:none;
+}
+

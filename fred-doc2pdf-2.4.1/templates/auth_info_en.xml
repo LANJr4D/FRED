@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+<str name="Confirmation of Request for password">Confirmation of Request for password</str>
+
+<str name="contact">contact</str>
+<str name="nameserver set">nameserver set</str>
+<str name="domain name">domain name</str>
+<str name="keyset">keyset</str>
+<str name="handle">handle</str>
+
+<str name="Re: Confirmation of Request for password for">Re: Confirmation of Request for password for</str>
+<str name="I hereby confirm my request to obtain password for">I hereby confirm my request to obtain password for</str>
+<str name="submitted through a web form at the association webpages">submitted through a web form at the association webpages</str>
+<str name="on">on</str>
+<str name="assigned id number">assigned id number</str>
+<str name="Please send the password to">. Please send the password to</str>
+<str name="Name and signature of responsible person:">Name and signature of responsible person:</str>
+
+<str name="Please print this request sign it (a notarized signature required) and send the signed original to the following address:">Please print this request sign it (a notarized signature required) and send the signed original to the following address:</str>
+<str name="Signatories whose name is not listed in the Central registry of domain names must attach">Signatories whose name is not listed in the Central registry of domain names must attach</str>
+<str name="an original or a notarized copy of a document authorizing them to perform the relevant request.">an original or a notarized copy of a document authorizing them to perform the relevant request.</str>
+</strings>
+

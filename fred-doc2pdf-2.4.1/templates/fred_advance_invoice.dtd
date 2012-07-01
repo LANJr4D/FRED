@@ -1,0 +1,45 @@
+<!ELEMENT invoice (client, supplier, payment, delivery)>
+
+<!ELEMENT client (name, address, ico, vat_number)>
+<!ELEMENT address (street, city, zip)>
+
+<!ELEMENT name       (#PCDATA)>
+<!ELEMENT street     (#PCDATA)>
+<!ELEMENT city       (#PCDATA)>
+<!ELEMENT zip        (#PCDATA)>
+<!ELEMENT ico        (#PCDATA)>
+<!ELEMENT vat_number (#PCDATA)>
+
+
+<!ELEMENT supplier (name, fullname, address, ico, vat_number, registration, reclamation, url, email)>
+
+<!ELEMENT fullname     (#PCDATA)>
+<!ELEMENT registration (#PCDATA)>
+<!ELEMENT reclamation  (#PCDATA)>
+<!ELEMENT url          (#PCDATA)>
+<!ELEMENT email        (#PCDATA)>
+
+<!ELEMENT payment (invoice_number, invoice_date, advance_payment_date, vs)>
+
+<!ELEMENT invoice_number       (#PCDATA)>
+<!ELEMENT invoice_date         (#PCDATA)>
+<!ELEMENT advance_payment_date (#PCDATA)>
+<!ELEMENT vs                   (#PCDATA)>
+
+
+
+<!ELEMENT delivery (vat_rates, sumarize)>
+
+<!ELEMENT vat_rates (entry+)>
+<!ELEMENT entry (vatperc, basetax, vat, total)>
+
+<!ELEMENT vatperc          (#PCDATA)>
+<!ELEMENT basetax          (#PCDATA)>
+<!ELEMENT vat              (#PCDATA)>
+<!ELEMENT total            (#PCDATA)>
+
+<!ELEMENT sumarize (to_be_paid)>
+
+<!ELEMENT to_be_paid       (#PCDATA)>
+
+

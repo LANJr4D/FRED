@@ -1,0 +1,192 @@
+#ifndef TECHCHECK_IDL_
+#define TECHCHECK_IDL_
+
+
+#include "_dataTypes.idl"
+
+module ccReg {
+
+  /// Reason for invocation of technical check.
+  enum CheckReason {
+    CHKR_ANY,    ///< Wildcard when searching in archived technical checks.
+    CHKR_EPP,    ///< Technical check is invoked over EPP interface.
+    CHKR_MANUAL, ///< Technical check is invoked over admin interface.
+    CHKR_REGULAR ///< Technical check is part of regular check of all nssets.
+  };
+
+  /** Definition of search filter, which is used for looking up result of
+   *  executed technical checks.
+   */
+  struct CheckFilter
+  {
+    long checkid;   ///< ID of technical check (inactive if -1).
+    long nsset_hid; ///< History ID of nsset (inactive if -1).
+    short status;   ///< Status - see CheckResult (inactive if -1).
+    CheckReason reason;         ///< Reason (inactive if CHKR_ANY).
+    DateTimeInterval checkdate; ///< Date of technical check's execution.
+  };
+
+  /// Structure describing type of technical check, not a result.
+  struct CheckTest {
+    /// ID of technical check type. ID influences application order of tests.
+    long id;
+    string name; ///< Name of the test.
+    short level; ///< Level of the test (how much is the test important). 
+    /** If the test requires list of domain fqdns or is meaning full if aplied
+     *  just to nsset.
+     */
+    boolean domain_centric;
+  };
+  /// List of test descriptive structures.
+  typedef sequence <CheckTest> CheckTestList;
+
+  /// Result of just one technical test from set of technical tests.
+  struct CheckResult {
+    long testid; ///< ID of test type.
+    /** Result (status value) of the test.
+     *  0 - All nameservers in nsset passed the test.
+     *  1 - At least one nameserver in nsset failed in the test.
+     *  2 - Something during the test unexpectedly failed.
+     *  Status 1 has preference over status 2 if both conditions are true.
+     */
+    short status;
+    string note; ///< Message from test script if not successfull.
+    string data; ///< Test specific string used for gathering of statistics.
+  };
+  /** List of results of technical checks representing a set of performed
+   *  technical checks on one nsset.
+   */
+  typedef sequence <CheckResult> CheckResultList;
+
+  /// Structure encapsulates result of a search in executed technical checks.
+  struct CheckItem {
+    long id;       ///< ID of archived technical check.
+    long nsset_hid;///< History ID of tested nsset.
+    boolean dig;   ///< True if nsset was tested with domain fqdns bound to it.
+    Lists fqdns;   ///< List of extra domain fqdns supplied by client.
+    short status;  ///< Status of technical check (see CheckResult).
+    timestamp checkdate; ///< Date of technical check execution.
+    CheckReason reason;  ///< Reason of technical check.
+    /** Results of individual tests performed on nsset as part of this
+     *  technical check.
+     */
+    CheckResultList results;
+  };
+  /// List of results of a search.
+  typedef sequence <CheckItem> CheckList;
+
+  /// Object making accessible results of check search.
+  interface TechCheckSearch
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /** Exception thrown if search object is no more active (not used for
+     *  a long time.
+     */
+    exception NotActive {
+    };
+
+    /** Returns specified number of items from result of search.
+     *  If empty list is returned it means that all results have been already
+     *  retrieved.
+     *  \param count   Number of items which should be retrieved.
+     *  \return        List of results of search. The list might be actually
+     *                 shorter than specified by count parameter in case that
+     *                 there is not so many results.
+     */
+    CheckList getNext(in long count) raises (InternalError, NotActive);
+
+    /** Destroy the search object at server-side.
+     *  This SHOULD be called whenever client finishes download of results,
+     *  allthough server has mechanism for cleaning of not used objects.
+     */
+    void destroy() raises (InternalError);
+  };
+
+  /// Interface of techcheck module.
+  interface TechCheck
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /// Exception thrown if specified nsset does not exist.
+    exception NssetNotFound {
+    };
+
+    /// Exception thrown if specified registrar does not exist.
+    exception RegistrarNotFound {
+    };
+
+    /** Vrati seznam testu definovanych v databazi.
+     * Ten je potreba na preklad id testu pri vyvolani synchronni technicke
+     * kontroly.
+     \return Seznam aktivnich testu a podrobnosti o nich.
+    */
+    CheckTestList checkGetTests() raises (InternalError);
+
+    /** Method performs technical check of a nsset and exits when all tests
+     *  are finished.
+     *  If resulting fqdn list is empty (depends on dig and fqdns argument)
+     *  only technical test, which do not require domain fqdns, are executed.
+     *
+     *  \param nsset   Handle of checked nsset.
+     *  \param level   If level is value greater than 0, then it overrides
+     *                 default level of nsset.
+     *  \param dig     Domain fqdns of domains associated with nsset are added
+     *                 to fqdn list if dig is true.
+     *  \param archive Archive executed technical check in database.
+     *  \param reason  Reason of technical check.
+     *  \param fqdns   Explicit list domain fqdns which should be added to fqdn
+     *                 list.
+     *  \param id      ID assigned to technical check if archived.
+     *  \param status  Resulting status of technical check (see CheckResult).
+     *  \return        Results of individual checks.
+     */
+    CheckResultList checkNsset(in string nsset, in short level, in boolean dig,
+	in boolean archive, in CheckReason reason, in Lists fqdns,
+	out short id, out short status)
+    raises (InternalError, NssetNotFound);
+
+    /** Method requests technical check of a nsset and exits without executing
+     *  the actual technical check. After the technical check is done, the
+     *  poll message for registrator is generated, which informs him about
+     *  the results. If resulting fqdn list is empty (depends on dig and fqdns
+     *  argument) only technical test, which do not require domain fqdns, are
+     *  executed.
+     *
+     *  \param regid    Handle of registrator, for which is generated a poll
+     *                  message containing results of tests.
+     *  \param nsset    Handle of checked nsset.
+     *  \param level    If level is value greater than 0, then it overrides
+     *                  default level of nsset.
+     *  \param dig      Domain fqdns of domains associated with nsset are added
+     *                  to fqdn list if dig is true.
+     *  \param archive  Archive executed technical check in database.
+     *  \param reason   Reason of technical check.
+     *  \param fqdns    Explicit list domain fqdns which should be added to fqdn
+     *                  list.
+     *  \param cltestid ClTRID of request, empty string if clTRID was not
+     *                  provided.
+     */
+    void checkNssetAsynch(in string regid, in string nsset, in short level,
+	in boolean dig, in boolean archive, in CheckReason reason,
+	in Lists fqdns, in string cltestid)
+    raises (InternalError, NssetNotFound, RegistrarNotFound);
+
+    /** Search in archive of technical checks based on a filter.
+     *  Returned object is used to retrieved results of the search.
+     *
+     *  \param filter Constraints which must be fulfilled by checks.
+     *  \return       Object through which are accessible results of the search.
+     */
+    TechCheckSearch createSearchObject(in CheckFilter filter)
+    raises (InternalError);
+  };
+};
+
+#endif

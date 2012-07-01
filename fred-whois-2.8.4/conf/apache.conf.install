@@ -1,0 +1,16 @@
+# INSTALL_DOC
+
+Alias /whois       INSTALL_PURELIB
+Alias /media       SHARE_WWW
+
+<Directory INSTALL_PURELIB>
+
+    DirectoryIndex whois.py
+    AddHandler mod_python .py
+    PythonHandler whois
+    PythonDebug On
+
+#   for mod_python 3.3 (See note under import_module at http://www.modpython.org/live/current/doc-html/pyapi-apmeth.html)
+    PythonPath "['INSTALL_PURELIB','PYTHON_ROOT']+sys.path"
+
+</Directory>

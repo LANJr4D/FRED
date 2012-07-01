@@ -1,0 +1,3 @@
+[bdist_rpm]
+requires=python-trml2pdf >= 1.2, /usr/share/fonts/dejavu/DejaVuSans.ttf
+install-extra-opts=--no-check-deps --prefix=/usr --sysconfdir=/etc --trml-name=trml2pdf --font-path=/usr/share/fonts/dejavu/ --font-names="DejaVuSans.ttf DejaVuSans-Oblique.ttf DejaVuSans-Bold.ttf DejaVuSans-BoldOblique.ttf" --include-scripts

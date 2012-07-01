@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <str name="Authentication new user mojeID">mojeID account created</str>
+  <str name="Subject: Authentication your identity with codes PIN1 and PIN2">Subject: mojeID account created</str>
+  <str name="Dear user,">Dear user,</str>
+  <str name="this letter approves the succefful creation of mojeID account with these dates:">this letter approves that mojeID account was successfully created for you with these data: </str>
+  <str name="account mojeID:">mojeID account:</str>
+  <str name="first name:">first name:</str>
+  <str name="last name:">last name:</str>
+  <str name="e-mail:">e-mail:</str>
+  <str name="To access into your mojeID account is necessary to verify your identity with a pair of pins PIN1 and PIN2:">Enter PIN1 and PIN2 codes to activate your account.</str>
+  <str name="PIN1 was sent to your email address">PIN1 was sent via email</str>
+  <str name="PIN2 is:">PIN2 is:</str>
+  <str name="For activate your account click on a link you received by email.">To activate your account click on the link you received by email.</str>
+  <str name="We wish you much pleasure when you use the service mojeID.">We wish You pleasant use of mojeID service.</str>
+  <str name="Your team CZ.NIC.">Your CZ.NIC team</str>
+  <str name="Your team mojeID">Your mojeID team</str>
+  <str name="Customer Support">Customer Support</str>
+
+  <str name="Authentication new owner of account mojeID">mojeID account full activation</str>
+  <str name="Subject: mojeID account full activation">Subject: mojeID account full activation</str>
+
+<str name="For full activation of the following account">For full activation of the following account: </str>
+<str name="you need this PIN3 code:">you need this PIN3 code:</str>
+
+  <str name="To complete full activation of your account, go to">To complete full activation of your account, go to</str>
+  <str name="log into your mojeID profile and enter the code PIN3 at the initial screen.">log into your mojeID profile and enter the code PIN3 at the initial screen.</str>
+
+  <str name="Americka 23">Americka 23</str>
+  <str name="120 00 Prague 2">120 00 Prague 2</str>
+</strings>
+

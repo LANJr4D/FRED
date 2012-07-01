@@ -1,0 +1,138 @@
+<!-- /* NSSET DATA START */ -->
+<div tal:omit-tag="" metal:define-macro="nsset">
+<table>
+<tbody>
+<tr>
+    <th>Name server set</th>
+    <td tal:content="result/nsset/handle">&lt;nsset handle&gt;</td>
+</tr>
+<span tal:omit-tag="" tal:repeat="dns result/nsset/hosts">
+    <tr>
+        <th>Name server</th>
+        <td>
+        <span class="dns_name" tal:content="dns/fqdn">&lt;dns name&gt;</span><span 
+            tal:omit-tag="" tal:repeat="ip dns/inet"> <span 
+            tal:omit-tag="" tal:content="ip">ip</span>
+        </span>
+        </td>
+    </tr>
+</span>
+<tr>
+    <th>Technical contact</th>
+    <td>
+    <div tal:repeat="tech result/nsset/admins">
+        <a href="#" tal:attributes="href python:'?c=%s' % tech['handle']" tal:content="tech/handle">&lt;tech handle&gt;</a>
+        <span tal:content="python:tech['discloseName'] and tech['name'] or tech['handle']">&lt;tech name&gt;</span>
+    </div>
+    </td>
+</tr>
+<tr>
+    <th>Sponsoring registrar</th>
+    <td>
+        <a href="#" tal:attributes="href python:'?r=%s' % result['nsset']['registrar']['handle']" tal:content="result/nsset/registrar/handle">&lt;registrator handle&gt;</a>
+        <span tal:content="result/nsset/registrar/name">&lt;registrar name&gt;</span> since
+        <span tal:content="python:(result['nsset'].get('transferDate') and [localtime(result['nsset']['transferDate'])] or [localtime(result['nsset'].get('createDate'))])[0]">01.01.1970</span>
+    </td>
+</tr>
+<tr>
+    <th>Status</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/nsset/status_names">
+            <span tal:omit-tag="" tal:content="name">status</span><br/>
+        </div>
+    </td>
+</tr>
+
+
+</tbody>
+</table>
+
+</div>
+<!-- /* NSSET DATA END */ -->
+
+<!-- /* KEYSET DATA START */ -->
+<div tal:omit-tag="" metal:define-macro="keyset">
+<table>
+<tbody>
+<tr>
+    <th>Key set</th>
+    <td tal:content="result/keyset/handle">&lt;keyset handle&gt;</td>
+</tr>
+<span tal:omit-tag="" tal:repeat="dsrecord result/keyset/dsrecords">
+    <tr>
+        <th>DS record</th>
+        <td>
+        	Keytag: <span tal:content="dsrecord/keyTag">keytag</span><br />
+	        Algorithm: <span tal:content="dsrecord/alg">alg</span> [<span tal:content="dsrecord/alg_label">alg</span>]<br />
+	        Digest type: <span tal:content="dsrecord/digestType">alg</span> [<span tal:content="dsrecord/digest_type_label">alg</span>]<br />
+	        Digest: <span tal:content="dsrecord/digest">alg</span><br />
+	        Max sig. life: <span tal:content="dsrecord/maxSigLife">max_sig_life</span><br />
+        </td>
+    </tr>
+</span>
+<span tal:omit-tag="" tal:repeat="dnskey result/keyset/dnskeys">
+    <tr>
+        <th>DNS Key</th>
+        <td>
+	        Flags: <span tal:content="dnskey/flags">flags</span><br />
+	        Protocol: <span tal:content="dnskey/protocol">protocol</span><br />
+	        Algorithm: <span tal:content="dnskey/alg">alg</span> [<span tal:content="dnskey/alg_label">alg</span>]<br />
+	        Key: <pre class="dnskey" tal:content="structure dnskey/key">alg</pre>
+        </td>
+    </tr>
+</span>
+<tr>
+    <th>Technical contact</th>
+    <td>
+    <div tal:repeat="tech result/keyset/admins">
+        <a href="#" tal:attributes="href python:'?c=%s' % tech['handle']" tal:content="tech/handle">&lt;tech handle&gt;</a>
+        <span tal:content="python:tech['discloseName'] and tech['name'] or tech['handle']">&lt;tech name&gt;</span>
+    </div>
+    </td>
+</tr>
+<tr>
+    <th>Sponsoring registrar</th>
+    <td>
+        <a href="#" tal:attributes="href python:'?r=%s' % result['keyset']['registrar']['handle']" tal:content="result/keyset/registrar/handle">&lt;registrator handle&gt;</a>
+        <span tal:content="result/keyset/registrar/name">&lt;registrar name&gt;</span> since
+        <span tal:content="python:(result['keyset'].get('transferDate') and [localtime(result['keyset']['transferDate'])] or [localtime(result['keyset'].get('createDate'))])[0]">01.01.1970</span>
+    </td>
+</tr>
+<tr>
+    <th>Status</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/keyset/status_names">
+            <span tal:omit-tag="" tal:content="name">status</span><br/>
+        </div>
+    </td>
+</tr>
+
+
+</tbody>
+</table>
+
+</div>
+<!-- /* KEYSET DATA END */ -->
+
+<!-- /* MOJEID FORMS START */ -->
+<div tal:omit-tag="" metal:define-macro="mojeid_forms">
+    <div id="mojeid-buttons">
+        <span>Create mojeID</span>
+        <ul>
+            <li tal:condition="result/mojeid_transfer_endpoint">
+                <form method="post" tal:attributes="action result/mojeid_transfer_endpoint">
+                    <input type="hidden" name="username" tal:attributes="value python:'%s' % result['contact']['handle']" />
+                    <input type="submit" value="Create mojeID from the domain registry" title="Transfer contact under mojeID registrar." />
+                </form>
+            </li>
+            <li tal:condition="result/mojeid_registry_endpoint">
+                <form method="post" tal:attributes="action result/mojeid_registry_endpoint/action">
+                    <input tal:repeat="param result/mojeid_registry_endpoint/post_params" type="hidden" tal:attributes="name param/0; value param/1" />
+                    <input type="submit" value="Create mojeID and change the personal data" title="Form with pre filled contacts values. It is possible to change them before submit." />
+                </form>
+            </li>
+            <div tal:omit-tag="" tal:content="structure result/extra_content_contact_handle">Extra content contact - handle</div>
+        </ul>
+    </div>
+</div>
+<!-- /* MOJEID FORMS END */ -->

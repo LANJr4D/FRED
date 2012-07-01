@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+    <str name="head">Confirmation of request for cancellation of blocking</str>
+
+    <str name="re_contact">contact</str>
+    <str name="re_nsset">nameserver set</str>
+    <str name="re_domain">domain name</str>
+    <str name="re_keyset">keyset</str>
+
+    <str name="subject">Subject: Confirmation of request for cancellation of blocking of</str>
+
+    <str name="line_1">I hereby confirm the request for cancellation of the blocking of the all changes made to</str>
+    <str name="line_2">submitted through the web form at the association webpages</str>
+    <str name="line_3">on</str>
+    <str name="line_4">, with the assigned identification number</str>
+    <str name="line_5">, and I request the cancellation of the specified blocking option.</str>
+    <str name="line_6">Name and officially authenticated signature of authorised person:</str>
+    <str name="line_7"></str>
+    <str name="line_8"></str>
+    <str name="line_9"></str>
+
+    <str name="footer_1">Please print this request, sign it (a notarized signature required) and send the signed original to the following address:</str>
+    <str name="footer_2">Signatories whose name is not listed in the Central registry of domain names must attach</str>
+    <str name="footer_3">an original or a notarized copy of a document authorizing them to perform the relevant request.</str>
+
+</strings>

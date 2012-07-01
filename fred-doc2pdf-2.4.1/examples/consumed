@@ -1,0 +1,34 @@
+#!/bin/bash
+
+STEPS=$1
+if [ -z "$STEPS" ]; then
+    echo "Create invoice.xml with NNN consumed items.
+Usage:
+    consumed 400 > consumed400.xml (add more 400 items into the list of
+    <advance_payment><applied_invoices> items)
+"
+    exit 1
+fi
+
+EXAMPLES=$(dirname $(readlink -f $0))
+SOURCE=$EXAMPLES/invoice.xml
+
+# Split at tag: </applied_invoices>
+LINENUM=`grep -n '</applied_invoices>' $SOURCE | awk -F: '{print $1}'`
+LINES=`wc -l $SOURCE | awk '{print $1}'`
+
+head -n $((LINENUM-1)) $SOURCE
+for INDEX in `seq $STEPS`; do
+    echo "        <consumed>
+            <number>$((2006110 + INDEX))</number>
+            <invoice_date>`date +"%Y-%m-%d %H:%M:%S.%N"`</invoice_date>
+            <price>$((RANDOM%400+800))</price>
+            <price_with_vat>$((RANDOM%4000+8000))</price_with_vat>
+            <vat>760</vat>
+            <balance>0</balance>
+            <vat_rate>19</vat_rate>
+            <total>$((RANDOM%1600+100))</total>
+            <total_with_vat>$((RANDOM%12000+600)).00</total_with_vat>
+        </consumed>"
+done
+tail -n $((LINES - LINENUM + 1)) $SOURCE

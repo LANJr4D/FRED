@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document>
+<!-- 
+This template serves as pattern for layout transfer into XSL.
+Create: Zdeněk Böhm <zdenek.bohm@nic.cz>; 15.10.2007
+-->
+<template pageSize="(21cm, 29.7cm)" leftMargin="2.0cm" rightMargin="2.0cm" topMargin="2.0cm" bottomMargin="2.0cm" 
+  title="Faktura č. 123/456"
+  author="CZ.NIC"
+  >
+
+    <pageTemplate id="first">
+      <pageGraphics>
+        <fill color="#035e79" />
+        <rect x="0" y="26.4cm" width="21cm" height="3.3cm" fill="yes" stroke="no" />
+
+        <image file="templates/white-balls.png" x="12.2cm" y="26.8cm" width="2cm"/>
+
+        <fill color="white" />
+        <setFont name="Times-Roman" size="14"/>
+        <drawRightString x="19.3cm" y="27.9cm">Faktura / daňový doklad</drawRightString>
+        <drawRightString x="19.3cm" y="27cm">č. 120700012</drawRightString>
+
+        <stroke color="#035e79"/>
+        <lineMode width="0.1cm"/>
+        <lines>0.9cm 25.55cm 1.4cm 25.55cm</lines>
+        <lines>0.9cm  20.5cm 1.4cm  20.5cm</lines>
+
+        <lines>10cm 20.9cm 10.5cm 20.9cm</lines>
+        <lines>10cm 19.7cm 10.5cm 19.7cm</lines>
+        <lines>10cm   17cm 10.5cm   17cm</lines>
+
+        <!-- left column -->
+
+        <fill color="black" />
+        <setFont name="Times-Roman" size="9" />
+        <drawString x="1.6cm" y="25.9cm">Odběratel:</drawString>
+        <setFont name="Times-Bold" size="11" />
+        <drawString x="1.6cm" y="25.4cm">General Registry, s.r.o.</drawString>
+        <drawString x="1.6cm" y="24.9cm">Novodvorská 745/21</drawString>
+        <drawString x="1.6cm" y="24.4cm">371 07 Česká Budějovice</drawString>
+
+        <setFont name="Times-Bold" size="9" />
+        <drawString x="1.6cm" y="23.7cm">IČO:</drawString>
+        <drawRightString x="8.6cm" y="23.7cm">26027267</drawRightString>
+        <drawString x="1.6cm" y="23.3cm">DIČ:</drawString>
+        <drawRightString x="8.6cm" y="23.3cm">CZ26027267</drawRightString>
+
+        <setFont name="Times-Roman" size="9" />
+        <drawString x="1.6cm" y="22.5cm">Sídlo odběratele:</drawString>
+        <drawString x="1.6cm" y="22.1cm">Novodvorská 745/21</drawString>
+        <drawString x="1.6cm" y="21.7cm">371 07 České Budějovice</drawString>
+
+        <drawString x="1.6cm" y="20.8cm">Dodavatel:</drawString>
+        <drawString x="1.6cm" y="20.4cm">CZ.NIC, z.s.p.o.</drawString>
+        <drawString x="1.6cm" y="20cm">Americká 23</drawString>
+        <drawString x="1.6cm" y="19.6cm">120 00 Praha 2</drawString>
+
+        <drawString x="1.6cm" y="18.7cm">IČO:</drawString>
+        <drawRightString x="7cm" y="18.7cm">67985726</drawRightString>
+        <drawString x="1.6cm" y="18.3cm">DIC:</drawString>
+        <drawRightString x="7cm" y="18.3cm">CZ67985726</drawRightString>
+
+        <drawString x="1.6cm" y="17.4cm">SpZ:</drawString>
+        <drawString x="1.6cm" y="16.9cm">odbor občanskoprávních agend</drawString>
+        <drawString x="1.6cm" y="16.5cm">Magistrát hl. m. Prahy, č. ZS/30/3/98</drawString>
+
+        <!-- right column -->
+        <setFont name="Times-Bold" size="9" />
+        <drawString x="10.7cm" y="20.8cm">Daňový doklad č.:</drawString>
+        <drawRightString x="19.3cm" y="20.8cm">05.04.2007</drawRightString>
+        <drawString x="10.7cm" y="20.4cm">Variabilní symbol:</drawString>
+        <drawRightString x="19.3cm" y="20.4cm">26027267</drawRightString>
+
+        <setFont name="Times-Roman" size="9" />
+        <drawString x="10.7cm" y="19.6cm">Datum vystavení faktury:</drawString>
+        <drawRightString x="19.3cm" y="19.6cm">05.04.2007</drawRightString>
+        <drawString x="10.7cm" y="19.2cm">Datum uskutečnění zdaň. plnění:</drawString>
+        <drawRightString x="19.3cm" y="19.2cm">31.03.2007</drawRightString>
+
+        <drawString x="10.7cm" y="16.9cm">List: 1</drawString>
+        <drawRightString x="19.3cm" y="16.9cm">Počet listů: 2</drawRightString>
+        <drawString x="10.7cm" y="16.5cm">Vystaveno fakturačním systémem CZ.NIC</drawString>
+
+
+        <stroke color="black"/>
+        <lineMode width="0.5"/>
+        <lines>1.6cm 16.1cm 19.3cm 16.1cm</lines>
+        
+        <frame id="delivery" x1="1.36cm" y1="3.6cm" width="18.2cm" height="12.4cm" showBoundary="0" />
+
+        <image file="templates/cz_nic_logo_cs.png" x="1.3cm" y="0.8cm" width="4.2cm"/>
+        <stroke color="#C4C9CD"/>
+        <lineMode width="0.01cm"/>
+        <lines>7.1cm  1.3cm  7.1cm 0.5cm</lines>
+        <lines>11.4cm 1.3cm 11.4cm 0.5cm</lines>
+        <lines>14.6cm 1.3cm 14.6cm 0.5cm</lines>
+        <lines>17.6cm 1.3cm 17.6cm 0.5cm</lines>
+        <lineMode width="1"/>
+        <fill color="#ACB2B9"/>
+        <setFont name="Times-Roman" size="7"/>
+        <drawString x="7.3cm" y="1.1cm">CZ.NIC, z.s.p.o.</drawString>
+        <drawString x="7.3cm" y="0.8cm">Americká 23, 120 00 Praha 2</drawString>
+        <drawString x="7.3cm" y="0.5cm">Česká republika</drawString>
+        <drawString x="11.6cm" y="1.1cm">T +420 222 745 111</drawString>
+        <drawString x="11.6cm" y="0.8cm">F +420 222 745 112</drawString>
+        <drawString x="14.8cm" y="1.1cm">IČ 67985726</drawString>
+        <drawString x="14.8cm" y="0.8cm">DIČ CZ67986726</drawString>
+        <drawString x="17.8cm" y="1.1cm">kontakt@nic.cz</drawString>
+        <drawString x="17.8cm" y="0.8cm">www.nic.cz</drawString>
+
+        <!-- TEST
+        <lineMode width=".1"/>
+        <fill color="pink"/>
+        <lines>1.5cm 0 1.5cm 29.7cm</lines>
+        <lines>19.5cm 0 19.5cm 29.7cm</lines>
+        TEST -->
+
+      </pageGraphics>
+    </pageTemplate>
+
+    <pageTemplate id="appendix">
+      <pageGraphics>
+        <fill color="#035e79" />
+        <rect x="0" y="26.4cm" width="21cm" height="3.3cm" fill="yes" stroke="no" />
+
+        <fill color="white" />
+        <setFont name="Times-Roman" size="9"/>
+        <drawString x="1.6cm" y="27cm">List: 2</drawString>
+        <drawString x="5.1cm" y="27cm">Počet listů: 2</drawString>
+
+        <setFont name="Times-Roman" size="14"/>
+        <drawRightString x="14.4cm" y="27cm">Příloha faktury</drawRightString>
+        <drawRightString x="19.3cm" y="27cm">č. 120700012</drawRightString>
+
+        <stroke color="#035e79"/>
+        <lineMode width="0.1cm"/>
+        <lines>0.8cm 25.5cm 1.3cm 25.5cm</lines>
+
+        <stroke color="black"/>
+        <lineMode width="0.5"/>
+        <lines>1.5cm 25.16cm 19.4cm 25.16cm</lines>
+
+        <frame id="delivery" x1="1.36cm" y1="3.5cm" width="18.2cm" height="22.5cm" showBoundary="0" />
+
+        <image file="templates/cz_nic_logo_cs.png" x="1.3cm" y="0.8cm" width="4.2cm"/>
+        <stroke color="#C4C9CD"/>
+        <lineMode width="0.01cm"/>
+        <lines>7.1cm  1.3cm  7.1cm 0.5cm</lines>
+        <lines>11.4cm 1.3cm 11.4cm 0.5cm</lines>
+        <lines>14.6cm 1.3cm 14.6cm 0.5cm</lines>
+        <lines>17.6cm 1.3cm 17.6cm 0.5cm</lines>
+        <lineMode width="1"/>
+        <fill color="#ACB2B9"/>
+        <setFont name="Times-Roman" size="7"/>
+        <drawString x="7.3cm" y="1.1cm">CZ.NIC, z.s.p.o.</drawString>
+        <drawString x="7.3cm" y="0.8cm">Americká 23, 120 00 Praha 2</drawString>
+        <drawString x="7.3cm" y="0.5cm">Česká republika</drawString>
+        <drawString x="11.6cm" y="1.1cm">T +420 222 745 111</drawString>
+        <drawString x="11.6cm" y="0.8cm">F +420 222 745 112</drawString>
+        <drawString x="14.8cm" y="1.1cm">IČ 67985726</drawString>
+        <drawString x="14.8cm" y="0.8cm">DIČ CZ67986726</drawString>
+        <drawString x="17.8cm" y="1.1cm">kontakt@nic.cz</drawString>
+        <drawString x="17.8cm" y="0.8cm">www.nic.cz</drawString>
+
+        <!-- TEST
+        <lineMode width=".1"/>
+        <fill color="pink"/>
+        <lines>1.5cm 0 1.5cm 29.7cm</lines>
+        <lines>19.5cm 0 19.5cm 29.7cm</lines>
+        TEST -->
+
+      </pageGraphics>
+    </pageTemplate>
+
+
+</template>
+
+<stylesheet>
+
+    <paraStyle fontSize="9"/>
+
+    <blockTableStyle id="tbl_delivery">
+      <lineStyle kind="LINEABOVE" start="0,0"  stop="2,0"  thickness="0.5" colorName="black"/>
+      <lineStyle kind="LINEBELOW" start="0,-1" stop="2,-1" thickness="0.5" colorName="black"/>
+      <blockAlignment value="RIGHT" start="1,0" stop="1,-1"/>
+      <blockFont name="Times-Bold" start="0,-1" stop="-1,-1" />
+      <blockLeftPadding length="0" start="0,0" stop="0,-1" />
+      <blockTopPadding length="0" start="0,1" stop="-1,-2" />
+      <blockBottomPadding length="0" start="0,0" stop="-1,-2" />
+
+      <blockTopPadding length="0.3cm" start="0,0" stop="-1,0" />
+
+      <blockTopPadding length="0.3cm" start="0,-1" stop="-1,-1" />
+      <blockBottomPadding length="0.2cm" start="0,-1" stop="-1,-1" />
+
+    </blockTableStyle>
+
+    <blockTableStyle id="tbl_advance_payment">
+      <blockFont name="Times-Roman" start="0,0" stop="-1,-1" size="9"/>
+      <blockAlignment value="RIGHT" start="1,0" stop="-1,-1"/>
+      <blockFont name="Times-Bold" start="0,0" stop="-1,0"/>
+      <lineStyle kind="LINEABOVE" start="0,0" stop="-1,0" thickness="0.5" colorName="black"/>
+      <lineStyle kind="LINEBELOW" start="0,-1" stop="-1,-1" thickness="0.5" colorName="black"/>
+      <blockLeftPadding length="0" start="0,0" stop="0,-1" />
+      <blockTopPadding length="0" start="0,1" stop="-1,-1" />
+      <blockBottomPadding length="0" start="0,1" stop="-1,-2" />
+      <blockBottomPadding length="0.3cm" start="0,-1" stop="-1,-1" />
+    </blockTableStyle>
+
+    <blockTableStyle id="appendix">
+      <blockFont name="Times-Roman" start="0,0" stop="-1,-1" size="9"/>
+      <blockAlignment value="RIGHT" start="4,0" stop="6,-1"/>
+
+      <!-- lineStyle kind="LINEBELOW" start="0,0" stop="-1,0" thickness="0.5" colorName="black"/ -->
+      <blockBottomPadding length="0.3cm" start="0,0" stop="-1,0" />
+
+      <lineStyle kind="LINEBELOW" start="0,-1" stop="-1,-1" thickness="0.5" colorName="black"/>
+      <blockFont name="Times-Bold" start="0,-1" stop="-1,-1"/>
+      <blockLeftPadding length="0" start="0,0" stop="0,-1" />
+      <blockRightPadding length="0" start="-1,0" stop="-1,-1" />
+      <blockTopPadding length="0" start="0,2" stop="-1,-2" />
+      <blockBottomPadding length="0" start="0,1" stop="-1,-2" />
+
+      <blockTopPadding length="0.5cm" start="0,-1" stop="-1,-1" />
+
+    </blockTableStyle>
+
+</stylesheet>
+
+
+<story>
+
+<spacer length="0.4cm"/>
+
+<illustration width="0.5cm" height="1">
+        <stroke color="#035e79"/>
+        <lineMode width="0.1cm"/>
+        <lines>-0.67cm -0.24cm -0.17cm -0.24cm</lines>
+</illustration>
+<para>Označení dodávky:</para>
+
+<spacer length="0.4cm"/>
+<para>Za období od 01.06.2006 do 10.01.2007 Vám fakturujeme poskytnuté služby (Smlouva o spolupráci při registracích doménových jmen ENUM):</para>
+
+<spacer length="0.4cm"/>
+<para>Registrace doménových jmen (kód RREG), za udržování záznamu o doménovém jménu (kód RUDR), v násobcích roků (Počet) pro doménová jména dle přílohy.</para>
+
+<spacer length="0.4cm"/>
+<blockTable colWidths="7cm,4.2cm,6.6cm" style="tbl_delivery">
+<tr>
+    <td>celkem:</td>
+    <td>2.00</td>
+    <td/>
+</tr>
+<tr>
+    <td>uhrazeno:</td>
+    <td>-2.00</td>
+    <td/>
+</tr>
+<tr>
+    <td>základ daně 19%:</td>
+    <td>0.00</td>
+    <td/>
+</tr>
+<tr>
+    <td>DPH 19%:</td>
+    <td>0.00</td>
+    <td/>
+</tr>
+<tr>
+    <td>celkem k úhradě:</td>
+    <td>0.00</td>
+    <td/>
+</tr>
+</blockTable>
+
+<spacer length="0.6cm"/>
+
+<illustration width="0.5cm" height="1">
+        <stroke color="#035e79"/>
+        <lineMode width="0.1cm"/>
+        <lines>-0.67cm -0.24cm -0.17cm -0.24cm</lines>
+</illustration>
+<para>DPH byla vypořádána na zálohových daňových dokladech:</para>
+
+    <spacer length="0.2cm"/>
+    <blockTable colWidths="3cm,2.5cm,5.7cm,6.6cm" repeatRows="1" style="tbl_advance_payment">
+      <tr>
+        <td>číslo faktury</td>
+        <td>čerpáno Kč</td>
+        <td>zůstatek zálohy Kč</td>
+        <td/>
+      </tr>
+      <tr>
+        <td>2006113</td>
+        <td>21 900.00</td>
+        <td>28 100.00</td>
+        <td/>
+      </tr>
+      <tr>
+        <td>2006112</td>
+        <td>80 000.00</td>
+        <td>0.00</td>
+        <td/>
+      </tr>
+      <tr>
+        <td>2006111</td>
+        <td>6 000.00</td>
+        <td>0.00</td>
+        <td/>
+      </tr>
+      <tr>
+        <td>2006110</td>
+        <td>4 000.00</td>
+        <td>0.00</td>
+        <td/>
+      </tr>
+    </blockTable>
+
+    <setNextTemplate name="appendix"/>
+    <pageBreak/>
+
+    <blockTable colWidths="1.3cm,2cm,6.2cm,2.1cm,1.6cm,2.2cm,2.5cm" repeatRows="1" style="appendix">
+      <tr>
+        <td>Změna</td>
+        <td>Provedena</td>
+        <td>Doména</td>
+        <td>Služba do</td>
+        <td>Počet</td>
+        <td>Cena</td>
+        <td>Celkem</td>
+      </tr>
+      <tr>
+        <td>RUDR</td>
+        <td>12.01.2007</td>
+        <td>1.1.1.7.4.5.2.2.2.0.2.4.e164.arpa</td>
+        <td>12.01.2009</td>
+        <td>2</td>
+        <td>300.00</td>
+        <td>600.00</td>
+      </tr>
+      <tr>
+        <td>RUDR</td>
+        <td>12.01.2007</td>
+        <td>abc.cz</td>
+        <td>12.01.2009</td>
+        <td>2</td>
+        <td>300.00</td>
+        <td>600.00</td>
+      </tr>
+      <tr>
+        <td>RREG</td>
+        <td>12.01.2007</td>
+        <td>snih.cz</td>
+        <td>12.01.2008</td>
+        <td>1</td>
+        <td>100 500.00</td>
+        <td>100 500.00</td>
+      </tr>
+      <tr>
+        <td>RUDR</td>
+        <td>12.01.2007</td>
+        <td>snih.cz</td>
+        <td>12.01.2008</td>
+        <td>1</td>
+        <td>100 500.00</td>
+        <td>100 500.00</td>
+      </tr>
+      <tr>
+        <td>RREG</td>
+        <td>12.01.2007</td>
+        <td>jindrizska.cz</td>
+        <td/>
+        <td/>
+        <td>10 800.00</td>
+        <td>10 800.00</td>
+      </tr>
+      <tr>
+        <td>RUDR</td>
+        <td>12.01.2007</td>
+        <td>gaad.cz</td>
+        <td>12.01.2009</td>
+        <td>2</td>
+        <td>300.00</td>
+        <td>600.00</td>
+      </tr>
+      <tr>
+        <td>Celkem</td>
+        <td/>
+        <td/>
+        <td/>
+        <td/>
+        <td/>
+        <td>111 900.00</td>
+      </tr>
+    </blockTable>
+
+</story>
+
+</document>

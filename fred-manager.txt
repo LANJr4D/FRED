@@ -1,0 +1,990 @@
+#!/bin/bash
+
+if [ -f /lib/lsb/init-functions ]; then
+    . /lib/lsb/init-functions
+else
+    log_failure_msg() { echo "ERROR: $1";  }
+    log_success_msg() { echo "SUCCESS: $1";  }
+fi
+
+f_control_cmd() {
+    if eval $2
+    then
+	log_success_msg "$1"
+    else
+	log_failure_msg "$1"
+    fi
+}
+
+PATH=$PATH:/sbin:/usr/sbin/
+
+check_pidfile() {
+    ps -p $(cat $1 2>/dev/null) >/dev/null 2>&1
+}
+
+P=$(dirname $0)
+if [ "$P" = "." ]; then P=$PWD; fi
+
+if [ "$CURDIR" = "" ]
+then
+    CURDIR=$P
+fi
+
+# install all script under $ROOT
+ROOT=$CURDIR/root
+# use $BUILD_DIR for building from sources
+BUILD_DIR=$CURDIR/build
+# port for database server
+if [ "$PORT" = "" ]
+then
+    DB_PORT=22345
+else
+    DB_PORT=$PORT
+fi
+# port for corba nameservice
+NS_PORT=$(($DB_PORT+1))
+# port for pyfred corba backend
+PYFRED_PORT=$(($DB_PORT+2))
+# port for rifd corba backend
+RIFD_PORT=$(($DB_PORT+3))
+# port for pifd corba backend
+PIFD_PORT=$(($DB_PORT+4))
+# port for adifd corba backend
+ADIFD_PORT=$(($DB_PORT+5))
+# port for epp apache server
+EPP_PORT=$(($DB_PORT+6))
+# port for unix whois apache server
+WHOIS_PORT=$(($DB_PORT+7))
+# port for web administration interface
+WADMIN_PORT=$(($DB_PORT+8))
+# port for web administration interface
+WEB_PORT=$(($DB_PORT+9))
+# port for local named (bind) service
+NAMED_PORT=$(($DB_PORT+10))
+# port for local named (bind) service
+PGPOOL_PORT=$(($DB_PORT+11))
+# port for logd corba backend
+LOGD_PORT=$(($DB_PORT+12))
+# path to pgpool executable
+PGPOOL_BIN=/usr/sbin/pgpool
+# path to named executable
+NAMED_BIN=/usr/sbin/named
+
+if [ ! -x $PGPOOL_BIN ]
+then
+    PGPOOL_PORT=$DB_PORT
+fi
+
+PACKAGE_LIST="db idl pyfred server doc2pdf mod-corba mod-whoisd mod-eppd \
+whois webadmin client"
+
+VERSION_1_10_0="1.9.0 1.10.0 1.9.1 1.10.1 1.4.1 1.3.0 2.2.0 1.7.0 1.10.4 2.1.1 1.6.1"
+VERSION_1_11_0="1.9.1 1.11.0 1.9.1 1.11.0 1.4.1 1.3.0 2.2.0 1.7.0 1.10.4 2.2.2 1.6.1"
+VERSION_2_0_0="2.1.0 2.0.1 2.0.1 2.0.8 2.0.0 1.3.0 3.0.1 2.0.2 2.0.1 3.0.4 2.0.4"
+VERSION_2_1_0="2.1.0 2.1.0 2.1.2 2.1.2 2.0.0 1.3.0 3.1.0 2.1.0 2.1.2 3.1.1 2.1.2"
+VERSION_2_1_1="2.1.1 2.1.0 2.1.3 2.1.7 2.0.1 1.3.0 3.1.1 2.1.0 2.1.2 3.1.2 2.1.3"
+VERSION_2_1_4="2.1.3 2.1.0 2.1.5 2.1.11 2.0.2 1.3.0 3.1.1 2.1.1 2.1.2 3.1.4 2.1.4"
+VERSION_2_1_5="2.1.4 2.1.1 2.1.8 2.1.18 2.0.3 1.3.0 3.1.1 2.1.1 2.1.6 3.1.6 2.1.5"
+VERSION_2_2_0="2.2.0 2.2.0 2.1.8 2.2.0 2.0.3 1.3.0 3.1.1 2.2.0 2.2.0 3.2.0 2.2.0"
+
+VERSION_BRANCHE_2_2="branches/2.2 branches/2.2 branches/2.1 branches/2.2 branches/2.0 branches/1.3 branches/3.1 branches/2.2 branches/2.2 branches/3.2 branches/2.2"
+
+
+if [ "$VERSION" = "" ]; then
+    VERSION=2_2_0
+#    VERSION=TRUNK
+fi
+
+if [ $VERSION != TRUNK ]; then
+    VERSION_LIST=$(eval echo \$VERSION_${VERSION})
+fi
+
+#SPECIAL_VERSION="branches/2.1 branches/2.1 branches/2.1 branches/2.1 branches/2.0 branches/1.3 branches/3.1 branches/2.1 branches/2.1 branches/3.1 branches/2.1"
+
+if [ -d $CURDIR/download/src -a "$VERSION" != "TRUNK" ]; then
+    SRC_DIR=$CURDIR/download/src
+    RESULT=""
+    VL=$VERSION_LIST
+    for PACKAGE in $PACKAGE_LIST; do
+	V="${VL%% *}"
+	VL="${VL#* }"
+	RESULT="${RESULT}fred-$PACKAGE-$V "
+    done
+else
+    SRC_DIR=$P/../../../
+    RESULT=""
+    VL=$VERSION_LIST
+    for PACKAGE in $PACKAGE_LIST; do
+	V="${VL%% *}"
+	VL="${VL#* }"
+	if [ "$SPECIAL_VERSION" != "" ]; then
+            HV="${SPECIAL_VERSION%% *}"
+            SPECIAL_VERSION="${SPECIAL_VERSION#* }"
+            RESULT="${RESULT}$PACKAGE/$HV "
+    elif [ "$VERSION" = "BRANCHE_2_2" ]; then
+        RESULT="${RESULT}$PACKAGE/$V "
+	elif [ "$VERSION" = "TRUNK" ]; then
+	    RESULT="${RESULT}$PACKAGE/trunk "
+    else
+	    RESULT="${RESULT}$PACKAGE/tags/$V "
+	fi
+    done
+fi
+
+# source directories of subprojects
+DB_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+IDL_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+PYFRED_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+SERVER_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+DOC2PDF_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+MODCORBA_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+MODWHOISD_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+MODEPPD_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+WHOIS_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+WEBADMIN_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+CLIENT_SRC=$SRC_DIR/${RESULT%% *}; RESULT=${RESULT#* };
+
+FOUND=0
+PGDIRDEB=$(ls -d /usr/lib/postgresql/*/bin/ 2>/dev/null| sort -r)
+for DB_BIN_F in $DB_BIN /usr/bin $PGDIRDEB
+do
+    if [ -x $DB_BIN_F/pg_ctl ]; then FOUND=1; break; fi
+done
+if [ $FOUND -eq 0 ]
+then
+    echo "PostgreSQL missing in $DB_BIN /usr/bin /usr/lib/postgresql/*/bin/";
+    exit 1
+else 
+    DB_BIN=$DB_BIN_F
+fi
+
+FOUND=0
+for APACHE_F in $APACHE /usr/sbin/apache2 /usr/sbin/httpd
+do
+    if [ -x $APACHE_F ]; then FOUND=1; break; fi
+done
+if [ $FOUND -eq 0 ]
+then
+    echo "Apache missing in $APACHE /usr/sbin/apache2 /usr/sbin/httpd";
+    exit 1
+else 
+    APACHE=$APACHE_F
+fi
+
+FOUND=0
+for APACHEDIR_F in $APACHEDIR /usr/lib/apache2/modules /usr/lib*/httpd/modules
+do
+    if [ -f $APACHEDIR_F/mod_ssl.so ]; then FOUND=1; break; fi
+done
+if [ $FOUND -eq 0 ]
+then
+    echo "SSL module missing in $APACHE_DIR " /usr/lib/apache2/modules \
+	/usr/lib*/httpd/modules
+    exit 1
+else 
+    APACHEDIR=$APACHEDIR_F
+fi
+
+OMNI=/usr/bin/omniNames
+if [ ! -x $OMNI ]
+then
+    echo "OmniORB nameservice $OMNI not exits";
+    exit 1;
+fi
+
+export PGHOST=$ROOT/nofred/pg_sockets/ # hack for Ubuntu
+
+make_dir() {
+   if [ ! -d $BUILD_DIR/$1 ]
+   then
+       mkdir $BUILD_DIR/$1
+   fi
+   cd $BUILD_DIR/$1
+}
+
+f_configure() {
+
+    export CXXFLAGS='-g'
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # prepare build dir
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ ! -d $BUILD_DIR ]
+    then
+        mkdir $BUILD_DIR
+    fi
+    SAVE_PWD=$PWD
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # configure fred-db
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "db" -o "$1" = "" ]
+    then
+        make_dir fred-db
+	RES=0
+        if grep -q "exit 0" config.log 2>/dev/null; then /bin/true; else
+            $DB_SRC/configure \
+                --prefix=$ROOT \
+                --with-dbhost=$ROOT/nofred/pg_sockets \
+                --with-dbport=$DB_PORT \
+                --with-pgdatadir=$ROOT/nofred/pg \
+                --with-pghbadir=$ROOT/nofred/pg
+	    RES=$?
+        fi
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # configure fred-idl
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "idl" -o "$1" = "" ]
+    then
+        make_dir fred-idl
+	RES=0
+        if grep -q "exit 0" config.log 2>/dev/null; then /bin/true; else
+            $IDL_SRC/configure \
+                --prefix=$ROOT 
+	    RES=$?
+        fi
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # configure server
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "server" -o "$1" = "" ]
+    then
+        make_dir fred-server
+	RES=0
+        if grep -q "exit 0" config.log 2>/dev/null; then /bin/true; else
+            $SERVER_SRC/configure \
+                --prefix=$ROOT \
+                --with-dbhost=$ROOT/nofred/pg_sockets \
+               --with-dbport=$PGPOOL_PORT \
+                --with-nshost=localhost \
+                --with-nsport=$NS_PORT \
+                --with-rifdport=$RIFD_PORT \
+                --with-pifdport=$PIFD_PORT \
+                --with-adifdport=$ADIFD_PORT \
+                --with-logdport=$LOGD_PORT \
+                --with-idldir=$IDL_SRC/idl
+	    RES=$?
+        fi
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # configure mod-corba
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "mod-corba" -o "$1" = "" ]
+    then
+        make_dir fred-mod-corba
+	RES=0
+        if grep -q "exit 0" config.log 2>/dev/null; then /bin/true; else
+            $MODCORBA_SRC/configure \
+                --prefix=$ROOT
+	    RES=$?
+        fi
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # configure mod-whoisd
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "mod-whoisd" -o "$1" = "" ]
+    then
+        make_dir fred-mod-whoisd
+	RES=0
+        if grep -q "exit 0" config.log 2>/dev/null; then /bin/true; else
+            $MODWHOISD_SRC/configure \
+                --prefix=$ROOT \
+                --with-nshost=localhost:$NS_PORT \
+                --with-port=$WHOIS_PORT \
+                --with-idldir=$IDL_SRC/idl
+	    RES=$?
+        fi
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # configure mod-eppd
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "mod-eppd" -o "$1" = "" ]
+    then
+        make_dir fred-mod-eppd
+	RES=0
+        if grep -q "exit 0" config.log 2>/dev/null; then /bin/true; else
+            $MODEPPD_SRC/configure \
+                --prefix=$ROOT \
+                --with-nshost=localhost:$NS_PORT \
+                --with-port=$EPP_PORT \
+                --with-idldir=$IDL_SRC/idl
+	    RES=$?
+        fi
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+
+}
+
+f_install_local_named() {
+    NAMED_PIDFILE=$ROOT/nofred/named/named.pid
+        
+    if [ ! -d $ROOT/nofred/named ]; then
+	mkdir $ROOT/nofred/named 
+	chmod 775 $ROOT/nofred/named 
+    fi
+
+    cat << _EOF_ > $ROOT/nofred/named/named.conf
+// sample bind configuration for FRED demonstration
+options {
+	recursion no;
+	pid-file "$NAMED_PIDFILE";
+};
+include "$ROOT/nofred/named/named_zones.conf";
+_EOF_
+    touch $ROOT/nofred/named/named_zones.conf
+    # cron job will be added when the service is started
+}
+
+f_named_add_cron() {
+    # make sure that the added entry won't cause duplicity
+    f_named_rem_cron
+    echo "*   *   *   *   *   ( $ROOT/bin/genzone_client -z $ROOT/nofred/named -f $ROOT/etc/fred/genzone.conf -g $ROOT/nofred/named/named_zones.conf -o; $CURDIR/$(basename $0) named_reload ) >> $ROOT/nofred/named/cron.log 2>&1 " | crontab - > /dev/null
+}
+
+f_named_rem_cron() {
+    crontab -l | grep -v 'named_reload' | crontab - >/dev/null
+}
+
+
+f_install_a() {
+
+    if [ "$1" = "$2" -o "$1" = "" ]
+    then
+        make_dir fred-$2
+        make install
+	RES=$?
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+}
+
+f_install_s() {
+
+    if [ "$1" = "$2" -o "$1" = "" ]
+    then
+        make_dir fred-$2
+        python $3/setup.py install $4 2>&1 | tee install.log
+	grep "Error" install.log >/dev/null 2>&1 # shouldn't be here
+	RES=$(($? - 1))
+        cd $SAVE_PWD
+	if [ $RES -ne 0 ]; then exit 1; fi
+    fi
+
+}
+
+f_install_pgpool() {
+
+ if [ -x $PGPOOL_BIN ]
+ then
+     mkdir -p $ROOT/nofred/pgpool > /dev/null
+     cat << _EOF_ > $ROOT/nofred/pgpool/pgpool.conf
+#sample pgpool configuration file
+listen_addresses = ''
+port = $PGPOOL_PORT
+socket_dir = '$ROOT/nofred/pg_sockets'
+backend_port = $DB_PORT
+backend_socket_dir = '$ROOT/nofred/pg_sockets'
+logdir = '$ROOT/nofred/pgpool/'
+num_init_children = 32
+max_pool = 4
+_EOF_
+ fi     
+
+}
+
+f_install() {
+    
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # create database cluster
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    if [ ! -d $ROOT/nofred/pg ]
+    then
+        $DB_BIN/initdb -D $ROOT/nofred/pg
+    fi
+
+    f_configure $1
+
+    if [ "$1" = "pgpool" -o "$1" = "" ]
+    then
+        f_install_pgpool
+    fi
+
+    f_install_a "$1" "db"
+    f_install_a "$1" "idl"
+    f_install_s "$1" "pyfred" $PYFRED_SRC " \
+      --prefix=$ROOT \
+      --dbhost=$ROOT/nofred/pg_sockets \
+      --dbport=$PGPOOL_PORT \
+      --nsport=$NS_PORT \
+      --pyfredport=$PYFRED_PORT"
+    f_install_s "$1" "doc2pdf" $DOC2PDF_SRC " \
+      --prefix=$ROOT"
+    f_install_a "$1" "server"
+    f_install_a "$1" "mod-corba"
+    f_install_a "$1" "mod-whoisd"
+    f_install_a "$1" "mod-eppd"
+    f_install_s "$1" "webadmin" $WEBADMIN_SRC " \
+      --prefix=$ROOT \
+      --nsport=$NS_PORT \
+      --webadminport=$WADMIN_PORT"
+    f_install_s "$1" "client" $CLIENT_SRC " \
+      --prefix=$ROOT \
+      --port=$EPP_PORT"
+    f_install_s "$1" "whois" $WHOIS_SRC " \
+      --prefix=$ROOT \
+      --host=localhost:$NS_PORT"
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # prepare directories
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    mkdir -p $ROOT/nofred/pg_sockets/ >/dev/null 2>&1
+    mkdir -p $ROOT/nofred/sessiondb > /dev/null 2>&1
+    mkdir -p $ROOT/var/lib/fred-webadmin/sessions/ >/dev/null 2>&1
+    mkdir -p $ROOT/var/log > /dev/null 2>&1
+    mkdir -p $ROOT/var/www/html >/dev/null 2>&1
+    ln -s ../../../nofred/named/ $ROOT/var/www/html/zones >/dev/null 2>&1
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=
+    # prepare client package
+    # -=-=-=-=-=-=-=-=-=-=-=-=    
+    if [ "$1" = "client-package" -o "$1" = "" ]; then
+        make_dir fred-client-dist
+        rm $ROOT/var/www/html/fred-client*
+        python $CLIENT_SRC/setup.py bdist_simple --format=zip \
+            --install-extra-opts="--host=$(hostname) --port=$EPP_PORT" \
+            --dist-dir=$ROOT/var/www/html/
+    fi
+    cd $SAVE_PWD
+    
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # create apache configuation file
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "config" -o "$1" = "" ]; then
+	if [ ! -f $APACHEDIR/mod_python.so ]; then
+	    echo "Need mod_python module. Exiting!";
+	    exit 1;
+	fi
+	{ 
+	    echo "LoadModule ssl_module $APACHEDIR/mod_ssl.so"
+            # next three modules are because of web whois apache config
+            # they are builtin on ubuntu apache so test must be done
+	    if $APACHE -L | grep mod_dir > /dev/null 2>&1; then /bin/true;
+	    else echo "LoadModule dir_module $APACHEDIR/mod_dir.so"; fi
+	    if $APACHE -L | grep mod_alias > /dev/null 2>&1; then /bin/true;
+	    else echo "LoadModule alias_module $APACHEDIR/mod_alias.so"; fi
+	    if $APACHE -L | grep mod_mime > /dev/null 2>&1; then /bin/true;
+	    else echo "LoadModule mime_module $APACHEDIR/mod_mime.so"; fi
+	    echo "LoadModule python_module $APACHEDIR/mod_python.so"
+	    echo "TypesConfig /etc/mime.types"
+	    echo "PidFile $ROOT/nofred/apache.pid"
+	    echo "ErrorLog $ROOT/nofred/apache.log"
+	    cat $ROOT/share/fred-mod-corba/01-fred-mod-corba-apache.conf 
+	    cat $ROOT/share/fred-mod-whoisd/02-fred-mod-whoisd-apache.conf 
+
+	    cat $ROOT/share/fred-mod-eppd/02-fred-mod-eppd-apache.conf
+	    echo "Listen $WEB_PORT"
+	    cat $ROOT/share/doc/fred-whois/apache.conf
+  	    # if modpython session database file already exist, it's usually
+            # created in /tmp as a file owned by www-date and so
+            # unaccessible by regular user. So next three options handle 
+            # this situation. They are three because od different name in
+            # different mod_python versions
+	    echo -n "PythonOption mod_python.dbm_session.database_directory "
+	    echo "$ROOT/nofred/sessiondb"
+	    echo "PythonOption session_directory $ROOT/nofred/sessiondb"
+	    echo "PythonOption SessionDbm $ROOT/oldsession"
+            # root for web
+	    echo "DocumentRoot $ROOT/var/www/html"
+	} > $ROOT/nofred/apache.conf
+    fi
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # create simple fred homepage
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    if [ "$1" = "homepage" -o "$1" = "" ]; then	
+	{
+	    URL="http://$(hostname)"
+            CLPCKG=$(basename $ROOT/var/www/html/fred-client*)
+	    echo "<HTML><BODY>"
+	    echo "<H3>FRED</H3>"
+	    echo "<UL>"
+	    echo "<LI>"
+	    echo "<A href='$URL:$WADMIN_PORT'>"
+	    echo "Web administration interface</A></LI>"
+	    echo "<LI>"
+	    echo "<A href='$URL:$WEB_PORT/whois/'>"
+	    echo "Web whois</A></LI>"
+	    echo "<LI>"
+	    echo "<A href='$URL:$WEB_PORT/whois/registrars.py'>"
+	    echo "List of registrars</A></LI>"
+	    echo "<LI>"
+	    echo "<A href='$URL:$WEB_PORT/whois/publicrequest.py'>"
+	    echo "Public requests</A></LI>"
+	    echo "</UL>"
+	    echo "<P/>"
+	    echo "To test unix whois call:"
+	    echo "<PRE>"
+	    echo "whois -h $(hostname) -p $WHOIS_PORT QUERY"
+	    echo "</PRE>"
+	    echo "To test EPP client call:"
+	    echo "<PRE>"
+	    echo -n "fred-client -h $(hostname) -p $EPP_PORT "
+	    echo "-u REG-FRED_A -w passwd"
+	    echo "</PRE>"
+            echo "or download, unpack and run prepared client "
+            echo "<A href='$CLPCKG'>package</A>"
+            echo "<P>Zone is generated every minute. To test generated "
+            echo "zone using DNS protocol call:"
+            echo "<PRE>dig AXFR cz @$(hostname) -p $NAMED_PORT</PRE></P>"
+            echo "<P>Or you can download generated zone using http protocol on following links:<UL>"
+	    for F in $ROOT/nofred/named/db.*; do
+                BF=$(basename $F) 
+                echo "<LI><A href='zones/$BF'>${BF#*.}</A></LI>"
+            done
+	    echo "</BODY></HTML>"
+	} > $ROOT/var/www/html/index.html
+    fi
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    # create sample bind configuration
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+    if [ "$1" = "named" -o "$1" = "" ]
+    then
+        f_install_local_named
+    fi
+}
+
+f_control_db() {
+    case "$1" in
+	start)
+	    f_control_cmd \
+		"Starting PostgreSQL" \
+		"$DB_BIN/pg_ctl start -ws -D $ROOT/nofred/pg \
+		-l $ROOT/nofred/pg.log \
+		-o \"-p $DB_PORT -k $ROOT/nofred/pg_sockets/ \
+                -c TimeZone=UTC -c fsync=false\" >/dev/null 2>&1"
+            if [ -x $PGPOOL_BIN ]
+            then
+                f_control_cmd \
+                    "Starting PgPool" \
+                    "$PGPOOL_BIN -f $ROOT/nofred/pgpool/pgpool.conf"
+            fi
+	    ;;
+	stop)
+            if [ -x $PGPOOL_BIN ]
+            then
+                f_control_cmd \
+                    "Stopping PgPool" \
+                    "$PGPOOL_BIN -f $ROOT/nofred/pgpool/pgpool.conf \
+                    -m immediate stop >/dev/null 2>&1"
+            fi
+	    f_control_cmd \
+		"Stopping PostgreSQL..." \
+		"$DB_BIN/pg_ctl stop -ws -D $ROOT/nofred/pg -m fast -s \
+                 >/dev/null 2>&1"
+	    ;;
+        status)
+	    echo -n "postgresql is "
+	    if $DB_BIN/pg_ctl status -D $ROOT/nofred/pg -s >/dev/null 2>&1
+	    then
+		echo "running"
+	    else
+		echo "stopped"
+	    fi
+	    ;;
+    esac
+}
+
+f_control_pgpool() {
+    case "$1" in
+	start)
+            if [ -x $PGPOOL_BIN ]
+            then
+                f_control_cmd \
+                    "Starting PgPool" \
+                    "$PGPOOL_BIN -f $ROOT/nofred/pgpool/pgpool.conf"
+            fi
+	    ;;
+	stop)
+            if [ -x $PGPOOL_BIN ]
+            then
+                f_control_cmd \
+                    "Stopping PgPool" \
+                    "$PGPOOL_BIN -f $ROOT/nofred/pgpool/pgpool.conf \
+                    -m immediate stop >/dev/null 2>&1"
+            fi
+            ;;
+        status)
+            if [ -x $PGPOOL_BIN ]
+            then
+	        echo -n "pgpool is "
+	        if $DB_BIN/pg_ctl status -D $ROOT/nofred/pg -s >/dev/null 2>&1
+	        then
+		    echo "running"
+	        else
+		    echo "stopped"
+	        fi
+            fi
+	    ;;
+    esac
+}
+
+f_control_omni() {
+    case "$1" in
+	start)
+            OMNIPID=$(fuser $ROOT/nofred/omniNames.log 2>/dev/null | cut -f1 )
+            if [ "$OMNIPID" != "" ]; then
+	    	log_failure_msg "Starting omniNames..."
+	    else
+ 	        OMNI_DIR=$ROOT/nofred/omniNames/
+	        rm -rf $OMNI_DIR
+	        mkdir $OMNI_DIR
+	        f_control_cmd \
+		    "Starting omniNames..." \
+    		    "$OMNI -start $NS_PORT -logdir $OMNI_DIR \
+                     -errlog $ROOT/nofred/omniNames.log &"
+            fi
+	    ;;
+	stop)
+	    PATH=$PATH:/sbin # Fedora has fuser in /sbin
+	    OMNIPID=$(fuser $ROOT/nofred/omniNames.log 2>/dev/null | cut -f1 )
+	    f_control_cmd \
+		"Stopping omniNames..." \
+		"kill $OMNIPID >/dev/null 2>&1"
+	    ;;
+        status)
+	    echo -n "omniNames is "
+	    PATH=$PATH:/sbin # Fedora has fuser in /sbin
+	    OMNIPID=$(fuser $ROOT/nofred/omniNames.log 2>/dev/null | cut -f1 )
+	    if [ "$OMNIPID" != "" ]
+	    then
+		echo "running"
+	    else
+		echo "stopped"
+	    fi
+	    ;;
+    esac
+}
+
+f_control_apache() {
+    case "$1" in
+	start)
+	    if check_pidfile $ROOT/nofred/apache.pid; then
+	        log_failure_msg "Starting Apache..."
+	    else
+  	        f_control_cmd \
+		    "Starting Apache..." \
+		    "$APACHE -f $ROOT/nofred/apache.conf -k start 2>/dev/null"
+            fi
+	    ;;
+	stop)
+	    f_control_cmd \
+		"Stopping Apache..." \
+		"$APACHE -f $ROOT/nofred/apache.conf -k stop 2>/dev/null"
+	    ;;
+        status)
+	    echo -n "apache is "
+	    if check_pidfile $ROOT/nofred/apache.pid
+	    then
+		echo "running"
+	    else
+		echo "stopped"
+	    fi
+	    ;;
+    esac    
+}
+
+f_control_named() {
+    NAMED_PIDFILE=$ROOT/nofred/named/named.pid
+    NAMED_CONFIG=$ROOT/nofred/named/named.conf
+    NAMED_LOG=$ROOT/nofred/named/named.log
+
+    case "$1" in
+	start)            
+	    # check whether current user has permissions to run named or at least has sudo
+	    if [ ! -x $NAMED_BIN -a "$HAVE_SUDO" = "" ]; then 
+		log_failure_msg "Starting named... (no perms)"
+		return 1
+	    fi
+	    if check_pidfile $NAMED_PIDFILE ; then
+		log_failure_msg "Starting named... (already running)"
+		return 1
+	    else
+		if [ ! -x $NAMED_BIN ]; then 
+		    CUR_USER=`whoami`
+		    # FIXME: This won't work, because sudo needs terminal
+		    sudo $NAMED_BIN -c $NAMED_CONFIG -p $NAMED_PORT -u $CUR_USER -g >> $NAMED_LOG 2>&1 &
+		else
+		    $NAMED_BIN -c $NAMED_CONFIG -p $NAMED_PORT -g >> $NAMED_LOG 2>&1 &
+		fi
+
+		sleep 1
+		if check_pidfile $NAMED_PIDFILE ; then
+		    log_success_msg "Starting named..."
+		    f_named_add_cron
+		    return 0
+		else
+		    log_failure_msg "Starting named... (did not start)"
+		    return 1
+		fi
+	    fi
+	    ;;
+
+	stop)
+	    f_named_rem_cron
+
+	    if check_pidfile $NAMED_PIDFILE ; then
+		kill `cat $NAMED_PIDFILE`
+		sleep 1;
+		if check_pidfile $NAMED_PIDFILE ; then 
+		    log_failure_msg "Stopping named..."
+		    return 1
+		else  
+		    log_success_msg "Stopping named..."
+		    return 0
+		fi
+	    else 
+		return 0
+	    fi
+	    ;;
+
+	reload)
+	    if check_pidfile $NAMED_PIDFILE ; then
+		kill -HUP `cat $NAMED_PIDFILE`
+	    else
+		log_failure_msg "Reloading named..."
+	    fi
+	    ;;
+
+        status)
+	    echo -n "named is "
+
+	    if check_pidfile $NAMED_PIDFILE ; then
+		echo "running"
+	    else 
+		echo "stopped"
+	    fi
+	    ;;	
+    esac
+}
+
+f_start() {
+    f_control_db start
+    f_control_omni start
+    $ROOT/etc/init.d/fred-server start
+    f_control_apache start
+    $ROOT/etc/init.d/fred-webadmin-server start
+    f_control_named start
+}
+
+f_stop() {
+    f_control_named stop
+    $ROOT/etc/init.d/fred-webadmin-server stop
+    f_control_apache stop
+    $ROOT/etc/init.d/fred-server stop
+    f_control_omni stop
+    f_control_db stop
+}
+
+f_status() {
+    f_control_db status
+    f_control_omni status
+    $ROOT/etc/init.d/fred-server status
+    f_control_apache status
+    $ROOT/etc/init.d/fred-webadmin-server status
+    f_control_named status
+}
+
+f_source_a() {
+    if [ "$1" = "$2" -o "$1" = "" ]
+    then
+        make_dir fred-$2
+        make dist
+        mv *.tar.gz $CURDIR/sources
+    fi
+}
+
+f_source_s() {
+    if [ "$1" = "$2" -o "$1" = "" ]
+    then
+        rm -rf $BUILD_DIR/fred-$2/*
+        make_dir fred-$2
+        python $3/setup.py sdist
+        mv dist/*.tar.gz $CURDIR/sources
+    fi
+}
+
+f_sources() {    
+    f_configure $1
+    mkdir $CURDIR/sources >/dev/null 2>&1
+    f_source_a "$1" "db"
+    f_source_a "$1" "idl"
+    f_source_s "$1" "pyfred" "$PYFRED_SRC"
+    f_source_s "$1" "doc2pdf" "$DOC2PDF_SRC"
+    f_source_a "$1" "server"
+    f_source_a "$1" "mod-corba"
+    f_source_a "$1" "mod-whoisd"
+    f_source_a "$1" "mod-eppd"
+    f_source_s "$1" "client" "$CLIENT_SRC"
+    f_source_s "$1" "whois" "$WHOIS_SRC"
+    f_source_s "$1" "webadmin" "$WEBADMIN_SRC"
+    cd $SAVE_PWD
+}
+
+f_rpms_a() {
+    if [ "$1" = "$2" -o "$1" = "" ]
+    then
+        make_dir fred-$2
+        make dist
+        rpmbuild -ta *.tar.gz --define "_topdir $CURDIR/rpms" --define "$3"
+    fi
+}
+
+f_rpms_s() {
+    if [ "$1" = "$2" -o "$1" = "" ]
+    then
+        rm -rf $BUILD_DIR/fred-$2/*
+        make_dir fred-$2
+        python $3/setup.py bdist_rpm -d '' --rpm-base=$CURDIR/rpms $4
+    fi
+}
+
+f_rpms() {
+    SAVE_PWD=$PWD
+    mkdir -p $CURDIR/rpms/RPMS $CURDIR/rpms/SOURCES $CURDIR/rpms \
+        $CURDIR/rpms/SPECS $CURDIR/rpms/SRPMS \
+        $CURDIR/rpms/BUILD 2>/dev/null
+    f_configure $1
+        
+    f_rpms_a "$1" "db"
+    f_rpms_a "$1" "idl"
+    f_rpms_s "$1" "pyfred" "$PYFRED_SRC" \
+        "--install-extra-opts='--idldir=$IDL_SRC/idl/'"
+    f_rpms_s "$1" "doc2pdf" "$DOC2PDF_SRC"
+    f_rpms_a "$1" "server" "idldir --with-idldir=$IDL_SRC/idl"
+    f_rpms_a "$1" "mod-corba" 
+    f_rpms_a "$1" "mod-whoisd" "idldir --with-idldir=$IDL_SRC/idl"
+    f_rpms_a "$1" "mod-eppd" "idldir --with-idldir=$IDL_SRC/idl"
+    f_rpms_s "$1" "client" "$CLIENT_SRC"
+    f_rpms_s "$1" "whois" "$WHOIS_SRC"
+    f_rpms_s "$1" "webadmin" "$WEBADMIN_SRC"
+    cd $SAVE_PWD
+}
+
+f_unittests() {
+    python $ROOT/lib/fred-client/unittest/unittests.py
+    python $ROOT/lib/mod_whoisd/unittest/test_whois.py
+}
+
+f_download() {
+    SAVE_PWD=$PWD
+    mkdir $CURDIR/download >/dev/null 2>&1
+    mkdir $CURDIR/download/src >/dev/null 2>&1
+    VL=$VERSION_LIST
+    URL=http://fred.nic.cz/sources/fred
+    for P in $PACKAGE_LIST; do
+	V="${VL%% *}"
+	VL="${VL#* }"
+	echo "Downloading $P-$V.tar.gz"
+	wget -q -P $CURDIR/download $URL-$P-$V.tar.gz
+	if [ "$?" != "0" ]
+	    then
+	    echo "File could not be downloaded, exitting"
+	    exit 1
+	fi
+    done
+    cd $CURDIR/download/src
+    for F in ../*.tar.gz; do
+	tar -xzf $F;
+    done
+    cd $SAVE_PWD
+}
+
+f_clean_db() {
+    $ROOT/etc/init.d/fred-server stop
+    f_control_pgpool stop
+    $ROOT/sbin/fred-dbmanager uninstall
+    f_control_pgpool start
+    $ROOT/etc/init.d/fred-server start
+    $ROOT/etc/init.d/fred-server init_cz
+}
+
+f_usage() {
+    cat <<EOT
+Usage:
+    $0 <command> [ parameter ]
+
+    Command is one of:
+        download		- Download FRED source archives
+        configure	PKG	- Configure sources for building
+        install		PKG	- Compile and install sources
+        named_install		- Create initial named configuration
+
+        start			- Start all FRED servers
+        stop			- Stop all FRED servers
+        status			- Display status of FRED servers
+
+        named_start		- Start DNS server
+        named_stop		- Stop DNS server
+        named_reload		- Reload DNS server configuration
+
+        sources		PKG	- Create source archives
+        rpms		PKG	- Create binary RPM packages
+        unittests		- Run fred-client unittests
+
+        help			- Display this help
+
+    If PKG is omitted, all packages are configured/built or installed, else only
+    the ones specified.
+
+    PKG is one of db, idl, pyfred, doc2pdf, server, mod-corba, mod-whoisd,
+    mod-eppd, client, whois, webadmin;
+    for install command also  pgpool, client-package, config, homepage, named
+
+EOT
+}
+
+if [ "$1" = "" ]
+then
+    f_usage
+else
+    case $1 in
+        "configure" ) f_configure $2;;
+        "install" ) f_install $2;;
+        "start" ) f_start $2;;
+	"status" ) f_status $2;;
+        "start_db" ) f_start_db;;
+        "stop" ) f_stop;;
+        "help" ) f_usage;;
+        "sources" ) f_sources $2;;
+        "rpms" ) f_rpms $2;;
+        "unittests" ) f_unittests;;
+        "download") f_download;;
+	"named_install") f_install_local_named;;
+	"named_start") f_control_named start;;
+	"named_stop") f_control_named stop;;
+	"named_reload") f_control_named reload;;
+        "start_pgpool") f_control_pgpool start;;
+        "stop_pgpool") f_control_pgpool stop;;
+        "clean_db") f_clean_db;;
+        *) echo "Unknown argument"; f_usage;;
+    esac
+fi

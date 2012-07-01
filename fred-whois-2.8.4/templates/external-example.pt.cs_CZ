@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
+    <head>
+	<title tal:content="title">Titulek</title>
+	<meta http-equiv="Content-Language" content="cs">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="Keywords" content="Domény, Domains, Registrátoři, Registrators, Registrace domén, CZ.NIC, WHOIS, DNS, ENUM, Doména .eu, zájmové sdružení právnických osob, Top level domain, Domény nejvyšší urovně">
+	<script type="text/javascript" src="/whois/_js/jscript.js"></script>
+	<link href="/whois/_css/global.css" rel="stylesheet" type="text/css" media="screen, print">
+    </head>
+<body>
+
+<div id="body">
+
+<div id="content">
+<div id="toputils">
+    <div class="block-logo"><a href="/"><img src="/whois/_clip/nic-logo-cz.gif" alt="cz nic - logo" /></a></div>
+    <div><p>Toto je testovací verze WHOIS aplikace pro nový registrační systém FRED. Data zde zobrazená jsou výstupem z testovací databáze a nemají žádnou spojitost s konkrétními osobami nebo doménami.</p></div>
+    <div class="clear"></div>
+</div>
+<div id="main">
+<div id="main-content">
+	<div id="main-menu"></div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

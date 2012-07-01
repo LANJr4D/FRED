@@ -1,0 +1,18 @@
+// IDL interface for CORBA functions
+// interfaces: EPP , Whois , Admin
+#include "_dataTypes.idl"
+#include "Mailer.idl"
+#include "Whois.idl"
+#include "Admin.idl"
+
+
+#include "EPP.idl"
+#include "ZoneGenerator.idl"
+#include "TechCheck.idl"
+#include "FileManager.idl"
+#include "Logger.idl"
+#include "Messages.idl"
+
+// for zone handling
+#include "Zone.idl"
+

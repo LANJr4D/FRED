@@ -1,0 +1,1354 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE book PUBLIC '-//OASIS//DTD DocBook XML V4.2//EN' 
+          'http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd'>
+<book lang="cs">
+
+<bookinfo>
+    <title>Manuál pro FredClient konzoli a knihovnu fred</title>
+    <subtitle>FredClient</subtitle>
+    <copyright>
+      <year>2007</year>
+      <holder>CZ.NIC</holder>
+    </copyright>
+    <releaseinfo>
+    Vzniklo: 11. 7.2006;
+    Revize:  
+    18. 8.2006;
+     1. 9.2006;
+     4. 9.2006;
+    14. 9.2006;
+    27. 9.2006;
+     1.11.2006;
+     7.11.2006;
+     17.1.2007;
+    </releaseinfo>
+  </bookinfo>
+
+  <preface>
+    <title>Co je FredClient:</title>
+    <para>
+    FredClient je sada scriptů v jazyce Python postavených na fred knihovně
+    a určených ke komunikaci s EPP serverem.
+    </para>
+    <para>Sada obsahuje EPP konzoli a skripty určené pro použití v shellu.</para>
+  </preface>
+
+
+  <chapter>
+    <title>Licence</title>
+    <para>Licence je v souboru fred/LICENSE.</para>
+  </chapter>
+
+
+
+  <chapter>
+    <title>Požadavky na systém a instalace</title>
+    <para>Pokyny k instalaci jsou v souboru INSTALL.</para>
+  </chapter>
+
+
+
+
+
+
+<chapter>
+    <title>
+    Popis jednotlivých programů, parametry a konfigurační soubor
+    </title>
+
+<para>
+Dostupné skripty jsou následující:
+</para>
+
+<simplelist>
+    <member>fred_client      - EPP konzole, komunikuje s EPP serverem</member>
+    <member>fred_create.py   - Vytvoří zdrojový EPP XML příkaz</member>
+    <member>fred_sender.py   - Odešle soubor na EPP server</member>
+</simplelist>
+
+    <section id="options">
+    <title>
+    Parametry při spuštění (OPTIONS)
+    </title>
+
+<para>
+Skripty se dají spouštět s parametry. Jaké parametry lze použít zjistíte 
+zadáním parametru --help nebo -?:
+
+<programlisting>
+    $ fred_client --help
+    $ fred_client -?
+
+Použití: fred_client [parametry...]
+
+Hlavní parametry:
+  -?, --help       Zobrazit tuto nápovědu a skončit
+  -V, --version    Zobrazit verzi programu a skončit
+  -l LANGUAGE, --lang=LANGUAGE
+                   Nastavení jazykové verze
+  -v LEVEL, --verbose=LEVEL
+                   Nastavení módu výpisu
+                   0 - zobrazit jen XML odpověď od EPP serveru
+                   1 - normální výstup
+                   2 - zobrazit více detailů
+                   3 - zobrazit více detailů a XML zdroje
+  -x, --no_validate
+                   Deaktivovat XML validaci na straně klienta
+
+Parametry pro spojení:
+  -f CONFIG, --config=CONFIG
+                   Načtení konfigurace ze souboru
+  -s SESSION, --session=SESSION
+                   Použít session z konfiguračního souboru
+
+  -h HOSTNAME, --host=HOSTNAME
+                   Fred server host
+  -p PORT, --port=PORT\n"
+                   Server port (default: 700)
+  -u USERNAME, --user=USERNAME
+                   Přihlásit se jako uživatel
+  -w PASSWORD, --password=PASSWORD
+                   Přihlásit se s heslem
+  -c CERTIFICATE --cert=CERTIFICATE
+                   Pro spojení použít SSL certifikát
+  -k PRIVATEKEY --privkey=PRIVATEKEY
+                   Pro spojení použít SSL privátní klíč
+
+  -n, --nologin
+                   Deaktivovat automatické spojení se serverem po startu
+  -d COMMAND, --command=COMMAND
+                   Odeslat příkaz na server a skončit
+  -o OUTPUT_TYPE, --output=OUTPUT_TYPE
+                   Zobrazit výstup jako text (default), html, xml, php (Pozor! Jen pro testování!)
+  -q,  --qt
+                   Spustit klienta v Qt4 GUI (Pozor! Jen pro testování!)
+
+Speciální parametry, které se v helpu nezobrazují:
+   -r, --cltrid    --cltrid=mycID_%04d
+                   Definice <link linkend="cltrid">vlastního clTrID</link> s přidáním čísla příkazu
+</programlisting>
+</para>
+</section>
+
+    <section id="config">
+    <title>
+    Konfigurační soubor
+    </title>
+<para>
+Konfigurační soubor slouží k uložení různých nastavení klienta tak, aby při každém
+spuštění byly hodnoty takové, jaké je potřebujete mít. Například se zde definují
+jména a umístění souborů s certifikáty, adresa serveru, na který se má klient připojit,
+verze schemat a další nastavení.
+</para>
+<para>
+Konfigurační soubor se implicitně hledá nejdříve v home uživatele (~/.fred_client.conf), 
+který skript spustil. Pokud tam není nalezen, hledá se v adresáři etc/fred
+(/etc/fred/fred_client.conf). Na POSIX systémech je to /etc/fred, v MS Windows 
+to je v adresáři nastaveném v proměnné $ALLUSERSPROFILE.
+
+Přepínačem --config=filepath (nebo -f filepath) je možné konfigurační soubor 
+načíst z libovolného souboru.
+</para>
+<para>
+Pro založení nového konfiguračního souboru je k dispozici příklad 
+<emphasis>fred_client.conf.sample</emphasis>. Tento příklad můžete použít jako základ pro váš
+konfigurační soubor. V příkladu jsou pro definici plné cesty k souborům použity
+<emphasis>proměnné</emphasis>, které slouží jako hodnoty, které lze vložit do jiných položek v dané sekci.
+</para>
+<para>
+Proměnné se zapisují ve tvaru <emphasis>%(název proměnné)s</emphasis>. 
+Například: 
+<programlisting>
+   %(dir)s
+</programlisting>
+V tomto příkladu je definována proměnná jménem <emphasis>dir</emphasis>. Ta musí být v dané sekci také definována:
+<programlisting>
+   dir = /home/username/certificates
+</programlisting>
+Pak se takovýto zápis 
+<programlisting>
+   %(dir)s/private_key.pem
+</programlisting>
+po načtení konfiguračního souboru rozvine na: 
+<programlisting>
+   /home/username/certificates/private_key.pem
+</programlisting>
+Tato metoda umožňuje mít plnou adresu k souborům na jednom místě a doplňovat k ní jen jméno potřebného souboru.
+Pokud se vám ale tento způsob zdá příliš složitý, tak proměnné používat nemusíte 
+a v příslušných položkách zadejte místo proměnné vždy adresu celou.
+</para>
+<para>
+V příkladu konfiguračního souboru se takto musí nastavit dvě cesty: Jedna k <emphasis>certifikátům</emphasis> (pro dva soubory)
+a druhá ke <emphasis>schematům</emphasis>.
+</para>
+<para>
+V konfiguračním souboru se nachází sekce <emphasis>connect</emphasis>, kde jsou uloženy cesty k certifikátům
+a informace o serveru. Také tam jsou další hodnoty například username a password.
+Pokud se tyto hodnoty v konfiguračním souboru nacházejí, tak je příkaz 
+<emphasis>login</emphasis> použije jako parametry příkazu, které mu nebyly zadány.
+</para>
+<para>
+
+Sekcí <emphasis>connect</emphasis> může být v konfiguračním souboru více. Která z nich se při startu použije se nastaví
+pomocí parametru <emphasis>-s --session</emphasis>. Například si vytvoříte sekci [connect_myeppserver]
+tu pak aktivujete: 
+
+<programlisting>
+    $ fred_client --session=myeppserver     (nebo -s myeppserver)
+
+    [connect_myeppserver]
+    dir=/test/certificates
+    host = myeppserver.cz
+    ssl_cert = %(dir)s/cert.pem
+    ssl_key  = %(dir)s/key.pem
+    username = myusername
+    password = mypassword
+</programlisting>
+</para>
+
+<para>
+V sekci <emphasis>session</emphasis> jsou tato nastavení:</para>
+
+<itemizedlist>
+    <listitem>
+    <para><emphasis role='bold'>poll_autoack</emphasis> = on/off </para>
+    <para>
+        Při <emphasis>on</emphasis> se po odeslání příkazu <emphasis>poll req</emphasis> automaticky
+        pošle i <emphasis>poll ack</emphasis>.
+    </para>
+    </listitem>
+    <listitem>
+    <para>
+    <emphasis role='bold'>confirm_send_commands</emphasis> = on/off
+    </para>
+    <para>
+        Všechny editační příkazy (create, delete, update, ...) vyžadují v konzoli
+        pozvrzení před odesláním na server. Tuto funkci lze vypnout/zapnout.
+    </para>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold'>validate</emphasis> = on/off</para>
+    <para>
+        K validaci se používá externí program xmllint. Validaci lze vypnout
+        a dokumnety se tak na server posílají bez ověření platnosti formátu.
+    </para>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold'>schema</emphasis> = /installdir/schemas/all-1.0.xsd</para>
+    <para>
+        Soubor, ve kterém má validátor hledat schemata, podle kterých dokumenty ověřuje.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>colors</emphasis> = on/off</para>
+    <para>
+        Výstup na terminál může být barevný, pokud to terminál umožňuje.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>escaped_input</emphasis> = on/off</para>
+    <para>
+        Pokud je vstup escapovaný (&amp;lt;example&amp;amp;test&amp;gt;), nastavte tuto hodnotu na on.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>verbose</emphasis> = 1/2/3</para>
+    <para>
+        Úroveň výpisu 1 - stručná, 2 - celá, 3 - celá + XML zdrojové dokumenty.
+    </para>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold'>lang</emphasis> = en/cs</para>
+    <para>
+        Jazyková verze. Pokud není zadána žádná hodnota, tak se bere nastavení
+        z proměnné LANG prostředí OS. Dostupné jsou zatím jen angličtina a čeština.
+        Jazykovou verzi můžete také nastavit i pomocí parametru při spuštění skriptu.
+    </para>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold' id="config_null_value">null_value</emphasis> = NULL</para>
+    <para>
+        Nastavení zástupce pro hodnotu nic (Nil), která vyjadřuje <quote>žádnou hodnotu</quote>.
+        Defaultně je nastaveno NULL.
+        Tuto hodnotu používáme, když chceme přeskočit některý z parametrů příkazu.
+        Zadání NULL znamená, že jsme nezadali žádnou hodnotu na rozdíl od '' nebo "",
+        kdy jsme zadali hodnotu nulové délky.
+    </para>
+    <para>
+        <emphasis role='bold'>Formát hodnoty NULL:</emphasis>
+        Zástupce může být libovolný, ale nesmí obsahovat <emphasis>spojovník</emphasis> (-), <emphasis>mezery</emphasis> a 
+        <emphasis>kulaté závorky</emphasis>.
+    </para>
+    <para>
+        Více se o této hodnotě dozvíte v části 
+        <quote><link linkend='null_or_empty' endterm="null_or_empty.title"/></quote>
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold' id="config_skip_value">skip_value</emphasis> = SKIP</para>
+    <para>
+        Speciální hodnota umožňující vynechat XML element v EPP dokumentu.
+        Zavedeno pro testovací účely. Aktuálně lze tuto hodnotu použít pouze
+        na element &lt;clTRID&gt;. Výchozí hodnota je nastavena na SKIP.
+    </para>
+
+    <para>Výchozí EPP dokument:</para>
+
+        <programlisting>
+        REG-FRED_A@localhost> credit_info
+        
+        &lt;?xml version="1.0"?&gt;
+        &lt;epp&gt;
+            &lt;fred:creditInfo/&gt;
+            <emphasis role="bold">&lt;fred:clTRID&gt;zhte004#11-08-12at09:00:27&lt;/fred:clTRID&gt;</emphasis>
+        &lt;/epp&gt;
+        </programlisting>
+
+    <para>Při použití hodnoty SKIP:</para>
+
+        <programlisting>
+        REG-FRED_A@localhost> credit_info SKIP
+
+        &lt;?xml version="1.0"?&gt;
+        &lt;epp&gt;
+            &lt;fred:creditInfo/&gt;
+        &lt;/epp&gt;            
+        </programlisting>
+    
+    <para>
+        <emphasis role='bold'>Formát hodnoty SKIP:</emphasis>
+        Zástupce může být libovolný, ale nesmí obsahovat <emphasis>spojovník</emphasis> (-), <emphasis>mezery</emphasis> a 
+        <emphasis>kulaté závorky</emphasis>.
+    </para>
+
+    <para>
+        Popis elementu clTRID:
+        <quote><link linkend='cltrid' endterm="cltrid.title"/></quote>
+    </para>
+
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold' id="config_cltrid">cltrid</emphasis> = myid%04d</para>
+    <para>Vlastní hodnota cltrID - <link linkend="cltrid">Client client transaction ID</link>.
+    Symbol %d je nahrazen číslem příkazu.
+    Hodnota mezi % a d zarovnává číslo na čtyři číslice (doplní se nula).
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>reconnect</emphasis> = no</para>
+    <para>V případě, že se během komunikace spojení přeruší, se klient pokusí
+    spojení znovu navázat. Tímto zápisem se funkce automatického navázání spojení vypne.
+    </para>
+    </listitem>
+
+</itemizedlist>
+
+<para>V sekci <emphasis>connect</emphasis> jsou tato nastavení:</para>
+
+<itemizedlist>
+
+    <listitem>
+    <para><emphasis role='bold'>dir</emphasis> = cesta k adresáři s certifikáty</para>
+    <para>Tato hodnota nahrazuje zástupce <emphasis>%(dir)s</emphasis> ve všech
+    položkách dané sekce. V našem případě je v ní uložena cesta k certifikátům.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>ssl_cert</emphasis> = jméno certifikátu</para>
+    <para>Název souboru s certifikátem. Před ním je uveden zástupce adresáře <emphasis>dir</emphasis>,
+    který je nahrazen hodnotou definovanou v této sekci.
+    </para>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold'>ssl_key</emphasis> = jméno privátního klíče</para>
+    <para>Název souboru s privátním klíčem. Před ním je uveden zástupce adresáře <emphasis>dir</emphasis>,
+    který je nahrazen hodnotou definovanou v této sekci.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>host</emphasis> = jméno_serveru</para>
+    <para>Název serveru, ke kterému se má klient připojit.
+    </para>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold'>port</emphasis> = číslo_portu</para>
+    <para>Číslo portu serveru. Pokud není zadán, použije se default 700.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>username</emphasis> = uživatelské jméno</para>
+    <para>Uživatelské jméno potřebné k přihlášení do systému.
+    </para>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold'>password</emphasis> = heslo</para>
+    <para>Heslo potřebné k přihlášení do systému.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>timeout</emphasis> = čas čekání na odpověď ve vteřinách</para>
+    <para>Nastavení timeoutu říká socketu jak dlouho má čekat na odpověď ze serveru.
+    Pokud do uvedené doby odpověď nepřijde, je spojení považováno za přerušené.
+    Defaultně je nastaveno 10 vteřin. <emphasis role="bold">Pozor!</emphasis> V MS Windows se může u timeoutu vyskytnout bug,
+    který způsobí, že se spojení nenaváže. V takovém případě nastavte timeout na nulu: timeout = 0
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>socket</emphasis> = IPv4/IPv6</para>
+    <para>
+        Nastavení typu soketu na IPv4 nebo IPv6. Pokud není tato hodnota zadána,
+        tak se použije typ soketu, který nabízí server.
+    </para>
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>schema_version_[name]</emphasis> = 1.0</para>
+    <para>Individuální nastavení verze schemat pro objekty contact, nsset, domain, enum, fred a epp.
+    </para>
+    </listitem>
+
+
+    <listitem>
+    <para><emphasis role='bold'>nologin</emphasis> = on/off</para>
+    <para>
+        Klient se ihned po spuštění pokusí spojit se serverem a zalogovat se.
+        Tuto funkci je možné vypnout nastavením nologin = <emphasis role='bold'>off</emphasis>.
+    </para>
+    </listitem>
+</itemizedlist>
+
+</section>
+</chapter>
+
+<chapter>
+    <title>
+    Program fred_client
+    </title>
+
+<para>
+fred_client je konzole, která komunikuje s EPP serverem. Konzoli spustíte
+příkazem:
+</para>
+
+<programlisting>
+    $ fred_client
+</programlisting>
+
+<para>
+Pokud máte v konfiguračním souboru správně nadefinovánu cestu k certifikátům a uložené login a heslo, 
+tak můžete jednoduše zadat <emphasis>login</emphasis> a tím se spojíte s EPP serverem.
+Konzole se ukončuje příkazem "quit" nebo jen krátce "q".
+</para>
+
+<section>
+<title>Zobrazení helpu</title>
+
+<para>
+Jaké příkazy máte k dispozici zjistíte zadáním příkazu "help" (nebo h, ?).
+</para>
+
+<programlisting>
+    FredClient verze n.n.n Zadejte "help", "license" nebo "credits" pro zobrazení více informací.
+    &gt; help
+</programlisting>
+
+<para>Help vypíše dvě části nápovědy:</para>
+
+    <simplelist>
+    <member>1) Dostupné EPP příkazy</member>
+    <member>2) Příkazy relace (session) pro nastavení vnitřních proměnných 
+       konzole</member>
+    </simplelist>
+
+</section>
+
+<section>
+<title>EPP příkazy</title>
+
+<para>
+Všechny EPP příkazy (kromě hello), mají své parametry. Jaké parametry to jsou
+a v jakém pořadí se zadávají naleznete v helpu daného příkazu. Help příkazu si zobrazíte zadáním
+"help příkaz" nebo zkráceně "h příkaz" nebo také "? příkaz".
+Například když chcete znát parametry příkazu login, zadáte: "help login".
+</para>
+
+<para>Příklad:</para>
+
+    <programlisting>&gt; help login</programlisting>
+    <programlisting>&gt; ?login</programlisting>
+
+<para>
+Vypíšou se podrobnosti o jednotlivých parametrech daného příkazu. 
+Samotný příkaz zadáte tak, že napíšete název příkazu a za ním jeho parametry:
+</para>
+
+    <programlisting>&gt; login username password</programlisting>
+
+</section>
+
+
+<section>
+<title>Syntaxe zadávání paramerů příkazu</title>
+
+<para>
+Na zadání parametrů EPP příkazu jsou kladeny zvláštní požadavky, kvůli kterým
+byla zavedena speciální syntaxe. 
+
+Parametry, na které není nutné použít tuto syntaxi nazýváme <emphasis>jednoduché hodnoty</emphasis>.
+To jsou hodnoty, ve kterých se nevyskytuje mezera a ani to nejsou seznamy.
+Například:
+<programlisting>
+username password
+</programlisting>
+Parametry jsou odděleny mezerou nebo mohou být odděleny i více mezerami.
+</para>
+
+<para>Syntaxe obsahuje tyto prvky:</para>
+
+<itemizedlist>
+    <listitem><emphasis role='bold'>' " uvozovky (jednoduché nebo dvojité)</emphasis></listitem>
+    <listitem><emphasis role='bold'>( ) závorky</emphasis></listitem>
+    <listitem><emphasis role='bold'>- spojovník (divis) a = (rovná se)</emphasis></listitem>
+    <listitem><emphasis role='bold'>. tečka</emphasis></listitem>
+    <listitem><emphasis role='bold'>[] hranaté závorky</emphasis></listitem>
+</itemizedlist>
+
+<para>Popis jednotlivých prvků:</para>
+<itemizedlist>
+
+    <listitem>
+    <para><emphasis role='bold'>' " uvozovky</emphasis> řeší požadavek na zadání hodnoty, která obsahuje 
+mezery nebo znak = (rovná se).
+Taková hodnota se uzavře do uvozovek. Je jedno jestli jednoduchých nebo dvojitých.
+Uvnitř uvozovek se pak mohou nacházet libovolné znaky včetně závorek, spojovníku a
+dalších uvozovek. Pokud to jsou ale uvozovky shodné s těmi, které jsou použity na uzavření
+textu, tak se před ně musí dát zpětné lomítko \ (backslash):
+</para>
+<programlisting>"text \"uvozovky\" text"</programlisting>
+<para>Jinak mohou být bez něj:</para>
+<programlisting>"text s 'jednoduchými' uvozovkami"</programlisting> 
+<para>nebo</para> 
+<programlisting>'text s "dvojtými" uvozovkami'</programlisting>
+<para>nebo</para> 
+<programlisting>'text s rovnítkem = '</programlisting>
+    </listitem>
+    <listitem>
+    <para><emphasis role='bold'>( ) závorky</emphasis> se používají pro parametr, který může obsahovat seznam hodnot.
+Například parametr <emphasis>street</emphasis> v příkazu <emphasis>create_contact</emphasis> může 
+být seznam až o třech položkách.
+Když chcete zadat jen jednu ulici, stačí zadat pouze:
+<programlisting>ulice1</programlisting>
+Program ví, že parametr má být seznam a tak tuto hodnotu vyhodnotí jako seznam s jednou položkou.
+Nemusíte tedy zadávat: (ulice1).
+</para>
+<para>
+Když chcete zadat více ulic, tak napíšete:
+<programlisting>(ulice1 ulice2 ulice3)</programlisting> 
+Lze samozřejmě kombinovat se syntaxí s uvozovkami:
+<programlisting>("ulice 1" "ulice 2" "ulice 3")</programlisting>
+</para>
+<para>
+Položky seznamu je možné kromě mezer oddělit i čárkou:
+<programlisting>
+(ulice1,ulice2,ulice3)
+(ulice1, ulice2, ulice3)
+("ulice 1", "ulice 2", "ulice 3")
+</programlisting>
+    </para>
+
+    <para>Některé příkazy mají parametr typu seznam, který dále obsahuje další seznamy. Takový seznam také nazýváme
+<emphasis role='bold'>jmenný prostor</emphasis>, protože obsahuje další položky, které lze definovat
+jménem. Ty mohou být jednoduché nebo to mohou být další seznamy.
+Je potřeba zadávat závorky tak, aby zápis odpovídal struktuře parametru. 
+Strukturu zanořených seznamů zjistíte také z helpu příkazu. Každá úroveň je odsazena.
+    </para>
+    <para>
+Například příkaz <emphasis>update_contact</emphasis> obsahuje seznam <emphasis>chg</emphasis>,
+který dále obsahuje senzam <emphasis>postal_info</emphasis>, který obsahuje hodnoty
+<emphasis>name</emphasis>, <emphasis>org</emphasis> a ještě další seznam <emphasis>addr</emphasis>.
+Seznam <emphasis>addr</emphasis> obsahuje položky <emphasis>city</emphasis>, <emphasis>cc</emphasis>, <emphasis>street</emphasis>, atd.
+
+Takový seznam se zapíše asi takto:
+
+<programlisting>
+((name, org, (city, cc, street, sp, pc)) voice, fax, ...)
+</programlisting>
+
+Porovnejte s příklady, které jsou uvedeny v helpu u každého příkazu.
+    </para>
+
+    </listitem>
+
+    <listitem>
+    <para><emphasis role='bold'>- spojovník (divis) a = (rovná se).</emphasis>
+Parametry se musí zadávat ve stanoveném pořadí. Nejdříve se vždy zadávají povinné položky
+a pak nepovinné. Zadávání příkazu tedy můžete ukončit za posledním povinným parametrem.
+Pokud ale chcete zadat ještě nějaký nepovinný, který se shodou okolností nachází
+někde vzadu nebo na konci řady parametrů, museli byste zapsat i ty nepovinné parametry, které
+se nacházejí před ním, aby se zachovalo správné pořadí. To však není nutné pokud hodnotu
+zadáte pomocí <quote>pojmenovaného parametru</quote>.
+</para>
+<para>
+<emphasis role='bold'>Pojmenovaný parametr</emphasis> je způsob, jak vložit hodnotu parametru 
+<emphasis>mimo pořadí</emphasis>. Princip je ten, že se uvede jméno parametru, kterému hodnota patří.
+Toto jméno zjistíte z helpu příkazu. Pak jméno a hodnotu zadáte ve tvaru
+<programlisting>
+-jmeno hodnota
+</programlisting>
+Podle spojovníku na začátku slova parser pozná, že se jedná o jméno parametru. Za ním pak
+následuje hodnota. Tato syntaxe je volná v tom směru, že je možné zadat spojovníků více a
+mezi jménem a hodnotou může být rovnítko. Pak takový zápis vypadá takto:
+<programlisting>
+--jmeno = hodnota
+</programlisting>
+</para>
+
+<para>Hodnoty, které jsou definovány pomocí <emphasis>pojmenovaného parametru</emphasis>,
+stojí MIMO pořadí ostatních parametrů. To znamená, že mohou být uvedeny na kterékoliv
+pozici mezi parametry a hodnoty za nimi mají stále stejnou pozici, jako kdyby tam nic
+uvedeno nebylo (viz následující příklad).
+</para>
+
+
+<para>
+Například když si vypíšete help pro příkaz 
+<emphasis>create_contact</emphasis>, tak předposlední parametr se jmenuje 
+<emphasis>notify_email</emphasis>. Kromě povinných chcete zadat již pouze tuto hodnotu
+(povinných je prvních pět parametrů: ID, jméno, email, město a kód země). Pak zadáte:
+<programlisting>
+create_contact CID:ID jméno email@email město CZ <emphasis role='bold'>--notify_email = muj@email.net</emphasis>
+</programlisting>
+Na pozici pojmenovaného parametru nezáleží:
+<programlisting>
+create_contact <emphasis role='bold'>--notify_email = muj@email.net</emphasis> CID:ID jméno email@email město CZ
+</programlisting>
+</para>
+    </listitem>
+
+    <listitem>
+<para><emphasis role='bold'>Tečka.</emphasis> Složitější případ nastane, když chcete definovat hodnotu, která se nachází v nějakém
+<quote>zanořeném seznamu</quote>, tj. seznamu v jiném seznamu. Pak se jednotlivá jména seznamů spojují pomocí <emphasis role='bold'>tečky</emphasis>.
+Například:
+<programlisting>
+create_contact CID:ID jméno email@email město CZ <emphasis role='bold'>--disclose.flag</emphasis> = y
+</programlisting>
+</para>
+    </listitem>
+
+    <listitem>
+<para><emphasis role='bold'>[] hranaté závorky.</emphasis> V případě, že hodnota je položkou v seznamu, je možné zadat i <emphasis>index</emphasis> seznamu.
+Ten se zadává pomocí čísla v hranatých závorkách:
+
+<programlisting>
+create_nsset nssid:nsset1 ((ns1.domain.cz (217.31.207.130 217.31.207.129))) --dns.addr<emphasis role='bold'>[1]</emphasis> = tato_hodnota_prepise_druhou_adresu_217.31.207.129 cid:regid
+</programlisting>
+
+</para>
+
+
+    </listitem>
+</itemizedlist>
+
+
+
+<para><emphasis>Shrnutí:</emphasis></para>
+
+<simplelist>
+    <member>Parametry zadávejte v pořadí, v jakém jsou vypsané v helpu.</member>
+    <member>Počet mezer mezi hodnotami může být libovolný.</member>
+    <member>Hodnoty s mezerami dejte do uvozovek.</member>
+    <member>Seznamy se definují pomocí závorek, položky seznamu můžou být odděleny čárkami.</member>
+    <member>Pokud je v seznamu jen jedna položka, nemusí se závorky zadávat.</member>
+    <member>Hodnoty mimo pořadí zadávejte pomocí <quote>pojmenovaného parametru.</quote></member>
+    <member>Jména položek zanořených do více seznamů spojíte pomocí tečky.</member>
+</simplelist>
+
+</section>
+
+<section id="cltrid">
+<title id="cltrid.title">Společný parametr cltrid (Client transaction ID)</title>
+<para>
+Každý EPP příkaz, kromě příkazu <emphasis>hello</emphasis>, obsahuje 
+tag <emphasis role="bold">&lt;clTRID&gt;</emphasis>. Ten je vždy jako
+poslední z parametrů a jmenuje se <emphasis role="bold">cltrid</emphasis>.
+Tato hodnota je identifikátor transakce. Ten si stanovuje klient a 
+může být libovolný v rámci formátovacích pravidel definovaných ve
+schematech pro tuto hodnotu. Identifikátor je nepovinný a pokud 
+není zadán, tak jej klient automaticky doplní.
+</para>
+<para>
+Element &lt;clTRID&gt; lze potlačit speciální hodnotou <link linkend="config_skip_value">SKIP</link>.
+</para>
+<para>Další možnost, jak zadat tento parametr je nadefinovat jej v <link linkend="config_cltrid">konfiguračním souboru</link>
+nebo při spuštění klienta v <link linkend="options">parametrech při spuštění (options)</link>.
+</para>
+<para>Jednotlivé příkazy jsou v rámci relace číslovány.
+Pokud se v hodnotě <emphasis>cltrid</emphasis> vyskytne zástupce %d, je tento symbol nahrazen pořadovým číslem příkazu:
+<programlisting>
+myCtrlID%d  - je zkonvertován na myCtrlID1, myCtrlID2, myCtrlID3, ...
+</programlisting>
+
+Chcete-li aby pořadové číslo mělo vždy stejný počet číslic, je možné zadat:
+<programlisting>
+myCtrlID%04d  - je zkonvertován na myCtrlID0001, myCtrlID0002, myCtrlID0003, ...
+</programlisting>
+</para>
+</section>
+
+
+<section id="null_or_empty">
+
+<title id="null_or_empty.title">Žádná hodnota / Prázdná hodnota</title>
+
+<section>
+<title>Žádná hodnota: NULL</title>
+
+<para>
+Výraz <emphasis>Žádná hodnota</emphasis> představuje hodnotu, kterou 
+jste nezadali. Slouží nám k tomu, abychom mohli přeskakovat parametry,
+které nechceme zadávat. Je to alternativa k zadávání hodnot pomocí <emphasis>pojmenovaného parametru</emphasis>.
+Defaultě je zástupce <emphasis>žádné hodnoty</emphasis> nastaven na NULL.
+</para>
+<para>
+Například, když v příkazu <emphasis>create_contact</emphasis> 
+chcete kromě povinných parametrů uvést už jen telefonní číslo 
+(parametr <emphasis>voice</emphasis>). Mezi posledním povinným parametrem
+<emphasis>pw</emphasis> a pořadovaným <emphasis>voice</emphasis> leží ještě další čtyři parametry:
+<emphasis>org, street, sp, cp</emphasis>. Místo nich zadáte "žádnou hodnotu" 
+- pokud jste nenastavili jinak, tak NULL. 
+Tím jste telefonní číslo umístili na správnou pozici v parametrech příkazu:
+
+<programlisting>
+   create_contact CID:ID01 'Jan Novak' info@mymail.cz Praha CZ mypassword NULL NULL NULL NULL +420.222745111
+</programlisting>
+
+Uvedený příkaz <emphasis role="bold">nebude</emphasis> v XML struktuře vytvářet tagy pro hodnoty
+<emphasis>org, street, sp, cp</emphasis>:
+
+<programlisting>
+&lt;contact:id&gt;CID:ID01&lt;/contact:id&gt;
+        &lt;contact:postalInfo&gt;
+          &lt;contact:name&gt;Jan Novak&lt;/contact:name&gt;
+          &lt;contact:addr&gt;
+            &lt;contact:city&gt;Praha&lt;/contact:city&gt;
+            &lt;contact:cc&gt;CZ&lt;/contact:cc&gt;
+          &lt;/contact:addr&gt;
+        &lt;/contact:postalInfo&gt;
+        &lt;contact:voice&gt;+420.222745111&lt;/contact:voice&gt;
+</programlisting>
+
+
+</para>
+
+<para>
+V <emphasis>interaktivním módu</emphasis> zadávání parametrů zadáte <quote>žádnou hodnotu</quote> 
+prostě tak, že jenom stisknete ENTER.
+</para>
+
+<para>
+Definici <emphasis>žádné hodnoty</emphasis> lze v konzoli změnit příkazem 
+<emphasis>null_value</emphasis>
+a také je možné si ji definovat v <link linkend='config_null_value'>konfiguračním souboru</link>.
+</para>
+</section>
+
+<section>
+<title>Prázdná hodnota: '', ""</title>
+<para>
+Výraz <emphasis>Prázdná hodnota</emphasis> představuje hodnotu, která je prázdná.
+Je to tedy <emphasis role="bold">text o nulové délce</emphasis>. Ten zapisujeme práznými uvozovkami '' nebo "".
+Tato hodnota nám slouží k tomu, abychom mohli zadávat hodnoty nulové délky.
+Rozdíl mezi práznou hodnotou a žádnou je v tom, že tato hodnota generuje tag v XML
+dokumentu. Protože je prázdná, tak daný XML tag bude také prázdný.
+
+<programlisting>
+   create_contact CID:ID01 'Jan Novak' info@mymail.cz Praha CZ mypassword '' '' '' '' +420.222745111
+</programlisting>
+
+Příkaz vygeneruje XML, ve kterém budou u prázdných hodnot prázdné tagy:
+
+<programlisting>
+&lt;contact:id&gt;CID:ID01&lt;/contact:id&gt;
+        &lt;contact:postalInfo&gt;
+          &lt;contact:name&gt;Jan Novak&lt;/contact:name&gt;
+          <emphasis role="bold">&lt;contact:org/&gt;
+          &lt;contact:addr&gt;
+            &lt;contact:street/&gt;</emphasis>
+            &lt;contact:city&gt;Praha&lt;/contact:city&gt;
+           <emphasis role="bold">&lt;contact:sp/&gt;
+            &lt;contact:pc/&gt;</emphasis>
+            &lt;contact:cc&gt;CZ&lt;/contact:cc&gt;
+          &lt;/contact:addr&gt;
+        &lt;/contact:postalInfo&gt;
+        &lt;contact:voice>+420.222745111&lt;/contact:voice&gt;
+</programlisting>
+
+</para>
+
+<para>
+V <emphasis>interaktivním módu</emphasis> zadávání parametru zadáme <quote>prázdnou hodnotu</quote> tak,
+že zapíšeme prázdné uvozovky '' nebo "".
+</para>
+</section>
+</section>
+
+
+<section>
+<title>Interaktivní mód vkládání parametrů</title>
+
+<para>
+<emphasis role="bold">Interaktivní mód</emphasis> umožňuje zadávat hodnoty jednu za druhou, podle
+toho co prompt aktuálně požaduje. Tento způsob je vhodný zejména pokud nevíte přesně jak máte parametry
+zadat.
+
+Interaktivní mód se spouští pomocí vykřičníku, který
+se napíše před příkaz:
+
+  <programlisting>&gt; !update_nsset</programlisting>
+
+Konzole vždy vypíše jméno parametru a čeká na zadání hodnoty. Pokud hodnotu nechcete
+zadat, tak prostě stisknete enter a hodnota se přeskočí.
+Interaktivní mód můžete kdykoliv zrušit stisknutím kláves Ctrl+C (C jako Cancel). 
+Po zadání všech povinných parametrů, kdy už nechcete zadávat další nepovinné
+hodnoty, lze interaktivní režim dokončit stiknutím kláves Ctrl+D (D jako Done nebo Dokončit).
+</para>
+<para>
+V případě zrušení interaktivního módu se žádný příkaz nesestaví a nic se
+na server neposílá. V případě dokončení módu se sestaví příkaz 
+a na konzoli se vypíše tak, jako byste jej zadali přímo bez interaktivního režimu.
+Pak se příkaz odešle na server. V případě, že se jedná o <quote>editační</quote> příkaz
+a je zapnutá funkce potvrzování (confirm), tak se příkaz musí před odesláním
+na server ještě potvrdit:
+</para>
+
+    <programlisting>
+REG-LRR@epp-test.ccreg.nic.cz&gt; !update_nsset
+Start interaktivního módu. Mód zrušíte stisknutím Ctrl+C. Příkaz dokončíte kombinací Ctrl+D.
+NSSET ID [povinný]: nssid:id01
+Přidat hodnoty / Seznam DNS[1/9] / Jmenný server [povinný jen je-li tato část zadána]: ns1.dns.cz
+Přidat hodnoty / Seznam DNS[1/9] / Adresa serveru[1/oo] [nepovinný]: 217.31.207.130
+Přidat hodnoty / Seznam DNS[1/9] / Adresa serveru[2/oo] [nepovinný]: 217.31.207.131
+Přidat hodnoty / Seznam DNS[1/9] / Adresa serveru[3/oo] [nepovinný]:
+Přidat hodnoty / Seznam DNS[2/9] / Jmenný server [nepovinný]:
+Přidat hodnoty / Technický kontakt ID[1/oo] [nepovinný]: cid:myid01
+Přidat hodnoty / Technický kontakt ID[2/oo] [nepovinný]:
+Přidat hodnoty / Stav[1/6] [nepovinný]:
+Interaktivní mód ukončen. [stiskněte Enter]
+Příkaz k odeslání:
+update_nsset nssid:id01 (((ns1.dns.cz (217.31.207.130, 217.31.207.131))) cid:myid01)
+Opravdu chcete odeslat tento poříkaz na server? (y/N): y
+nssid:id01 aktualizováno.
+REG-LRR@epp-test.ccreg.nic.cz&gt;
+    </programlisting>
+
+</section>
+
+<section>
+<title>Příkazy relace (session)</title>
+
+<para>
+Konzole má svá vnitřní nastavení, která můžete změnit přímo z promptu. K tomu slouží
+příkazy, které nazýváme <emphasis>příkazy relace</emphasis>. Nejsou to EPP příkazy
+a neslouží ke komunikaci se serverem. Jsou určeny z nastavení vnitřních proměnných
+konzole a nebo k zobrazení již nastavených hodnot. 
+Takto nastavené hodnoty se neukládají. Jsou platné jen po dobu relace - spuštění
+konzole. S ukončením aplikace zanikají. Pokud chcete tato nastavení mít trvalá,
+musíte je nastavit v <link linkend='config'>konfiguračním souboru</link>.
+</para>
+<para>
+Hodnoty se nastavují tak, že se zadá příkaz relace a za ním hodnota, která se má přiřadit:
+
+<programlisting>
+&gt; poll_autoack on
+</programlisting>
+
+Pokud příkaz zadáte bez parametrů, tak se pouze vypíše aktuální stav nastavení.
+
+<programlisting>
+&gt; poll_autoack
+poll_autoack je ON
+</programlisting>
+</para>
+
+<para><emphasis role="bold">Seznam příkazů relace:</emphasis></para>
+
+<para>
+
+<programlisting>
+&gt; poll_autoack [on/off]
+</programlisting>
+
+Pokud je tento přepínač ON, tak se po odeslání příkazu "poll req" automaticky odesílá i "poll ack".
+Tuhle funkci asi nejvíce oceníte, když budete mít na serveru hodně zpráv. Příkaz "poll req" zprávu
+ze serveru pouze zobrazí, ale pak se zpráva musí ze serveru odstranint příkazem "poll ack ID-zprávy".
+Při automatickém poll-ack se bude odstraňování provádět automaticky po zobrazení zprávy.
+
+<programlisting>
+&gt; escaped_input [on/off]
+</programlisting>
+
+Pokud je vstup escapovaný (&amp;lt;example&amp;amp;test&amp;gt;), nastavte tuto hodnotu na on.
+
+
+<programlisting>
+&gt; confirm [on/off]
+</programlisting>
+
+U EPP editačních příkazů, které nějak mění hodnoty na serveru (create, upadte, delete, transfer, renew),
+se před odesláním požaduje potvrzení k odeslání. Přepínačem "confirm OFF" lze toto potvrzování vypnout.
+
+
+<programlisting>
+&gt; credits
+</programlisting>
+
+Příkaz credits zobrazí text s informacemi o klientovi.
+
+<programlisting>
+&gt; help [příkaz]
+</programlisting>
+
+Příkaz help zadaný bez parametru zobrazí seznam dostupných příkazů. Pokud se zadá i parametr
+příkaz, tak se zobrazí detaily zadaného příkazu. Stejný význam jako "help" mají i příkazy
+"h" a "?".
+
+<programlisting>
+&gt; lang [kód]
+</programlisting>
+
+Příkazem lang se přepíná jazyková verze klienta a serveru. Pokud jste ale již zalogováni, tak
+je nutné se odlogovat a znovu zalogovat. Důvod je ten, že typ jazykové verze se serveru sděluje
+pouze pomocí příkazu "login". To je také druhá možnost, jak přepnout na jinou jazykovou verzi:
+
+<quote><emphasis role='bold'>login usename password cs</emphasis></quote>
+
+V této verzi klienta i serveru jsou dostupné jen dva jazyky: en - angličtina; cs - čeština.
+
+<programlisting>
+&gt; license
+</programlisting>
+
+Příkaz license zobrazí text licence klienta.
+
+<programlisting>
+&gt; quit
+</programlisting>
+
+Příkaz quit odpojí klienta od serveru a ukončí aplikaci. Synonyma 'q' a 'exit' mají 
+stejnou funkci.
+
+<programlisting>
+&gt; validate [on/off]
+</programlisting>
+
+Tímto přepínačem zapnete nebo vypnete proces validace XML dokumentu. Validace je v této verzi
+realizována přes externí program <emphasis>xmllint</emphasis>. Pokud není v systému přítomen, 
+tak nastavení ON nemá žádný efekt. Validace ověřuje platnost XML dokumentu podle EPP schemat 
+a to jak v odchozích, tak i příchozích zprávách. Pokud není dokument validní, tak jej 
+konzole na server neodešle.
+Nevalidní dokument vznikne například tím, že zadáte hodnotu, která neodpovídá konkrétnímu schématu.
+Například příliš krátké heslo. Konzole v této verzi obsah hodnot nijak neověřuje, pouze zjišťuje
+jestli byly zadány nebo ne.
+
+<programlisting>
+&gt; verbose [úrověň]
+</programlisting>
+
+Klient zobrazuje různé informace. Ty jsou rozděleny do úrovní detailů.
+První úroveň zobrazování (základní) je určena pro běžného uživatele a
+vypisuje nezbytné minimum informací, které jsou k práci nutné.
+Pro zvídavé uživatele je zacílena druhá úroveň, která vypisuje všechna
+dostupná hlášení, která se během komunikace vyskytla. Třetí úroveň zobrazuje
+ještě navíc XML zdrojové dokumenty, které si klient se serverem předává.
+
+<simplelist>
+      <member><emphasis>Úrovně výpisu detailů:</emphasis></member>
+      <member>1 - stručná (default)</member>
+      <member>2 - všechno</member>
+      <member>3 - všechno a XML zdroje.</member>
+</simplelist>
+
+Úroveň výpisu lze nastavit i při spuštění příkazového řádku. Viz <link linkend="config">konfigurační soubor</link>.
+
+<programlisting>
+&gt; fetch_from_info typ_příkazu [ne-do-příkazové-řádky]
+</programlisting>
+
+Funkce <emphasis>fetch_from_info</emphasis> umožňuje vytvořit příkaz z hodnot, které byly načteny
+z jednoho z příkazů typu <emphasis>info</emphasis> v předchozím kroku. To je například užitečné, 
+když chcete vytvořit nový záznam s velmi podobnými údaji, jaké jsou již v nějakém zzáznamu použity.
+Platné typy příkazů, které můžete pomocí <emphasis>fetch_from_info</emphasis> vytvořit jsou:
+<emphasis role='bold'>  create, update, delete</emphasis>.
+</para>
+<para>
+Například, když chcete vytvořit <emphasis>create_contact</emphasis>, proveďte tyto tři kroky:
+<simplelist>
+<member>  1. Načtěte hodnoty: <emphasis role='bold'>info_contact CID:ID</emphasis></member>
+<member>  2. Vytvořte příkaz: <emphasis role='bold'>fetch_from_info create</emphasis></member>
+<member>  3. Upravte příkaz jak potřebujete a pak jej odešlete na server.</member>
+</simplelist>
+Pokud váš terminál podporuje vkládání textu do příkazové řádky (Unix),
+bude vytvořený příkaz vložen přímo do něj.
+Chcete-li příkaz místo do příkazové řádky zobrazit jen na výstup, zadejte parametr 
+<emphasis>noprompt</emphasis> (nebo jen <emphasis>n</emphasis>).
+</para>
+<para>
+Pokud váš terminál vkládání do promptu nepodporuje (Windows), bude příkaz zobrazen normálně na výstupu
+a musíte si jej do příkazové řádky zkopírovat nebo přepsat.
+</para>
+</section>
+
+</chapter>
+
+<chapter>
+
+    <title>
+    Skripty fred_create.py a fred_sender.py
+    </title>
+
+<para>
+
+
+Skripty <emphasis>fred_create.py</emphasis> a <emphasis>fred_sender.py</emphasis> jsou určeny pro použití v shell batchi.
+
+<emphasis>fred_create.py</emphasis> přijímá parametry se standardního vstupu a vygeneruje 
+XML EPP dokument na standardní výstup. Například:
+</para>
+
+<programlisting>
+    $ python fred_create.py info_domain nic.cz
+    $ echo -en "check_domain nic.cz\ninfo_domain nic.cz" | ./fred_create.py
+    $ cat file-with-commands.txt | ./fred_create.py
+</programlisting>
+
+<para>&lt;?xml version='1.0' encoding....</para>
+
+<para>
+Pokud nastane nějaká chyba, tak vrací XML s chybovým hlášením:
+</para>
+
+<programlisting>
+    $ python fred_create.py inxo_domain nic.cz
+</programlisting>
+
+<para>
+&lt;?xml encoding='utf-8'?&gt;&lt;errors&gt;inxo_domain nic.cz: Neznámý příkaz!&lt;/errors&gt;
+</para>
+
+<para>
+<emphasis>fred_sender.py</emphasis> odesílá dokumenty na server. Skript se automaticky zaloguje, pak
+předá dokument, zobrazí odpověď a odloguje se a ukončí. Pro správné zalogovájní je nutné
+mít správně nastaven konfigurační soubor.</para>
+<para>
+Skript může odesílat dokumenty dvěma způsoby:
+</para>
+
+<para>
+    1. dokumenty se uloží do souboru a skriptu se předají jména souborů. Skript
+       je pak odesílá v uvedeném pořadí. Například:
+<programlisting>
+    $ ./fred_create.py check_domain cosi.cz nic.cz &gt; doc1.xml
+    $ ./fred_create.py info_domain nic.cz > doc2.xml
+    $ ./fred_sender.py doc1.xml doc2.xml
+</programlisting>
+</para>
+
+<para>
+    2. PIPE - Zřetězením příkazů create a sender.
+       Například:
+
+<programlisting>
+    $ ./fred_create.py check_domain cosi.cz nic.cz | ./fred_sender.py
+    $ echo -en "check_domain nic.cz\ninfo_domain nic.cz" | ./fred_create.py | ./fred_sender.py
+</programlisting>
+</para>
+
+</chapter>
+
+<chapter id="output_types">
+
+<title id="output_types.title">Integrace klienta do PHP kódu</title>
+
+<para>
+Pozor! Rozšíření klienta o podporu PHP je v této verzi ve vývojovém a testovacím stádiu.
+Finální řešení se může od tohoto vývojového ještě lišit.
+</para>
+
+<para>
+Součástí distribuce klienta je i ukázkový PHP skript, který demonstruje,
+jak lze klienta začlenit do PHP: <emphasis role='bold'>doc/client_example.php</emphasis>.
+V příkladu je nutné správně nastavit cestu ke klientovi <emphasis>$exec_path</emphasis> (pokud ten nebyl nainstalován
+standardním způsobem a systém jej nenalezne).
+Proměnou <emphasis>$php_module_name</emphasis> se nastavuje přesměrování do souboru a <emphasis>$command_options</emphasis> umožňují
+přidat další parametry, jsou-li třeba.
+</para>
+
+<para>Popis začlenění klienta:</para>
+
+<para>
+Klient <emphasis>fred_client</emphasis> lze spustit i tak, že se mu v parametrech na příkazové řádce zadá příkaz,
+který má vykonat <emphasis>-d --command</emphasis>. V takovém případě se nespouští konzole, ale klient funguje jako batch.
+Stejně jako kombinace skriptů fred_create.py a fred_sender.py. 
+Klient pouze zadaný příkaz provede, zobrazí výstup a ukončí se. Přihlášení a odhlášení
+(login, logout) proběhnou automaticky a na výstup se nevypisují. Pro správné přihlášení
+je proto potřebné mít nastavený konfigurační soubor nebo vše definovat na příkazové řádce.
+</para>
+
+<para>
+Přepínačem <emphasis role='bold'>--output -o</emphasis> upravíme výstup do požadovaného formátu. Pokud chceme v prohlížeči hodnoty pouze
+zobrazit, můžeme zadat typ HTML: --output=html. Chceme-li data dále
+zpracovávat PHP skriptem, nastavíme typ PHP: --output=php.
+</para>
+
+<para>Shrnutí metody použití klienta v PHP:</para>
+
+<simplelist>
+<member>V PHP se klient spustí jako externí program například funkcí <emphasis>passthru()</emphasis>.</member>
+<member>V parametrech se nastaví mód výpisu na PHP: --output=php</member>
+<member>Výstup klienta se přesměruje do adresáře s právy zápisu: <emphasis>... &gt; /cache/output.php</emphasis></member>
+<member>Výsledný kód se vloží do stránky <emphasis>required_once('/cache/output.php')</emphasis> a tím jsou hodnoty PHP skriptu dostupné.</member>
+</simplelist>
+
+<para>Proměnné z PHP výstupu</para>
+
+<simplelist>
+<member>$fred_error_create_name = 'poll'; // jméno neplatného příkazu</member>
+<member>$fred_error_create_value = 'op: Value "xxx" is not allowed. Valid is: (req, ack)'; // popis chyby, která se objevila při vytváření příkazu.</member>
+<member>$fred_client_notes = array(); // seznam hlášení, které se generuje během komunikace</member>
+<member>$fred_client_errors = array(); // seznam chyb, které vznikly během komunikce</member>
+<member>$fred_encoding = 'utf-8'; // kódování textu </member>
+<member>$fred_code = 1000; // návratový kód odpovědi </member>
+<member>$fred_command = 'domain:info'; // název odeslaného příkazu </member>
+<member>$fred_reason = 'Command completed successfully'; // popis návratového kódu </member>
+<member>$fred_reason_errors = array(); // detaily hodnot, které způsobily navrácení kódu s chybou</member>
+<member>$fred_labels = array(); // seznam popisků hodnot </member>
+<member>$fred_data = array(); // seznam hodnot </member>
+<member>$fred_source_command = '&lt;?xml ... &gt;'; zdrojový XML dokument příkazu generuje se jen ve verbose 3). </member>
+<member>$fred_source_answer = '&lt;?xml ... &gt;'; zdrojový XML dokument odpovědi, generuje se jen ve verbose 3). </member>
+</simplelist>
+
+<para>Příklad dat:</para>
+
+<programlisting>
+$fred_labels['domain:name'] = 'Domain name';
+$fred_data['domain:name'] = 'domena.cz';
+$fred_labels['domain:roid'] = 'Repository object ID';
+$fred_data['domain:roid'] = 'D0000000174-CZ';
+$fred_labels['domain:crID'] = 'Created by';
+$fred_data['domain:crID'] = 'REG-LRR';
+$fred_labels['domain:clID'] = 'Designated registrar';
+$fred_data['domain:clID'] = 'REG-LRR';
+$fred_labels['domain:crDate'] = 'Created on';
+$fred_data['domain:crDate'] = '2006-10-31T16:51:56+01:00';
+$fred_labels['domain:exDate'] = 'Expiration date';
+$fred_data['domain:exDate'] = '2009-10-31T01:00:00+01:00';
+$fred_labels['domain:renew'] = 'Last renew on';
+</programlisting>
+
+
+</chapter>
+
+<chapter>
+<title>Grafická nadstavba v Qt4.</title>
+<para>Popis grafické nadstavby klienta je v samostatném souboru README_QT4.
+</para>
+</chapter>
+
+<chapter>
+    <title>
+    Knihovna fred a popis API
+    </title>
+
+<para>
+
+Knihovna "fred" vám umoňuje implmentovat API rozhraní do vašich aplikací. Knihova i jednotlivé funkce
+obsahují komentáře, podle kterých se můžete při implementaci řídit. V části __init__.py naleznete
+i ukázky kódu.
+</para>
+
+<section>
+<title>Online dokumentace:</title>
+<para>
+Pokud si chcete projít jednotlivé třídy a funkce knihovny, tak k tomu můžete využít generátor
+dokumentace <emphasis>pydoc</emphasis>, který je standardní součástí pythonu. Generátor má několik
+módů činnosti. Popis naleznete v helpu pydoc.
+
+Pokud jako parametr zadáte název souboru nebo modulu, tak se dokumentace zobrazuje ve stylu manuálové stránky:
+<programlisting>
+    $ pydoc fred
+</programlisting>
+
+Chcete-li generátor spustit, jako HTML server, tak zadejte na příkazové řádce příkaz:
+
+<programlisting>
+    $ pydoc -p 8080
+</programlisting>
+
+Pokud se server nespustí, tak zkuste:
+
+<programlisting>
+    $ python `which pydoc` -p 8080
+</programlisting>
+
+Tím jste spustili webový server, který generuje strany dokumentace přímo ze zdrojových souborů.
+Parametr -p udává na jakém portu je server spuštěn. Číslo portu můžete zadat jakékoliv jiné.
+Nyní si otevřete prohlížeč a zadejte adresu: http://localhost:8080/. Otevře se strana, na které
+v části ../site-packages naleznete odkaz na fred (package).
+</para>
+<para>
+Pokud jste skripty neinstalovali, ale jen nakopírovali, nebo pokud se chcete podívat i na skripty
+pracující s knihovnou fred, tak celý proces spuštění udělejte stejně, ale s tím rozdílem, že pydoc
+spustíte z adresáře, kde máte tyto skripty uložené. Pak se v helpu zobrazí i ony:
+
+<programlisting>
+    $ cd FredClient-n.n.n
+    $ pydoc -p 8080
+</programlisting>
+
+Server ukončíte stiskem Ctrl+C.
+</para>
+</section>
+
+<section>
+<title>Příklady práce s knihovnou</title>
+
+<para>
+Import knihovny provedete příkazem:
+
+<programlisting>
+    &gt;&gt;&gt; import fred
+</programlisting>
+
+Instanci EPP klienta vytvoříte:
+
+<programlisting>
+    &gt;&gt;&gt; epp = fred.Client()
+</programlisting>
+
+Ještě musíte načíst config, aby knihovna našla certifikát:
+
+<programlisting>
+    &gt;&gt;&gt; epp.load_config()
+</programlisting>
+
+Chcete-li načíst jinou session - analogicky k parametru --session, tak zadejte:
+
+<programlisting>
+    &gt;&gt;&gt; epp.load_config('my-sessison-name')
+</programlisting>
+
+Pak již můžete navázat spojení funkcí login:
+
+<programlisting>
+    &gt;&gt;&gt; retval = epp.login("username","password")
+</programlisting>
+
+Každá funkce (EPP příkazu) vrací tuto "retval" hodnotu, která je typu dict a ve tvaru:
+
+<programlisting>
+    {'reason': u'Text of answer reason', 
+     'code': 1000,
+     'command': 'command_name',  
+     'errors': []
+     'data': {'key': 'value' [,'next-key':'next-value']}, 
+    }
+</programlisting>
+
+<simplelist>
+<member>Klíč "reason" (str) je vyrozumění serveru o stavu odpovědi.</member>
+<member>Klíč "code" (int) je číslo, které definuje typ chyby. Číslo 1000 znamená OK - vše vpořádku.</member>
+<member>Klíč "command" (str) je název příkazu, na který se odpověď vztahuje (který odpověď vyvolal).</member>
+<member>Klíč "errors" (list) je seznam chyb, které server nalezl.</member>
+<member>Klíč "data" (dict) je slovník s hodnotami individuálními pro každý jednotlivý příkaz.</member>
+</simplelist>
+
+</para>
+<para>
+Příklad: Když jsou vstupní data: 
+<programlisting>
+    name = 'jmeno'
+    addr = (1,2,3)
+    tech = ('ok',)
+    stat = ''
+</programlisting>
+
+...tak se vytvoří takovýto slovník 'data':
+<programlisting>
+    {'name': 'jmeno',
+     'addr':['1','2','3']
+     'tech':'ok'           # tady je type str a stat chybí
+    }
+</programlisting>
+...ale ve finální verzi by to mělo být takto:
+<programlisting>
+    {'name': 'jmeno',
+     'addr':['1','2','3']
+     'tech':['ok',]
+     'stat':''
+    }
+</programlisting>
+
+Návratovou hodnotu "retval" není nutné odchytávat, ukládá se do interní proměnné a lze ji kdykoliv
+zobrazit funkcí print_answer():
+
+<programlisting>
+    &gt;&gt;&gt; epp.print_answer()
+</programlisting>
+
+nebo testovat jakoukoliv hodnotu v retval pomocí funkce is_val():
+
+<programlisting>
+    &gt;&gt;&gt; epp.is_val('reason')
+    u'Text of answer reason'
+</programlisting>
+
+Každé volání další funkce EPP příkazu samozřejmě předchozí "retval" přepíše, takže uvedené dvě funkce
+pracují vždy jen s poslední návratovou hodnotou. Pokud chcete návratovou hodnotu testovat nebo
+zobrazit později, tak si ji uložte a pak ji předejte funkcím:
+
+<programlisting>
+    &gt;&gt;&gt; epp.print_answer(my_retval)
+    &gt;&gt;&gt; epp.is_val('reason', my_retval)
+</programlisting>
+
+Funkci is_val() je možno zadat bez parametru. V takovém případě defaultně vrací hodnotu klíče "code":
+
+<programlisting>
+   &gt;&gt;&gt; epp.is_val()
+    1000
+</programlisting>
+
+Pokud chcete zjistit hodnotu v jakékoliv vnořené části slovníku, tak zadejte parametr jako cestu - 
+seznam jmen (klíčů) slovníku:
+
+<programlisting>
+    &gt;&gt;&gt; epp.is_val(('data','next-key'))
+    next-value
+</programlisting>
+
+V případě, že daný klíč neexistuje, vrací funkce hodnotu None.
+
+<programlisting>
+    &gt;&gt;&gt; epp.is_val(('data','any-key'))
+    None
+</programlisting>
+
+Pokud se vyskytne nějaká chyba při přenosu nebo jiná, která zablokuje funkčnost, tak se generuje
+výjimka FredError.
+</para>
+</section>
+
+</chapter>
+
+</book>

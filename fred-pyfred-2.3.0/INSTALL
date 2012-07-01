@@ -1,0 +1,115 @@
+Installation and running of pyfred
+----------------------------------
+
+If you want quickly to try out the pyfred, then this manual is for you.
+However you are strongly recommended to read also README file before or
+later on after installation. Note that it's quite possible that the
+pyfred server will not work unless you change the default configuration
+file, which involves at least reading configuration section in README file.
+We cover several scenarious in this howto of running pyfred according to
+installation location.
+
+  1) Classic installation (in system's $PREFIX)
+  2) Installation with fake prefix
+  3) Running pyfred directly from repository without prior installation
+
+The second way has the advantage of not messing up your system with pyfred
+files. You can install pyfred with prefix of for examples /tmp/pyfred and
+see what will be in which place installed before you do the real install.
+You can also run the pyfred from this fake directory tree. This might be
+of some use also for people creating package from pyfred.
+
+The third way is most convenient when working with pyfred from day to day:
+programming, debugging, etc.
+
+Note: With pyfred comes the script pyfredctl which is standard
+start/stop/status script.
+
+
+1. Classic installation
+
+  Step 1: Check the dependencies.
+  ------
+    $ python setup.py config
+
+  Step 2: Build the pyfred. In this step will be generated libraries from IDL
+  ------  files. Rest of this step is fairly trivial since we do not need to
+      compile anything (it's more or less about copying files in build
+	  directory).
+
+    $python setup.py build
+
+  Step 3: Install it!
+  ------
+    $ python setup.py install
+
+	Note: You may need to adjust 'idldir' in your setup.cfg to point to correct
+	      directory where your IDL files reside. This you can also do by pass
+		  option '-idldir' with correct path on command line. 
+
+  Step 4: Configure it. Here we assume that your configuration directory is
+  ------  /etc, this might not be always true. You will need probably root
+	  privileges for this step. Hopefully the default configuration will
+	  work for you.
+
+    # cd /etc/fred
+    # cp pyfred.conf-example pyfred.conf
+
+  Step 5: Run it! Again you will need root privileges for this step.
+  ------  Theoretically it should be possible to run pyfred under non-privileged
+	  account, however it was not tried yet and you may encounter
+	  unexpected problems when trying to do so.
+
+    $ pyfred_server
+
+  Step 6: See your log file (depends on where your syslogd redirects log
+  ------  messages destinned for the facility LOCAL1).
+
+
+2. Installation with fake prefix
+
+Is same as for classic installation with a few differences:
+
+  1) You have to overwrite 'prefix' configuration directive in setup.cfg to
+     directory where you would like to have installed pyfred.
+
+  2) The configuration file is installed in ${FAKE_PREFIX}/etc/fred. So you
+     have to copy it from there to /etc/fred directory like:
+
+     # cp ${FAKE_PREFIX}/etc/fred/pyfred.conf-example /etc/fred/pyfred.conf
+
+  3) Change the location of techcheck scripts in pyfred.conf. The 'scriptdir'
+     in 'TechCheck' section must be set to ${FAKE_PREFIX}/libexec/pyfred.
+
+  4) When running pyfred either add ${FAKE_PREFIX}/bin in your $PATH or go
+     in ${FAKE_PREFIX}/bin and run pyfred_server directly from there. Don't
+     forget to add ${FAKE_PREFIX}/lib/python2.4/site-packages/pyfred (or what
+     ever path it is on your system) to $PYTHONPATH, so that pyfred will be able
+     to load his packages and modules.
+
+
+3. Running pyfred directly from repository
+
+Step 1, 2 and 6 is the same as for classic installation, however the rest is
+either different or not needed. We will describe the steps between step 2 and 6
+of classic installation ($TOP refers to top of pyfred's repository, you have
+to substitute it with real directory in following howto):
+
+  1) Copy pyfred.conf-examples to pyfred.conf and edit the new file. Add
+     'scriptsdir=$TOP/tc_scripts' to TechCheck section.
+
+  2) Set $PYTHONPATH to $TOP/build/lib.
+
+  3) Run the pyfred server:
+
+     $ python scripts/pyfred_server
+
+
+
+APPENDIX A. Running genzone client
+
+Genzone client does not need a configuration file but it is convenient to use
+one, so that you don't have to name all options on command line. You can use
+and modify genzone.conf-example configuration file, which has to be copied
+to /etc/fred/genzone.conf.
+

@@ -1,0 +1,74 @@
+#
+# Configuration file of pyfred
+#
+# The detailed description of configuration may be found in README, consider
+# reading it before you make any changes to this file. Note that this is a
+# default configuration, which might work or not depending on many circumstances
+# (i.e. location of postgresql server, nameservice, ...)
+
+#
+# basic configuration of pyfred
+#
+[General]
+modules=MODULES
+dbuser=DBUSER
+dbname=DBNAME
+dbhost=DBHOST
+dbport=DBPORT
+dbpassword=DBPASS
+port=PYFREDPORT
+nscontext=NSCONTEXT
+nshost=NSHOST
+nsport=NSPORT
+pidfile=PIDFILE
+# Log handler selection
+# syslog  (see logfacility option also)
+# file    (see logfilename option also)
+# console (can be used only if server is not demonized after start)
+loghandler=file
+loglevel=debug
+logfacility=local1
+logfilename=LOGFILENAME
+
+#
+# configuration of zone generator
+#
+[Genzone]
+# default configuration kept
+
+#
+# configuration of mailer module
+#
+[Mailer]
+testmode=on
+tester=
+sendmail=SENDMAIL
+filemanager_object=FileManager
+signing=off
+sendperiod=30
+# limit for number of emails send in one period
+sendlimit=100
+# Enable vcard attachment. To each email is added text/x-vcard attachemnt
+# Do NOT turn this off! (Outlook express cannot open multipart emails containing
+# only single part). When vcard is turned on, we are sure that this never happens
+vcard=on
+# disable checks for undelivered messages
+undeliveredperiod=0
+
+#
+# configuration of a module which manages files
+#
+[FileManager]
+rootdir=FILEMANAGERFILES
+
+#
+# configuration of module executing technical checks
+#
+[TechCheck]
+scriptdir=TECHCHECKSCRIPTDIR
+msgLifetime=7
+queueperiod=5
+oldperiod=30
+missrounds=10
+drill=DRILL
+trusted_key=

@@ -1,0 +1,374 @@
+#!/bin/sh
+# fred-server	This is the init script for starting up all FRED
+#		servers. Start and kill priority should be set up to
+#               start/stop after/before postgresql and omniNames
+#
+# chkconfig: - 91 09
+# description: Starts and stops all FRED backend daemon 
+
+if [ -f /lib/lsb/init-functions ]; then
+    . /lib/lsb/init-functions
+else
+    log_failure_msg() { echo "ERROR: $1"; }
+    log_success_msg() { echo "SUCCESS: $1"; }
+fi
+
+PATH=$PATH:/sbin # to find pidof on redhat
+
+FRED_PATH=@SBINDIR@
+VARRUN_PATH=@LOCALSTATEDIR@/run/
+RIFD_PORT=@RIFDPORT@
+PIFD_PORT=@PIFDPORT@
+ADIFD_PORT=@ADIFDPORT@
+LOGD_PORT=@LOGDPORT@
+MIFD_PORT=@MIFDPORT@
+MSGD_PORT=@MSGDPORT@
+OPTIONS="-ORBnativeCharCodeSet UTF-8 -ORBendPoint giop:tcp::"
+
+MSG_START="Starting FRED central registry CORBA servers..."
+MSG_STOP="Stopping FRED central registry CORBA servers..."
+
+# set DB_INIT=0 if you have your own database setup (database name,
+# database user, access rules..etc)
+DB_INIT=1
+DB_MANAGER=@SBINDIR@/fred-dbmanager
+
+check_pidfile() {
+    ps -p $(cat $1 2>/dev/null) >/dev/null 2>&1
+}
+
+#
+# Store pid of process described by regex $1 into filename $2
+#
+store_pid()
+{
+        RETRY_COUNT=2
+        PID=""
+        while [ $RETRY_COUNT -gt 0 -a "$PID" = "" ]; do
+                PID=$(ps -e -o "pid args" | sed 's/^ *//g' | \
+                grep  "$1" | grep -v grep | cut -f1 -d' ')
+                if [ "$PID" = "" ]; then
+                        RETRY_COUNT=$(($RETRY_COUNT - 1))
+                        sleep 1
+                fi
+        done
+        if [ "$PID" != "" ]; then 
+	    echo $PID > $2; /bin/true; return
+	else 
+	    test -f $2 && rm $2; /bin/false; return
+	fi
+}
+
+fred_start() {
+    if [ $DB_INIT -eq 1 -a -x $DB_MANAGER ]
+    then
+	# this script will ensure that database exists
+        if $DB_MANAGER testuser
+        then
+            $DB_MANAGER install
+        elif [ "$(whoami)" = "root" ]; then
+	    /bin/su - postgres -c "$DB_MANAGER install"
+        fi
+	if [ $? -ne 0 ]; then 
+            log_failure_msg "${MSG_START}"
+            exit 1; 
+        fi
+    fi
+    if [ ! -d $VARRUN_PATH ]; then
+	mkdir -p ${VARRUN_PATH}
+    fi
+    NUM=0
+    if check_pidfile ${VARRUN_PATH}/pyfred.pid; then NUM=$(($NUM+1)); else
+        @BINDIR@/pyfredctl start >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+	    NUM=$(($NUM+1))
+	fi
+    fi
+    if check_pidfile ${VARRUN_PATH}/fred-rifd.pid; then NUM=$(($NUM+1)); else
+        ${FRED_PATH}/fred-rifd ${OPTIONS}${RIFD_PORT} 2>/dev/null &
+        if store_pid "${FRED_PATH}/fred-rifd" ${VARRUN_PATH}/fred-rifd.pid
+	then
+	    NUM=$(($NUM+1))
+        fi
+    fi
+    if check_pidfile ${VARRUN_PATH}/fred-pifd.pid; then NUM=$(($NUM+1)); else
+        ${FRED_PATH}/fred-pifd ${OPTIONS}${PIFD_PORT} 2>/dev/null &
+        if store_pid "${FRED_PATH}/fred-pifd" ${VARRUN_PATH}/fred-pifd.pid
+	then
+	    NUM=$(($NUM+1))
+        fi
+    fi
+    if check_pidfile ${VARRUN_PATH}/fred-adifd.pid; then NUM=$(($NUM+1)); else
+        ${FRED_PATH}/fred-adifd ${OPTIONS}${ADIFD_PORT} 2>/dev/null &
+        if store_pid "${FRED_PATH}/fred-adifd" ${VARRUN_PATH}/fred-adifd.pid
+	then
+	    NUM=$(($NUM+1))
+        fi
+    fi
+    if check_pidfile ${VARRUN_PATH}/fred-logd.pid; then NUM=$(($NUM+1)); else
+        ${FRED_PATH}/fred-logd ${OPTIONS}${LOGD_PORT} 2>/dev/null &
+        if store_pid "${FRED_PATH}/fred-logd" ${VARRUN_PATH}/fred-logd.pid
+	then
+	    NUM=$(($NUM+1))
+        fi
+    fi
+    if check_pidfile ${VARRUN_PATH}/fred-mifd.pid; then NUM=$(($NUM+1)); else
+        ${FRED_PATH}/fred-mifd ${OPTIONS}${MIFD_PORT} 2>/dev/null &
+        if store_pid "${FRED_PATH}/fred-mifd" ${VARRUN_PATH}/fred-mifd.pid
+	then
+	    NUM=$(($NUM+1))
+        fi
+    fi
+    if check_pidfile ${VARRUN_PATH}/fred-msgd.pid; then NUM=$(($NUM+1)); else
+        ${FRED_PATH}/fred-msgd ${OPTIONS}${MSGD_PORT} 2>/dev/null &
+        if store_pid "${FRED_PATH}/fred-msgd" ${VARRUN_PATH}/fred-msgd.pid
+	then
+	    NUM=$(($NUM+1))
+        fi
+    fi
+
+
+    if [ $NUM -eq 7 ]; then
+        log_success_msg "${MSG_START}"
+    else
+	log_failure_msg "${MSG_START}"
+    fi
+}
+
+check_server_status() {
+    echo -n "$1 is ";
+    if check_pidfile $2
+    then
+        echo "running"
+    else
+        echo "stopped"
+    fi
+}
+
+fred_status() {
+    check_server_status "fred-pyfred" "${VARRUN_PATH}/pyfred.pid"
+    check_server_status "fred-rifd" "${VARRUN_PATH}/fred-rifd.pid"
+    check_server_status "fred-pifd" "${VARRUN_PATH}/fred-pifd.pid"
+    check_server_status "fred-adifd" "${VARRUN_PATH}/fred-adifd.pid"
+    check_server_status "fred-logd" "${VARRUN_PATH}/fred-logd.pid"
+    check_server_status "fred-mifd" "${VARRUN_PATH}/fred-mifd.pid"
+    check_server_status "fred-msgd" "${VARRUN_PATH}/fred-msgd.pid"
+}
+
+fred_stop() {
+    STOP_SUCCEDED=1
+    if [ -f ${VARRUN_PATH}/fred-rifd.pid ]
+    then
+        kill -TERM `cat ${VARRUN_PATH}/fred-rifd.pid` 2>/dev/null
+        STOP_SUCCEDED=$(($STOP_SUCCEDED * $?))
+	rm -f ${VARRUN_PATH}/fred-rifd.pid
+    fi
+    if [ -f ${VARRUN_PATH}/fred-pifd.pid ]
+    then
+	kill -TERM `cat ${VARRUN_PATH}/fred-pifd.pid` 2>/dev/null
+        STOP_SUCCEDED=$(($STOP_SUCCEDED * $?))
+	rm -f ${VARRUN_PATH}/fred-pifd.pid
+    fi
+    if [ -f ${VARRUN_PATH}/fred-adifd.pid ]
+    then
+	kill -TERM `cat ${VARRUN_PATH}/fred-adifd.pid` 2>/dev/null
+        STOP_SUCCEDED=$(($STOP_SUCCEDED * $?))
+	rm -f ${VARRUN_PATH}/fred-adifd.pid
+    fi
+    if [ -f ${VARRUN_PATH}/fred-logd.pid ]
+    then
+	kill -TERM `cat ${VARRUN_PATH}/fred-logd.pid` 2>/dev/null
+        STOP_SUCCEDED=$(($STOP_SUCCEDED * $?))
+	rm -f ${VARRUN_PATH}/fred-logd.pid
+    fi
+    if [ -f ${VARRUN_PATH}/fred-mifd.pid ]
+    then
+	kill -TERM `cat ${VARRUN_PATH}/fred-mifd.pid` 2>/dev/null
+        STOP_SUCCEDED=$(($STOP_SUCCEDED * $?))
+	rm -f ${VARRUN_PATH}/fred-mifd.pid
+    fi
+    if [ -f ${VARRUN_PATH}/fred-msgd.pid ]
+    then
+	kill -TERM `cat ${VARRUN_PATH}/fred-msgd.pid` 2>/dev/null
+        STOP_SUCCEDED=$(($STOP_SUCCEDED * $?))
+	rm -f ${VARRUN_PATH}/fred-msgd.pid
+    fi
+
+
+    @BINDIR@/pyfredctl stop > /dev/null
+    STOP_SUCCEDED=$(($STOP_SUCCEDED * $?))
+    if [ $STOP_SUCCEDED -eq 0 ]
+    then
+        log_success_msg "${MSG_STOP}"
+    else
+        log_failure_msg "${MSG_STOP}"
+    fi
+}
+
+init_cz()
+{
+    ADMCMD=${FRED_PATH}/fred-admin
+    # do nothing if there is already some registrar 
+    $ADMCMD --registrar_list | grep registrar > /dev/null
+    if [ $? -eq 0 ]; then exit 1; fi
+    # add zone .cz 
+    $ADMCMD --zone_add \
+       --zone_fqdn=cz \
+       --ex_period_min=12 \
+       --ex_period_max=120 \
+       --ttl=18000 \
+       --hostmaster=hostmaster@nic.cz \
+       --refresh=10600 \
+       --update_retr=3600 \
+       --expiry=1209600 \
+       --minimum=7200 \
+       --ns_fqdn=ns.tld.cz
+    # add ENUM zone .0.2.4.e164.arpa
+    $ADMCMD --zone_add \
+       --zone_fqdn=0.2.4.e164.arpa \
+       --ex_period_min=12 \
+       --ex_period_max=120 \
+       --ttl=18000 \
+       --hostmaster=hostmaster@nic.cz \
+       --refresh=10600 \
+       --update_retr=3600 \
+       --expiry=1209600 \
+       --minimum=7200 \
+       --ns_fqdn=a.ns.nic.cz
+    # add nameservers for .cz
+    $ADMCMD --zone_ns_add \
+       --zone_fqdn=cz --ns_fqdn=ns.tld.cz --addr=217.31.196.10
+    $ADMCMD --zone_ns_add \
+       --zone_fqdn=cz --ns_fqdn=ns2.nic.fr
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=cz --ns_fqdn=ns1.tld.cz --addr=195.66.241.202
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=cz --ns_fqdn=nss.tld.cz --addr=217.31.200.10
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=cz --ns_fqdn=ns-cz.ripe.net
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=cz --ns_fqdn=sunic.sunet.se
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=cz --ns_fqdn=ns-ext.vix.com
+    # add nameservers for .0.2.4.e164.arpa
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=0.2.4.e164.arpa --ns_fqdn=a.ns.nic.cz
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=0.2.4.e164.arpa --ns_fqdn=b.ns.cznic.org
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=0.2.4.e164.arpa --ns_fqdn=c.ns.nic.cz
+    $ADMCMD --zone_ns_add \
+        --zone_fqdn=0.2.4.e164.arpa --ns_fqdn=e.ns.nic.cz
+    # add some testing registrars
+    $ADMCMD --registrar_add \
+        --handle=REG-FRED_A \
+        --country=CZ \
+        --organization="Testing registrar A" \
+        --reg_name="Company l.t.d." \
+        --url=www.nic.cz
+    $ADMCMD --registrar_add \
+        --handle=REG-FRED_B \
+        --country=CZ \
+        --organization="Testing registrar B" \
+        --reg_name="Company l.t.d." \
+        --url=www.nic.cz
+    # add EPP autentication data to these testin registrars 
+    $ADMCMD --registrar_acl_add \
+        --handle=REG-FRED_A \
+        --certificate="39:D1:0C:CA:05:3A:CC:C0:0B:EC:6F:3F:81:0D:C7:9E" \
+        --password=passwd
+    $ADMCMD --registrar_acl_add \
+        --handle=REG-FRED_B \
+        --certificate="39:D1:0C:CA:05:3A:CC:C0:0B:EC:6F:3F:81:0D:C7:9E" \
+        --password=passwd
+    # add EPP access to both zones to both registrars
+    $ADMCMD --registrar_add_zone \
+        --zone_fqdn=0.2.4.e164.arpa --handle=REG-FRED_A \
+        --from_date="2007-01-01"
+    $ADMCMD --registrar_add_zone \
+        --zone_fqdn=cz --handle=REG-FRED_A \
+        --from_date="2007-01-01"
+    $ADMCMD --registrar_add_zone \
+        --zone_fqdn=0.2.4.e164.arpa --handle=REG-FRED_B \
+        --from_date="2007-01-01"
+    $ADMCMD --registrar_add_zone \
+        --zone_fqdn=cz --handle=REG-FRED_B \
+        --from_date="2007-01-01"
+    # change some parameters specific for .cz
+    $ADMCMD --enum_parameter_change \
+        --parameter_name=handle_registration_protection_period \
+        --parameter_value=2
+    $ADMCMD --enum_parameter_change \
+        --parameter_name=roid_suffix \
+        --parameter_value=CZ
+    # configure price list as on production
+    $ADMCMD --price_add --operation='CreateDomain' \
+	--valid_from='2009-12-31 23:00:00' --zone_fqdn cz \
+	--operation_price 0 --period 1 
+    $ADMCMD --price_add --operation='CreateDomain' \
+	--valid_from='2009-12-31 23:00:00' --zone_fqdn cz \
+	--operation_price 0 --period 1 
+    $ADMCMD --price_add --operation='CreateDomain' \
+	--valid_from='2007-09-29 19:15:56.186031' \
+	--valid_to='2009-12-31 23:00:00' --zone_fqdn cz \
+	--operation_price 0 --period 1
+    $ADMCMD --price_add --operation='RenewDomain' \
+	--valid_from='2009-12-31 23:00:00' \
+	--valid_to='2011-01-31 23:00:00' \
+	--zone_fqdn cz --operation_price 155 --period 1
+    $ADMCMD --price_add --operation='RenewDomain' \
+	--valid_from='2011-01-31 23:00:00' --zone_fqdn cz \
+	--operation_price 140 --period 1
+    $ADMCMD --price_add --operation='RenewDomain' \
+	--valid_from='2007-09-29 19:15:56.159594' \
+	--valid_to='2009-12-31 23:00:00' --zone_fqdn cz \
+	--operation_price 190 --period 1
+    $ADMCMD --price_add --operation='CreateDomain' \
+	--valid_from='2007-01-22 13:00:00' --zone_fqdn 0.2.4.e164.arpa \
+	--operation_price 0 --period 1
+    $ADMCMD --price_add --operation='RenewDomain' \
+	--valid_from='2007-01-22 13:00:00' --zone_fqdn 0.2.4.e164.arpa \
+	--operation_price 1 --period 1
+    $ADMCMD --price_add --operation='GeneralEppOperation' \
+	--valid_from='2011-05-31 22:00:00' --zone_fqdn cz \
+	--operation_price 0.10 --period 1  --enable_postpaid_operation
+    # configure prefixes for invoices
+    $ADMCMD --add_invoice_number_prefix \
+	--prefix=24 --zone_fqdn=cz --invoice_type_name=advance
+    $ADMCMD --add_invoice_number_prefix \
+	--prefix=23 --zone_fqdn=cz --invoice_type_name=account
+    $ADMCMD --add_invoice_number_prefix \
+	--prefix=11 --zone_fqdn=0.2.4.e164.arpa --invoice_type_name=advance
+    $ADMCMD --add_invoice_number_prefix \
+	--prefix=12 --zone_fqdn=0.2.4.e164.arpa --invoice_type_name=account
+    $ADMCMD --create_invoice_prefixes --for_current_year
+    # add some testing credit for both registrars
+    
+
+    exit 0
+}
+
+case "$1" in
+    start)
+	fred_start
+        ;;
+    restart)
+	fred_stop
+	fred_start
+        ;;
+    stop)
+	fred_stop
+        ;;
+    status)
+        fred_status
+        ;;
+    init_cz)
+        init_cz
+        ;;
+    *)
+	echo -n "Usage: @SYSCONFDIR@/init.d/fred-server "
+	echo "{start|stop|restart|status|init_cz}"
+	exit 1
+esac
+
+exit 0

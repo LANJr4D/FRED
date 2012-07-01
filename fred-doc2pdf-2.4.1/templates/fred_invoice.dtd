@@ -1,0 +1,70 @@
+<!ELEMENT invoice (client, supplier, payment, delivery, advance_payment, appendix)>
+
+<!ELEMENT client (name, address, ico, vat_number)>
+<!ELEMENT address (street, city, zip)>
+
+<!ELEMENT name       (#PCDATA)>
+<!ELEMENT street     (#PCDATA)>
+<!ELEMENT city       (#PCDATA)>
+<!ELEMENT zip        (#PCDATA)>
+<!ELEMENT ico        (#PCDATA)>
+<!ELEMENT vat_number (#PCDATA)>
+
+
+<!ELEMENT supplier (name, fullname, address, ico, vat_number, registration, reclamation, url, email)>
+
+<!ELEMENT fullname     (#PCDATA)>
+<!ELEMENT registration (#PCDATA)>
+<!ELEMENT reclamation  (#PCDATA)>
+<!ELEMENT url          (#PCDATA)>
+<!ELEMENT email        (#PCDATA)>
+
+<!ELEMENT payment (invoice_number, invoice_date, payment_date, tax_point,
+    vs, period_from, period_to
+)>
+
+<!ELEMENT invoice_number       (#PCDATA)>
+<!ELEMENT invoice_date         (#PCDATA)>
+<!ELEMENT payment_date         (#PCDATA)>
+<!ELEMENT tax_point            (#PCDATA)>
+<!ELEMENT vs                   (#PCDATA)>
+<!ELEMENT period_from          (#PCDATA)>
+<!ELEMENT period_to            (#PCDATA)>
+
+
+<!ELEMENT delivery (vat_rates, sumarize)>
+
+<!ELEMENT vat_rates (entry+)>
+<!ELEMENT entry (vatperc, basetax, vat, total)>
+
+<!ELEMENT vatperc          (#PCDATA)>
+<!ELEMENT basetax          (#PCDATA)>
+<!ELEMENT vat              (#PCDATA)>
+<!ELEMENT total            (#PCDATA)>
+
+<!ELEMENT sumarize (total, paid, to_be_paid)>
+
+<!ELEMENT paid             (#PCDATA)>
+<!ELEMENT to_be_paid       (#PCDATA)>
+
+
+<!ELEMENT advance_payment (applied_invoices)>
+<!ELEMENT applied_invoices (consumed+)>
+<!ELEMENT consumed (number, price, balance)>
+
+<!ELEMENT number           (#PCDATA)>
+<!ELEMENT price            (#PCDATA)>
+<!ELEMENT balance          (#PCDATA)>
+
+
+<!ELEMENT appendix (items, sumarize_items)>
+<!ELEMENT items (item+)>
+<!ELEMENT item (subject, code, timestamp, expiration?, count?, price, total)>
+<!ELEMENT sumarize_items (total)>
+
+<!ELEMENT subject          (#PCDATA)>
+<!ELEMENT code             (#PCDATA)>
+<!ELEMENT timestamp        (#PCDATA)>
+<!ELEMENT expiration       (#PCDATA)>
+<!ELEMENT count            (#PCDATA)>
+

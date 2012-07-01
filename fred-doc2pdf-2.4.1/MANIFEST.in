@@ -1,0 +1,18 @@
+include templates/*
+include examples/*
+include setup.cfg
+include setup.cfg.template
+include setup.py
+
+include conf/*.install
+
+include fred-doc2pdf
+include ChangeLog
+include *.ascii
+include *.utf8
+include MANIFEST.in
+include RELEASE-VERSION
+
+include freddist/*.py
+include freddist/README
+include freddist/command/*.py

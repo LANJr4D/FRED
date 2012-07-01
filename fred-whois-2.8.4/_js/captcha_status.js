@@ -1,0 +1,2 @@
+disableCaptcha = 1;
+

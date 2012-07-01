@@ -1,0 +1,204 @@
+#!/usr/bin/nawk -f
+#
+# Usage:  zone-file-check file ...
+#
+# This program checks DNS zone files one by one for syntactic errors.
+# Lines containing errors are printed together with the file name and line
+# number to the standard output. The program takes one or more filenames
+# as arguments and reads the standard input if none are supplied.
+#
+# Author: Gjermund Sørseth <gjermund@xyzzy.no> 1997
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+function version()	{ return "1.01" }
+
+
+#########################################################################
+#									#
+#                 General utility functions				#
+#									#
+#########################################################################
+
+
+function is_ip_address(s)  { return s ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ }
+
+function is_name(s)	   { return s ~ /^(@|([\\*A-Za-z0-9.-]+))$/ }
+
+function is_filename(s)	   { return s ~ /^[\\\/A-Za-z0-9._-]+$/ }
+
+function is_number(s)	   { return s ~ /^[0-9]+$/ }
+
+function is_rrtype(s)
+{
+	return s ~ /^(A|AAAA|PTR|CNAME|MX|NS|HINFO|TXT|WKS|SOA|RP)$/
+}
+
+
+
+#########################################################################
+#									#
+#    Syntax-checking of the RR (Resource Record) type field and		#
+#    following data							#
+#									#
+#########################################################################
+
+function is_rr_aaaa(a, first, last)
+{
+	return	last - first == 1 && a[first] == "AAAA"
+}
+
+function is_rr_a(a, first, last)
+{
+	return	last - first == 1 && a[first] == "A" &&
+		is_ip_address( a[last] )
+}
+
+function is_rr_ptr(a, first, last)
+{
+	return	last - first == 1 && a[first] == "PTR" &&
+		is_name( a[last] )
+}
+
+function is_rr_cname(a, first, last)
+{
+	return	last - first == 1 && a[first] == "CNAME" &&
+		is_name( a[last] )
+}
+
+function is_rr_mx(a, first, last)
+{
+	return	last - first == 2 && a[first] == "MX" &&
+		is_number( a[first+1] ) &&
+		is_name( a[last] )
+}
+
+function is_rr_ns(a, first, last)
+{
+	return	last - first == 1 && a[first] == "NS" &&
+		is_name( a[last] )
+}
+
+function is_rr_hinfo(a, first, last)
+{
+	return 	last - first == 2 && a[first] == "HINFO" &&
+		is_name( a[first+1] ) &&
+		is_name( a[first+2] )
+}
+
+function is_rr_txt(a, first, last)
+{
+	return	last - first == 1 && a[first] == "TXT"
+}
+
+function is_rr_wks(a, first, last)
+{
+	return	last - first > 0 && a[first] == "WKS"
+}
+
+function is_rr_soa(a, first, last)
+{
+	return	last - first == 7 && a[first] == "SOA" &&
+		is_name( a[first+1] ) &&
+		is_name( a[first+2] ) &&
+		is_number( a[first+3] ) &&
+		is_number( a[first+4] ) &&
+		is_number( a[first+5] ) &&
+		is_number( a[first+6] ) &&
+		is_number( a[first+7] )
+}
+
+function is_rr_rp(a, first, last)
+{
+	return	last - first == 2 && a[first] == "RP" &&
+		is_name( a[first+1] ) &&
+		is_name( a[last] )
+}
+
+#########################################################################
+#									#
+#        Check a single zone file line for correctness			#
+#									#
+#########################################################################
+
+function is_rr(a, first, last)
+{
+	return	is_rr_a(a, first, last)     ||	is_rr_ptr(a, first, last)   ||
+		is_rr_cname(a, first, last) ||	is_rr_mx(a, first, last)    ||
+		is_rr_ns(a, first, last)    ||	is_rr_hinfo(a, first, last) ||
+		is_rr_txt(a, first, last)   ||	is_rr_wks(a, first, last)   ||
+		is_rr_soa(a, first, last)   ||  is_rr_aaaa(a, first, last)
+}
+
+function is_special(a, fields)
+{
+	return	fields >= 2 && a[1] == "$INCLUDE" && is_filename( a[2] ) ||
+		fields == 2 && a[1] == "$ORIGIN"  && is_name( a[2] ) ||
+		fields == 2 && a[1] == "$TTL"  && is_number( a[2] )
+}
+
+function is_ok(RR)
+{
+	gsub( /"[^"]*"/, "-", RR )
+
+	gsub( /\(|\)/, "", RR )
+
+	sub( /[ \t]+(IN|CH|HS)[ \t]+/, " ", RR )
+
+	n = split( RR, a )
+
+	return	is_rrtype(a[1]) && is_rr(a, 1, n) ||
+
+		is_rrtype(a[2]) &&
+		(is_name(a[1]) || is_number(a[1])) && is_rr(a, 2, n) ||
+
+		is_rrtype(a[3]) && is_name(a[1]) &&
+		is_number(a[2]) && is_rr(a, 3, n) ||
+
+		is_special(a, n)
+}
+
+#########################################################################
+#									#
+#                       Main program					#
+#									#
+#########################################################################
+
+
+FNR == 1	{ } #printf "Checking file \"%s\"\n", FILENAME }
+
+		{ sub( /;.*/, " " ) }
+
+NF == 0		{ next }
+
+		{ ++line
+
+		  RR = (multi > 0) ? RR " " $0 : $0
+
+		  if ( $NF ~ /\)$/ || multi > 0 && line - multi > 10)
+			  multi = 0
+		  else
+		  if ( $NF ~ /\($/ )
+			  multi = line
+
+		  if ( !multi && !is_ok(RR) ) {
+			  ++err
+			  printf "   Line %d:\t%s\n", FNR, RR
+		  }
+		}
+
+#END		{ printf "==> Total of %d syntax error(s) <==\n", err }

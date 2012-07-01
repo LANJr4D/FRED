@@ -1,0 +1,13 @@
+    <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+    <p tal:condition="python:result['qtype'] == 'registrars-list'" id="path-info">
+    <a href="/">e.num</a> | <a href="/index.php?art=page&amp;art_id=28">registrace</a>  | Seznam registrátorů ENUM
+    </p>
+    <p tal:condition="python:result['qtype'] == 'publicrequest'" id="path-info">
+    <a href="/">e.num</a> | Požadavky veřejnosti
+    </p>
+    <p tal:condition="python:result['qtype'] not in ['registrars-list', 'publicrequest']" id="path-info">
+    <a href="/">e.num</a> | WHOIS
+    </p>
+    </div>
+    <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+    </div>

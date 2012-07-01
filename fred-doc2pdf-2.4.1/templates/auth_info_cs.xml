@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+<str name="Confirmation of Request for password">Vyžádání změny v AuthInfo záznamu</str>
+
+<str name="contact">ke kontaktu</str>
+<str name="nameserver set">k sadě nameserverů</str>
+<str name="domain name">k doménovému jménu</str>
+<str name="keyset">k sadě klíčů</str>
+<str name="handle">k identifikátoru</str>
+
+<str name="Re: Confirmation of Request for password for">Věc: Potvrzení žádosti o poskytnutí hesla</str>
+<str name="I hereby confirm my request to obtain password for">Potvrzuji tímto žádost o poskytnutí hesla</str>
+<str name="submitted through a web form at the association webpages">podanou prostřednictvím webového formuláře na stránkách sdružení</str>
+<str name="on">dne</str>
+<str name="assigned id number">které bylo přiděleno identifikační číslo</str>
+<str name="Please send the password to">a žádám o poskytnutí příslušného hesla na adresu</str>
+<str name="Name and signature of responsible person:">Jméno a úředně ověřený podpis zodpovědné osoby:</str>
+
+<str name="Please print this request sign it (a notarized signature required) and send the signed original to the following address:">Tuto žádost prosím vytiskněte, podepište (je nutný úředně ověřený podpis) a podepsaný originál zašlete na adresu:</str>
+<str name="Signatories whose name is not listed in the Central registry of domain names must attach">V případě, že podepisující osoba není uvedena v Centrálním registru doménových jmen, je k této žádosti potřeba přiložit</str>
+<str name="an original or a notarized copy of a document authorizing them to perform the relevant request.">originál nebo úředně ověřenou kopii dokumentu, který zmocňuje tuto osobu k uvedenému požadavku.</str>
+</strings>
+

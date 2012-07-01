@@ -1,0 +1,106 @@
+#ifndef ZONEGENERATOR_IDL_
+#define ZONEGENERATOR_IDL_
+
+#include "_dataTypes.idl"
+
+module ccReg {
+
+  /// Structure containing all data about a domain needed for zone generation.
+  struct ZoneItem {
+    string name; ///< Fqdn of a domain.
+    /// List of nameservers including their IP addresses if needed (GLUE RR).
+    DNSHost nameservers;
+    DSRecord dsrecords;
+  };
+
+  /// List of domains with information needed for zone generation.
+  typedef sequence<ZoneItem> ZoneSeq; 
+
+  /// Object used to retrive domain information needed for zone generation.
+  interface ZoneData
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /** Exception thrown if zone object is no more active (not used for
+     *  a long time.
+     */
+    exception NotActive {
+    };
+
+    /** Returns specified number of domains for zone generation.
+     *  If empty list is returned it means that all domains have been already
+     *  transfered.
+     *
+     *  \param count   Number of domains which should be retrieved.
+     *  \return        List of domains. The list might be actually
+     *                 shorter than specified by count parameter in case that
+     *                 there is not so many domains to transfer already.
+     */
+    ZoneSeq getNext(in long count) raises (InternalError, NotActive);
+
+    /** Destroy the search object at server-side.
+     *  This SHOULD be called whenever client finishes zone generation,
+     *  allthough server has mechanism for cleaning of not used objects.
+     */
+    void destroy() raises (InternalError);
+  };
+
+  /// Interface of zone generator.
+  interface ZoneGenerator {
+
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /// Exception thrown if generation of unknown zone was requested.
+    exception UnknownZone {
+    };
+
+    /** Method returns object which is used to retrieve data needed for zone
+     *  generation.
+     *
+     *  \param zonename  Name of zone which is generated.
+     *  \return          Object through which are accessible zone data.
+     */
+    ZoneData generateZone(in string zonename) raises (InternalError,UnknownZone);
+
+    /** Method returns all data needed for SOA record of a zone.
+     *
+     *  \param zonename    Name of zone for which are requested SOA data.
+     *  \param ttl         TTL.
+     *  \param hostmaster  Hostmaster.
+     *  \param serial      Serial.
+     *  \param refresh     Refresh.
+     *  \param update_retr Update retr.
+     *  \param expiry      Expiry.
+     *  \param minimum     Minimum.
+     *  \param soans       Fqdn of primary nameserver.
+     *  \param nameservers Nameservers of zone.
+     *  \return            Zone name.
+     */
+    string getSOA(
+      in string zonename,
+      out long ttl,
+      out string hostmaster,
+      out string serial,
+      out long refresh,
+      out long update_retr,
+      out long expiry,
+      out long minimum,
+      out string soans,
+      out DNSHost nameservers
+      ) raises (InternalError, UnknownZone);
+    
+    /// List of names for zones
+    typedef sequence<string> ZoneNameSeq;
+    
+    /// Return list of all zones managed by register
+    ZoneNameSeq getZoneNameList();
+  };
+};
+
+#endif

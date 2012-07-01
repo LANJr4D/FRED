@@ -1,0 +1,369 @@
+#!/bin/bash
+
+get_num_connections () {
+    CONNECTIONSQL="SELECT GREATEST(COUNT(*)-1,0) FROM pg_stat_activity"
+    @PGBINDIR@/psql -d @DBNAME@ -U @DBUSER@ -At -p @DBPORT@ \
+                    -c "$CONNECTIONSQL" 2>/dev/null;
+}
+
+get_db_version () {
+    VERSIONSQL="SELECT val FROM enum_parameters WHERE id=1"
+    @PGBINDIR@/psql -d @DBNAME@ -U @DBUSER@ -At -p @DBPORT@ \
+                    -c "$VERSIONSQL" 2>/dev/null;
+}
+
+test_db () {
+    @PGBINDIR@/psql -U @DBUSER@ -l -p @DBPORT@ @DBNAME@ | grep '@DBNAME@' > /dev/null
+    return $?
+}
+
+test_user() {
+    # check if user has administrator privileges
+    # only this test works for both situations supported:
+    # either system wide user 'postgres' or local postgres installation
+    @PGBINDIR@/psql -p @DBPORT@ postgres -c "" > /dev/null 2>&1
+    return $?
+}
+
+f_usage () {
+    echo "usage: fred-dbmanager [argument]
+arguments:
+    install - install FRED database
+    uninstall - uninstall FRED database
+    upgrade - upgrade FRED database with upgrade script
+    status - print status of FRED database
+    testuser - check if script can be run as current_user or postgres
+    create_partitions - create partitions for fred-logd
+    list_partitions - list partitions
+    drop_partitions - drop all partitions
+    help - print this help"
+}
+
+init_pghba () {
+    test_user;
+    if [ $? -ne 0 ]
+    then
+        echo "Current user doesn't have required administrator privileges "
+        echo "or server is not running. Start server or run this script "
+        echo "under 'postgres' user"
+        exit 1
+    fi
+    if [ "$PGDATA" = "" ]
+    then
+        PGHBA=@PGHBADIR@/pg_hba.conf
+        PGDATA=@PGDATADIR@
+    else
+        PGHBA=$PGDATA/pg_hba.conf
+    fi
+
+    if [ ! -w $PGHBA ]
+    then
+        if [ "$1" = "" -o ! -f "$1" ]
+        then
+            echo "Cannot locate pg_hba.conf file or it's not accessible, run"
+            echo "this script under adminstrator user (usually postgres)"
+        exit 2
+        else
+            PGHBA=$1
+        fi
+    fi
+}
+
+f_install () {
+    init_pghba
+
+    prefix=@prefix@
+    datarootdir=@datarootdir@
+    STRUCTSQL=@datadir@/@PACKAGE@/structure.sql
+    if [ ! -f $STRUCTSQL ]; then
+        echo "SQL script file $STRUCTSQL does not exists. Install terminated."
+        exit 1
+    fi
+
+    if grep "begin-@DBNAME@-@DBUSER@--" $PGHBA >/dev/null 2>&1
+    then
+        /bin/true
+    else
+        cp $PGHBA /tmp/pg_hba.conf.$$
+        echo -n "" > $PGHBA
+        # There is no evidence about user @DBUSER@ in authentication file so
+        # it can be suspected that user @DBUSER@ will not be allowed to connect
+        # This file will be modified to allow local connection for user
+        # @DBUSER@. If this is not intended modify database access options in
+        # server @DBUSER@ server configuration files to suite you needs
+        sed -i '1i# --begin-@DBNAME@-@DBUSER@-- \
+# Next three lines were added by script '$0' \
+# to allow local connection of user @DBUSER@ to database @DBNAME@ \
+# beware: lines between begin and end marks \
+# will be deleted by `fred-dbmanager uninstall` script \
+local @DBNAME@ @DBUSER@ @METHOD@ \
+host @DBNAME@ @DBUSER@ @CIDRIPV4@ @METHOD@ \
+host @DBNAME@ @DBUSER@ @CIDRIPV6@ @METHOD@ \
+# --end-@DBNAME@-@DBUSER@-- ' /tmp/pg_hba.conf.$$
+
+        cat /tmp/pg_hba.conf.$$ >> $PGHBA
+        rm /tmp/pg_hba.conf.$$
+
+        # reload new file into postgres
+        @PGBINDIR@/pg_ctl reload -D$PGDATA >/dev/null 2>&1
+        if [ $? -ne 0 ]
+        then
+            echo "Reload of updated configuration failed, try to reload manualy"
+            exit 3
+        fi
+    fi
+
+    if [ "$(get_db_version)" = "" ]; then
+        @PGBINDIR@/createuser @DBUSER@ -SDR -p @DBPORT@ > /dev/null 2>&1
+        @PGBINDIR@/createdb @DBNAME@ -O @DBUSER@ -E UTF8 \
+                            -p @DBPORT@ > /dev/null 2>&1
+        @PGBINDIR@/createlang plpgsql @DBNAME@ \
+                              -p @DBPORT@ > /dev/null 2>&1
+        error_msg=$(( @PGBINDIR@/psql @DBNAME@ -U @DBUSER@ -f $STRUCTSQL -p @DBPORT@ ) 2>&1 | grep "ERROR" )
+	if [ "$error_msg" != "" ]; then
+	    echo -e "There are errors in SQL script file $STRUCTSQL. Installation terminated.\nError message: $error_msg"
+	    exit 1
+	fi
+    fi
+}
+
+f_uninstall () {
+    init_pghba
+
+    NUM_CON=$(get_num_connections)
+    if [ "$NUM_CON" -gt 0 ]
+    then
+        echo "Still $NUM_CON active connections - uninstallation aborted"
+        exit 1;
+    fi
+    @PGBINDIR@/dropdb @DBNAME@ -p @DBPORT@ > /dev/null 2>&1
+    @PGBINDIR@/dropuser @DBUSER@ -p @DBPORT@ > /dev/null 2>&1
+    if grep 'begin-@DBNAME@-@DBUSER@--' $PGHBA > /dev/null 2>&1
+    then
+        cp $PGHBA /tmp/pg_hba.conf.$$
+        echo -n "" > $PGHBA
+        sed -i '/--begin-@DBNAME@-@DBUSER@--/,/--end-@DBNAME@-@DBUSER@--/d' /tmp/pg_hba.conf.$$
+        cat /tmp/pg_hba.conf.$$ >> $PGHBA
+        rm /tmp/pg_hba.conf.$$
+    fi
+}
+
+# return values:
+# 0 if equal
+# 1 if first version is bigger than second
+# 2 if second version is bigger than first
+# e.g. `compare_versions "1.2" "1.2.4"' return 2
+compare_versions () {
+    if [ "$3" = "" ]
+    then
+        separator="."
+    else
+        separator=$3
+    fi
+    ii=1
+    while /bin/true; do
+        verA=`echo $1 | cut -d"$separator" -f $ii 2> /dev/null`
+        verB=`echo $2 | cut -d"$separator" -f $ii 2> /dev/null`
+
+        if [ "$verA" = "" -a "$verB" = "" ]
+        then
+            return 0
+        fi
+
+        if [ "$verA" = "" ]
+        then
+            verA=0
+        fi
+        if [ "$verB" = "" ]
+        then
+            verB=0
+        fi
+
+        if [ `expr $verA '=' $verB` -eq 0 ]
+        then
+            if [ `expr $verA '>' $verB` -eq 1 ]
+            then
+                return 1
+            elif [ `expr $verA '<' $verB` -eq 1 ]
+            then
+                return 2
+            fi
+        fi
+
+        ii=`expr $ii + 1`
+    done
+    return 0
+}
+
+#add content of $2 file to $1 file
+add_to_list () {
+    cat $2 >> $1
+}
+
+# create upgrade sctipt against version in $1 and store it in file $2
+create_upgrade_script () {
+    prefix=@prefix@
+    datarootdir=@datarootdir@
+    upgradesqldir=@datadir@/@PACKAGE@/upgrades/
+    curr_dir=`pwd`
+    cd $upgradesqldir
+    for i in `ls *.sql`
+    do
+        vv=`echo $i | sed -r 's/([0-9_]+)-([0-9_]+)\.sql/\1/' | sed '/_/s//\./g'`
+        compare_versions $1 $vv
+        last=$?
+        if [ $last = 0 ]
+        then
+            vvv=`echo $i | sed -r 's/([0-9_]+)-([0-9_]+)\.sql/\2/' | sed '/_/s//\./g'`
+            compare_versions $1 $vvv
+            if [ $? = 2 ]
+            then
+                add_to_list $2 $i
+            fi
+        elif [ $last = 2 ]
+        then
+            add_to_list $2 $i
+        fi
+
+    done
+    cd $curr_dir
+}
+
+f_upgrade () {
+    test_db
+    if [ $? != 0 ]
+    then
+        echo "@DBNAME@ database does not exist or postgres server does not runnint."
+        exit 1
+    fi
+    ver=$(get_db_version)
+    upgrade_script="/tmp/fred-upgrade.sql.$$"
+    create_upgrade_script $ver $upgrade_script
+    @PGBINDIR@/psql @DBNAME@ -U @DBUSER@ -p @PDBORT@ \
+                    -f $upgrade_script >/dev/null 2>&1
+}
+
+f_status () {
+    test_db
+    if [ $? != 0 ]
+    then
+        echo "@DBNAME@ database does not exist or postgres server does not running."
+        exit 1
+    else
+        echo -n "@DBNAME@ database version: $(get_db_version), "
+        echo "active connections: $(get_num_connections) "
+        exit 0
+    fi
+}
+
+list_parts_worker() {
+    SERVICES=`@PGBINDIR@/psql -P tuples_only=on -d @DBNAME@ -U @DBUSER@ -At -p @DBPORT@ \
+                    -c "select partition_postfix from service order by partition_postfix" 2>/dev/null;`
+
+    # add monitoring postfix
+    SERVICES="$SERVICES mon_"
+
+    echo ----- List of services:
+    echo $SERVICES
+
+    > table_list.txt
+
+    if [ ! -w table_list.txt ]; then
+        echo File table_list.txt not accessible for writing, action cancelled.
+        exit 1
+    fi
+
+    # for table_base in log_entry log_raw_content log_property_value log_session; do
+    for table_base in request request_data request_property_value request_object_ref session; do
+            for postfix in $SERVICES; do
+                    @PGBINDIR@/psql -P tuples_only=on -d @DBNAME@ -U @DBUSER@ -At -p @DBPORT@ \
+                    -c "\dt ${table_base}_${postfix}*" | grep fred | cut -d '|' -f 2 >> table_list.txt
+            done
+    done
+
+    @PGBINDIR@/psql -P tuples_only=on -d @DBNAME@ -U @DBUSER@ -At -p @DBPORT@ \
+        -c "\dt session_*" | grep fred | cut -d '|' -f 2 >> table_list.txt
+
+    echo ------ List of partitions:
+    cat table_list.txt
+}
+
+f_list_parts() {
+    list_parts_worker
+
+    rm -f table_list.txt
+
+}
+
+f_drop_parts() {
+    list_parts_worker
+
+    echo "Type yes if you're sure you want to drop these tables"
+    read ans
+
+    if [ "$ans" != "yes" ]; then
+        echo Not confirmed.
+        exit 0
+    fi
+
+    # in bash ! only works with [[ command
+    if [[ ! -a table_list.txt ]]; then
+        echo File table_list.txt not found, action cancelled.
+        exit 1
+    fi
+
+    for table in `cat table_list.txt`; do
+            @PGBINDIR@/psql -P tuples_only=on -d @DBNAME@ -U @DBUSER@ -At -p @DBPORT@ \
+                    -c "drop table ${table} cascade" || break;
+    done;
+
+    rm -f table_list.txt
+
+}
+
+f_create_parts() {
+    test_db
+    if [ $? != 0 ]
+    then
+        echo "@DBNAME@ database does not exist or postgres server does not runnint."
+        exit 1
+    fi
+
+    if [ $# -lt 2 ]	
+    then
+        echo "Not enough arguments, Usage: $0 <from_date> <to_date>"
+        exit 1
+    fi	
+
+    echo
+    echo Creating partitions from: $1 to: $2
+
+    @PGBINDIR@/psql -d @DBNAME@ -U @DBUSER@ -At -p @DBPORT@ \
+                    -c "select create_parts('$1')"  > error_out.txt 2>&1
+
+
+    if [ $? != 0 ]; then
+        echo "----- SQL failed, error ouput (file error_out.txt): "
+        cat error_out.txt
+        exit 1
+    else
+        rm -f error_out.txt
+    fi
+}
+
+case $1 in
+    "install") f_install;;
+    "uninstall") f_uninstall;;
+    "upgrade" ) f_upgrade;;
+    "status" ) f_status;;
+    "testuser" ) test_user;;
+    "create_partitions") f_create_parts $2 $3;;
+    "list_partitions") list_parts_worker;;
+    "drop_partitions") f_drop_parts;;
+    "help" ) f_usage;;
+    "") f_usage;;
+    *)
+        echo "Unknown argument";
+        f_usage;
+        exit 1;;
+esac

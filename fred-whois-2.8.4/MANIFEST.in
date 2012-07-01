@@ -1,0 +1,41 @@
+include __init__.py
+include whois.py
+include ccregproxy.py
+include corbaparser.py
+include README.txt
+include RELEASE-VERSION
+include setup.py
+include setup.cfg
+include setup.cfg.template
+include MANIFEST.in
+include ChangeLog
+
+include conf/whois.conf.install
+include conf/apache.conf.install
+
+include templates/*
+
+include captcha/__init__.py
+include captcha/pil_missing.jpg
+include CaptchaWhois/*.*
+include CaptchaWhois/data/fonts/vera/*.*
+include CaptchaWhois/Visual/*.*
+include _clip/*.*
+include _css/*.*
+include _img/*.*
+include _js/*.*
+include _js/MochiKit/*.*
+
+include locale/*.*
+include locale/C/LC_MESSAGES/whois.mo
+include locale/cs_CZ/LC_MESSAGES/whois.mo
+include locale/en_US/LC_MESSAGES/whois.mo
+
+include statistics/*.*
+include statistics/README
+
+include freddist/*.py
+include freddist/README
+include freddist/command/*.py
+
+include contrib/fedora/rpm-*

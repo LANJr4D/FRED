@@ -1,0 +1,9 @@
+[bdist_wininst]
+install-script=setup_postinstall.py
+
+[bdist_rpm]
+requires=python
+install-extra-opts=--prefix=/usr --sysconfdir=/etc --no-mo
+
+[install]
+no-mo = 1

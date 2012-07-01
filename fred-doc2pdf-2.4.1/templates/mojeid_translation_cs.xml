@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <str name="Authentication new user mojeID">Založení účtu mojeID</str>
+  <str name="Subject: Authentication your identity with codes PIN1 and PIN2">Věc: Založení účtu mojeID</str>
+  <str name="Dear user,">Vážený uživateli,</str>
+  <str name="this letter approves the succefful creation of mojeID account with these dates:">tento dopis potvrzuje úspěšné založení mojeID s těmito údaji:</str>
+  <str name="account mojeID:">účet mojeID:</str>
+  <str name="first name:">jméno:</str>
+  <str name="last name:">příjmení:</str>
+  <str name="e-mail:">e-mail:</str>
+  <str name="To access into your mojeID account is necessary to verify your identity with a pair of pins PIN1 and PIN2:">Pro aktivaci Vašeho účtu je nutné vložit kódy PIN1 a PIN2.</str>
+  <str name="PIN1 was sent to your email address">PIN1 Vám byl zaslán emailem</str>
+  <str name="PIN2 is:">PIN2 je:</str>
+  <str name="For activate your account click on a link you received by email.">Aktivaci účtu proveďte klikem na odkaz, který jste obdrželi v emailu.</str>
+  <str name="We wish you much pleasure when you use the service mojeID.">Přejeme Vám mnoho radosti při používání služby mojeID.</str>
+  <str name="Your team CZ.NIC.">Váš tým CZ.NIC.</str>
+  <str name="Your team mojeID">Váš tým mojeID</str>
+  <str name="Customer Support">Zákaznická podpora</str>
+
+  <str name="Authentication new owner of account mojeID">Plná aktivace účtu mojeID</str>
+  <str name="Subject: mojeID account full activation">Věc: Plná aktivace účtu mojeID</str>
+
+<str name="For full activation of the following account">pro plnou aktivaci Vašeho účtu s následujícími údaji</str>
+<str name="you need this PIN3 code:">budete potřebovat tento kód PIN3:</str>
+  
+  <str name="To complete full activation of your account, go to">Pro provedení plné aktivace účtu jděte na</str>
+  <str name="log into your mojeID profile and enter the code PIN3 at the initial screen.">přihlaste se do Vašeho mojeID profilu a na úvodní obrazovce vložte kód PIN3.</str>
+
+  <str name="Americka 23">Americká 23</str>
+  <str name="120 00 Prague 2">120 00 Praha 2</str>
+
+  <str name="ZadostOValidaciKontaktu"> Žádost o validaci účtu mojeID</str>
+  <str name="ValidaciProvedte">Validaci proveďte jedním z následujících způsobů:</str>
+  <str name="ValidateVerifiedSignature1"> - Tuto žádost vytiskněte, opatřete ji </str> 
+  <str name="ValidateVerifiedSignature2">úředně ověřeným podpisem </str>
+  <str name="ValidateVerifiedSignature3">a odešlete poštou na níže uvedenou adresu </str>
+
+  <str name="ValidateEmail"> - Přiložte tuto žádost jako přílohu emailu, podepište jej svým elektronickým podpisem a zašlete jej na adresu podpora@nic.cz</str>
+  <str name="ValidateInPerson"> - Tuto žádost vytiskněte, podepište a dostavte se osobně na níže uvedenou adresu sdružení CZ.NIC. Nezapomeňte si s sebou vzít také Váš občanský průkaz. </str> 
+  <str name="ValOfficeHoursNotice"> Pracovní doba validačního pracoviště: </str>
+  <str name="ValOfficeHours">Po - Pá: 8:30 - 12:00, 13:00 - 16:00 </str>
+  <str name="ZadamTimtoO"> Žádám tímto o validaci účtu mojeID: </str>
+
+  <str name="00Handle"> Identifikátor : </str>
+  <str name="01Jmeno"> Jméno : </str>
+  <str name="02Org"> Organizace : </str>
+  <str name="03Ic"> IČ : </str>
+  <str name="04BirthDate"> Datum narození : </str>
+  <str name="05Address"> Adresa : </str>
+  <str name="IdentifikacniCisloZadosti"> Identifikační číslo žádosti </str>
+  <str name="zeDne">, ze dne </str>
+  <str name="JmenoApodpis"> Jméno a podpis odpovědné osoby: </str>
+
+</strings>
+

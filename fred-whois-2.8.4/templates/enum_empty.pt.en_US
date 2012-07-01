@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs"  dir="ltr">
+
+<head>
+         
+<meta name="distribution" content="global" />
+<meta name="copyright" content="(c) 2006 cz nic z.s.p.o." />
+<meta name="author" content="hippo" />
+<meta name="robots" content="index,follow" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Expires" content="0" />
+<meta http-equiv="Content-language" content="cz" />
+<meta http-equiv="Reply-to" content="tomas@caw.cz" />
+<meta name="author" content="http://www.freetime.cz" />
+<meta name="resource-type" content="document" />
+<meta name="googlebot" content="nosnippet,archive" />
+
+    <link rel="stylesheet" type="text/css" href="http://enum.nic.cz/css/global.css" />
+    <!--[if gte IE 6]> 
+        <link rel="stylesheet" type="text/css" href="http://enum.nic.cz/css/global_ie.css" />
+    <![endif]-->
+	<!--[if gte IE 5]> 
+        <link rel="stylesheet" type="text/css" href="http://enum.nic.cz/css/global_ie_5.css" />
+    <![endif]-->
+
+    <script type="text/javascript">
+	<!-- 
+	/* <![CDATA[ */
+    function open_w(url, w, h, s)
+    {
+    var parametry = null;
+    var nove_okno = null;
+    parametry = "width=" + w + "; height=" + h + "; resizable=0; scrollbars=" + s + "; toolbar=0;"
+    nove_okno = window.open(url, null, parametry);
+    nove_okno.returnValue = null;
+    nove_okno.focus();
+    }
+    
+    function openWin(src,width,height)  {
+        var okno=window.open(src, "win", "left=20, top=20, width="+width+", height="+height+", toolbar=0, location=0, directories=0, status=0, menubar=0, scrollbars=0, resizable=0");
+        okno.focus();
+        return false;
+    }
+    
+    function verdict(text) { 
+        alert(text);
+    }
+    /*]]>*/
+	//-->
+    </script>
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      _uacct = "UA-439372-2";
+      urchinTracker();
+    </script><title>ENUM - REGISTRATION</title>
+  </head>
+  <body id="body">
+	<div id="content">
+		<div id="top">
+	  		<h1>WEMANAGENUMBERS ENUM</h1>	
+			<div id="click" onclick="document.location.href='/'"></div>
+			<div id="toputils">
+				<div id="topmenu"> 	
+    				<span id="slovnicek-pojmu"><a href="/en/dict/">Dictionary</a></span>
+					<span id="tisk"><a onclick="window.open(this.href); return false;" href="http://enum.nic.cz/en/template/28/?outputmode=print ">Print</a></span>
+					<span id="mapa-webu"><a href="/en/map/">Site map</a></span>
+				</div>
+				<div id="topsearch">
+					<span id="vyhledat-nawebu">
+						<form action="/index.php" method="get">
+							<fieldset>
+								<input type="hidden" name="art" value="search" />
+								<input id="vyhledat-text" type="text" name="searched" value="" />
+								<input id="vyhledat" type="image" src="/img/hledat.gif" value="" onclick="check_word(this.form); return false;" />
+							</fieldset>
+						</form>
+					</span>
+					<span id="jak-registrovat"><a href="/en/page/28/">How to register</a></span>
+					<span id="vyhledat-cislo"><a href="http://enum.nic.cz/whois/?lang=en">Whois</a></span>
+					
+				</div>
+			</div>  	 	  	  
+		</div>
+		<script type="text/javascript">
+		<!--
+		/* <![CDATA[ */
+		function check_word(formik) {
+			var is_ok = true;
+			var is_empty = '';
+			if ( !formik['searched'].value ) {
+            	is_empty += '_L_S_SEARCH_WORD\n'; is_ok = false;
+            }
+			if ( is_empty ) {
+            	alert ( is_empty );
+                        return;
+            }
+			if ( is_ok ) {   
+            	formik.submit();
+            }
+		}
+		/*]]>*/
+		//-->
+	</script>
+		<div id="main-header"></div>
+		<div id="main">
+			<div id="main-content">
+
+
+
+
+		</div>
+		<div id="main-menu">
+	  	
+	  	<ul>
+<li class="" ><a href="http://enum.nic.cz/en/news/33/news.html" title="NEWS">NEWS</a>
+</li>
+<li class="" ><a href="http://enum.nic.cz/en/page/30/what-is-enum.html" title="WHAT IS ENUM?">WHAT IS ENUM?</a>
+</li>
+<li class="" ><a href="http://enum.nic.cz/en/page/53/why-enum.html" title="WHY ENUM?">WHY ENUM?</a>
+</li>
+<li class="" ><a href="http://enum.nic.cz/en/page/58/requirements.html" title="REQUIREMENTS">REQUIREMENTS</a>
+</li>
+<li class="" ><a href="http://enum.nic.cz/en/page/28/registration.html" title="REGISTRATION">REGISTRATION</a>
+</li>
+<li class="submenu" ><a href="http://enum.nic.cz/en/page/50/rules-and-conditions.html" title="RULES AND CONDITIONS">RULES AND CONDITIONS</a>
+</li>
+<li class="submenu" ><a href="http://enum.nic.cz/whois/registrars.py?lang=en" title="REGISTRARS LIST">REGISTRARS LIST</a></li>
+<li class="submenu" ><a href="http://enum.nic.cz/en/page/51/voip-operators-list.html" title="VOIP OPERATORS LIST">VOIP OPERATORS LIST</a>
+</li>
+<li class="submenu" ><a href="http://enum.nic.cz/whois?lang=en" title="WHOIS">WHOIS</a></li>
+<li class="" ><a href="http://enum.nic.cz/en/page/41/faq.html" title="FAQ">FAQ</a>
+</li>
+<li class="" ><a href="http://enum.nic.cz/en/page/14/contact.html" title="CONTACT">CONTACT</a>
+</li>
+
+</ul>
+
+	  	
+	  	
+		<div class="left-banner">
+			<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" 
+			codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" 
+			width="179" height="185" id="left-banner" align="middle">
+			<param name="allowScriptAccess" value="sameDomain" />
+			<param name="movie" value="/_data/flash/en_left_banner.swf?clickthru=http://enum.nic.cz/en/page/59/" />
+			<param name="quality" value="high" />
+			<param name="bgcolor" value="white" />
+			<param name="base" value="." />
+			<embed base="." src="/_data/flash/en_left_banner.swf?clickthru=http://enum.nic.cz/en/page/59/" 
+			quality="high" bgcolor="white" width="179" 
+			height="185" name="left-banner" align="middle" allowScriptAccess="sameDomain" 
+			type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+			</object>
+		</div>
+
+
+
+		<div class="left-banner">
+	  		<a href="http://www.nic.cz/en/"><img id="logonic" src="http://img.nic.cz/enum-nic-logo.gif" alt="" /></a>
+		</div>
+	  </div>
+	<div class="clear"></div>
+	</div>
+
+     
+	<div id="main-footer"></div>
+	</div>
+	</body>                 
+    </html>

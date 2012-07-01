@@ -1,0 +1,3 @@
+MAILTO=root@nic.cz
+# */30 * * * * root /usr/local/bin/update-stats.sh
+*/30 * * * * root python /usr/lib/python2.4/site-packages/fred_whois/statistics/simple_stats.py

@@ -1,0 +1,195 @@
+#ifndef FILEMANAGER_IDL_
+#define FILEMANAGER_IDL_
+
+#include "_dataTypes.idl"
+
+module ccReg {
+
+  /// Data type used for transfer of bytes of a file.
+  typedef sequence < octet > BinaryData;
+
+  /// Item in code list of file types.
+  struct FileEnumType
+  {
+    short id;    ///< Numeric ID of file type.
+    string name; ///< Name of file type.
+  };
+  /// Code list of file types (pairs of code and file type name).
+  typedef sequence < FileEnumType > FileEnumTypes;
+
+  /// Definition of search filter, which is used for looking up managed files.
+  struct FileFilter
+  {
+    long id;         ///< Id of the file (inactive if -1).
+    string name;     ///< Filename (inactive if empty string).
+    string path;     ///< Path to file on filesystem (inactive if empty string).
+    string mimetype; ///< MIME type of the file (inactive if empty string).
+    /** Numeric ID of file type (inactive if -1; 0 represents files with not
+     *  assigned type).
+     */
+    short filetype;
+    /** Creation timestamp of the file must lie in this interval (inactive if
+     *  filled with zeros). By creation we mean upload to file repository.
+     */
+    DateTimeInterval crdate;
+  };
+
+  /// Structure describing managed file.
+  struct FileInfo {
+    long id;            ///< Numeric ID of the file.
+    string name;        ///< Filename of the file (does not have to be unique).
+    string path;        ///< Path to the file on a filesystem.
+    string mimetype;    ///< MIME type of the file.
+    short filetype;     ///< Numeric ID of file type (0 if without type).
+    timestamp crdate;   ///< Date of file creation.
+    unsigned long size; ///< Size in bytes.
+  };
+  /// List of file descriptive structures.
+  typedef sequence < FileInfo > FileInfos;
+
+  /// Object making accessible results of file search.
+  interface FileSearch
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /** Exception thrown if search object is no more active (not used for
+     *  a long time.
+     */
+    exception NotActive {
+    };
+
+    /** Returns specified number of items from result of search.
+     *  If empty list is returned it means that all results have been already
+     *  retrieved.
+     *
+     *  \param count   Number of items which should be retrieved.
+     *  \return        List of results of search. The list might be actually
+     *                 shorter than specified by count parameter in case that
+     *                 there is not so many results.
+     */
+    FileInfos getNext(in long count) raises (InternalError, NotActive);
+
+    /** Destroy the search object at server-side.
+     *  This SHOULD be called whenever client finishes download of results,
+     *  allthough server has mechanism for cleaning of not used objects.
+     */
+    void destroy() raises (InternalError);
+  };
+
+  /// Object for downloading of a file
+  interface FileDownload
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /** Exception thrown if download object is no more active (not used for
+     *  a long time.
+     */
+    exception NotActive {
+    };
+
+    /** Returns a specified number of bytes from file.
+     *  If no bytes are returned it means that the download is finished.
+     *
+     *  \param nbytes  Number of bytes to download.
+     *  \return        Bytes of file.
+     */
+    BinaryData download(in long nbytes) raises (InternalError, NotActive);
+
+    /** Destroy the download object at server-side.
+     *  This SHOULD be called whenever client finishes download of a file,
+     *  allthough server has mechanism for cleaning of not used objects.
+     */
+    void finalize_download() raises (InternalError);
+  };
+
+  /// Object for uploading of a file
+  interface FileUpload
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+
+    /** Exception thrown if upload object is no more active (not used for
+     *  a long time.
+     */
+    exception NotActive {
+    };
+
+    /** Uploads a specified number of bytes from a file.
+     *
+     *  \param data    Uploaded bytes of a file.
+     */
+    void upload(in BinaryData data) raises (InternalError, NotActive);
+
+    /** Destroy the upload object at server-side.
+     *  This SHOULD be called whenever client finishes upload of a file.
+     *  It is a signal for the server that a whole file was successfully
+     *  uploaded.
+     *
+     *  \return           Numeric ID of the file assigned by file manager.
+     */
+    long finalize_upload() raises (InternalError);
+  };
+
+  /// Interface of file manager.
+  interface FileManager
+  {
+    /// Exception thrown in case of internal error (i.e. database error).
+    exception InternalError {
+      string message; ///< Textual description of error.
+    };
+    /// Exception thrown if requested file is in database but not on filesystem.
+    exception FileNotFound {
+    };
+    /// Exception thrown if requested file is not in database.
+    exception IdNotFound {
+    };
+    /** Method returns code list of file types.
+     *
+     *  \return    Code list of file types.
+     */
+    FileEnumTypes getTypeEnum() raises (InternalError);
+
+    /** Method uploads file in file manager.
+     *
+     *  \param name       File name (does not have to be unique).
+     *  \param mimetype   MIME type of the file.
+     *  \param filetype   Type of the file (0 means no type).
+     *  \return           FileUpload object used for transfer of bytes.
+     */
+    FileUpload save(in string name, in string mimetype, in short filetype)
+    raises (InternalError);
+
+    /** Method downloads a file from file manager.
+     *
+     *  \param id     Numeric ID of wanted file.
+     *  \return       FileDownload object used for transfer of bytes.
+     */
+    FileDownload load(in long id)
+    raises (InternalError, IdNotFound, FileNotFound);
+
+    /** Method returns file descriptive structure for a given file.
+     *
+     *  \param id     Numeric ID of file.
+     *  \return       Structure describing the file.
+     */
+    FileInfo info(in long id) raises (InternalError, IdNotFound);
+
+    /** Search in file repository based on a filter.
+     *  Returned object is used to retrieved results of the search.
+     *
+     *  \param filter Constraints which must be fulfilled by files.
+     *  \return       Object through which are accessible results of the search.
+     */
+    FileSearch createSearchObject(in FileFilter filter) raises (InternalError);
+  };
+};
+
+#endif

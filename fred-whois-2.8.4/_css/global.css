@@ -1,0 +1,801 @@
+/*
+    Pozor!!! Je zde docasna zavislost na /enumday/img
+*/
+body {
+  margin: 0px;
+  padding: 0px;
+  letter-spacing: 1px;
+  font-family: "Arial CE", Arial, Helvetica,  sans-serif;
+  font-size: 11px;
+  line-height: 140%;
+}
+body#body {
+	color: #475245;
+	background-color: #88988F; 
+} 
+div, img, h1, h2, h3, h4, h5, fieldset, 
+form, input, label, ul, ol, li, p, a, span, select {
+    margin: 0px; padding: 0px; border: 0px; 
+    font-family: "Arial CE", Arial, Helvetica,  sans-serif;
+}
+p {
+  padding: 0px;
+  margin: 0px 0px 15px 0px;
+  color: #475245;
+  background-color: transparent;
+  letter-spacing: 1px;
+
+}
+strong {
+  color: #475245;
+  background-color:transparent;
+}
+h2 {
+  color: #557EBB;
+  font-size: 14px;
+  background-color:transparent;
+  margin-bottom: 15px;
+  
+}
+h4 {
+  color: #557EBB;
+  font-size: 12px;
+  background-color:transparent;
+  margin-bottom: 15px;
+  
+}
+div.clear, span.clear ,.util
+{display: block;clear: both; font-size: 0px; height: 0px; line-height: 0px;}
+
+
+a {
+  color: #C83996;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+#content {
+    position: absolute; 
+    top: 0; left: 50%; 
+    margin-left: -362px; 
+    width: 724px;
+    
+}
+
+#nsset_record, #keyset_record {
+    border:solid 1px #ECECEC;
+    padding:0 8px;
+    background-color:#F9FBFF;
+}
+
+#nsset_record table, #keyset_record table {
+    background-color:#fff;
+}
+
+#top {
+  width: 724px;
+  height: 114px;
+  background: url("/enumday/img/top.gif") top left;
+  position:relative;
+}
+#top #click {
+	position:absolute;
+	width:180px;
+	height:60px;
+	top:40px;
+	left: 10px;
+	cursor:pointer;
+	z-index: 99;
+	
+}
+#top h1 {
+  margin: 0px;
+  padding: 0px;
+  position: relative;
+  top: 17px;
+  left: 200px;
+  font-size: 12px;
+  color: #fff;
+  background-color:transparent;
+  width: 400px;
+}
+
+
+#toputils {position:relative;}
+#topmenu {
+	padding-right: 10px;
+	height:22px;
+	line-height: 18px;
+	
+}
+#topmenu span {
+	display:block;
+	height:22px;
+	float: right;
+	width: auto;
+	margin-right: 7px;
+	padding-left: 20px;
+	font-size: 10px;
+	}
+
+
+#topmenu #mapa-webu {
+  background: url("/enumday/img/mapa-webu.gif") 0px 2px no-repeat;
+}
+
+#topmenu #tisk {
+  background: url("/enumday/img/tisk.gif") 0px 2px no-repeat;
+}
+
+#topmenu #slovnicek-pojmu {
+  background: url("/enumday/img/tisk.gif") 0px 2px no-repeat;
+}
+
+
+#topmenu span em { 
+	font-variant:normal;
+	font-style:normal;
+}
+
+#topmenu a {
+	color:#000;
+	text-decoration: none;
+	background-color:transparent;
+	
+}
+
+#topsearch {
+	background-color: transparent;
+	position: absolute;
+	top: 46px;
+	left: 0px;
+	font-size: 10px;
+	font-weight: bold;
+	color: #fff;
+	height: 25px;
+	width:700px;
+	padding-right: 24px;
+  
+}
+#topsearch a {
+  color: #fff;
+  text-decoration: none;
+}
+#topsearch span {
+	float: right;
+}
+
+#topsearch #vyhledat-cislo, 
+#topsearch #jak-registrovat {
+	display:block;
+	height:22px;
+	float: right;
+	width: auto;
+	margin-right: 7px;
+	padding-left: 20px;
+	font-size: 10px;
+}
+#topsearch #vyhledat-cislo {  
+  background: url("/enumday/img/vyhledat-cislo.gif") 0px 1px no-repeat;
+}
+
+#topsearch #jak-registrovat {  
+  background: url("/enumday/img/jak-registrovat.gif") 0px 1px no-repeat;
+}
+
+span#vyhledat-nawebu form {
+  display: inline;
+}
+#vyhledat-text {
+  border: 1px solid #557EBB;
+  margin-bottom:17px;
+  height: 16px;
+  
+}
+#vyhledat {
+  border: 0px;
+  margin-left: 10px;
+  width: 15px;
+  height: 15px;
+  margin-bottom:11px
+}
+
+
+
+#main-header {
+  width: 724px;
+  height: 15px;
+  background: url("/enumday/img/main-header.gif") top left;
+  padding: 0px;
+
+}
+
+
+ul {
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
+  color:#475245;
+}
+
+/*
+ol li:before {
+	color:red;
+	
+}
+*/
+
+#path-info a {
+  color: #000;
+  background-color: transparent;
+}
+
+#main-content ul {
+  margin-left: 15px;
+  margin-bottom: 12px;
+  list-style: square url( '/enumday/img/wctverec.png' );
+  color:#475245;
+  
+}
+#main-content ol {
+	margin-left: 25px;
+    margin-bottom: 12px;
+	color:#475245;
+}
+
+#main-content table {
+  border-collapse: collapse;
+  border: 1px solid #ECECEC;  
+  width: 100%;
+  margin-top:14px;
+  margin-bottom:14px;
+  
+}
+
+#main-content table tr td, table tr th {
+  font-weight: normal;
+  padding: 3px;
+  border-left: 1px solid #ECECEC;
+  border-right: 1px solid #ECECEC;
+  
+}
+td.gray {
+	background-color:#f8f9f9;
+}
+
+#main-content table tr th {
+  height: 18px;
+  background: url("/media/_img/bg-th.gif") top left; 
+  padding:1px 1px 1px 3px;
+  text-align:left;
+}
+#main-content table tr td {
+	height: 18px
+}
+
+#main-content table tr:hover,
+#main-content table tr:hover > td.gray,
+#main-content table tr.hover {
+	background-color:#e6f1ff;
+	cursor: text;
+}
+
+#main-content label {
+  display: block;
+  float: left;
+}
+
+#main-content label.lineup {
+  width: 350px;
+}
+
+
+h3 {
+  color: #557EBB;
+  background-color:transparent;
+  font-size:13px;
+  margin:7px 0px 7px 0px ;
+  
+}
+
+/*
+input, textarea {
+  border: 1px solid #ECECEC;  
+  margin-bottom: 5px;
+}
+*/
+
+
+
+#main-content
+{
+  width: 460px;
+  float: right;
+  padding-right: 55px;
+}
+
+#path-info {
+  font-size: 9px;
+  color: #475245;
+}
+
+#main-menu {
+  width: 192px;
+}
+
+#main-menu ul {
+  margin-left: 12px;
+  width: 180px;  
+  margin-bottom: 2px;  
+  overflow: visible;
+  border-top: 1px solid #ECECEC;
+  border-bottom: 1px solid #ECECEC;
+  padding:0px;
+  
+}
+
+span.border {
+	border: 1px solid #ECECEC;
+}
+
+#main-menu ul li,
+#main-menu ul li.submenu {
+	width: 180px;
+	height:20px;
+}
+#main-menu ul li {
+	background: url("/enumday/img/bg-menu.gif") top left no-repeat;
+}
+#main-menu ul li.submenu {
+	background: url("/enumday/img/bg-submenu.gif") top left no-repeat;
+}
+
+
+#main-menu ul li a, 
+#main-menu ul li.submenu a {
+	 color: black;
+	 text-decoration: none;
+	 display: block;	 
+	}
+#main-menu ul li a {
+	padding-left: 22px;
+	width:158px;
+	height:17px;
+	padding-top: 3px;
+}
+
+#main-menu ul li.submenu a {	
+	padding-left: 30px;
+	width:150px;
+	height:17px;
+	padding-top: 3px;
+	font-size: 7pt;
+}	
+#main-menu ul li a:hover,
+#main-menu ul li.submenu a:hover {
+	border: 1px solid #ECECEC;
+	height:16px;
+	padding-top:2px;
+	color: #C83996;	
+}
+#main-menu ul li a:hover {
+	padding-left: 21px;
+}
+#main-menu ul li.submenu a:hover { 
+	padding-left: 29px;
+}
+
+.left-banner {
+  margin-left: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding:0px;
+  
+}
+
+#main {
+  min-height: 670px;
+  background: url("/enumday/img/bg.gif") top left;
+}
+
+
+#main-footer {
+  width: 712px;
+  height: 15px;
+  background: url("/enumday/img/main-footer.gif") top left repeat-x;
+  padding: 0px;
+  margin-bottom: 12px;
+  padding-top: 22px;
+  padding-right: 12px;
+  text-align: right;
+  color: #fff;
+  font-size: 10px;
+}
+
+#main-footer a {
+  color: #fff;
+  font-size: 10px;
+}
+
+.oper, .firm, .indi {
+  padding: 10px 14px 0px 75px;
+  margin-bottom: 20px;
+}
+.oper p, .firm p, .indi p {
+	margin-left:14px;
+	padding-right:15px;
+}
+.oper  a {
+	color:#FFA41A;
+}
+.firm a {
+	color:#5FC038;
+}
+.indi a {
+	color:#3387BE;
+}
+
+
+.oper ul li, .firm ul li, .indi ul li {
+  font-weight: bold;
+}
+
+.oper {
+  border: 1px solid #FFA41A;
+  background: url("/enumday/img/01.gif") 10px 10px no-repeat #fffbf5;
+  
+}
+#main-content .oper ul { list-style: square url( '/enumday/img/wctverec_or.png' ); }
+.oper ul li {
+  color: #FFA41A;
+}
+
+.firm {
+  border: 1px solid #5FC038;
+  background: url("/enumday/img/02.gif") 10px 10px no-repeat #f1f9ee;
+}
+
+.firm ul li {
+  color: #5FC038;
+}
+#main-content .firm ul { list-style: square url( '/enumday/img/wctverec_gr.png' ); }
+.indi {
+  border: 1px solid #3387BE;
+  /*background: url("/enumday/img/bg-indi.gif") top left no-repeat #f3f8fc;*/
+  background: url("/enumday/img/03.gif") 10px 10px no-repeat #f3f8fc;
+}
+
+.indi ul li {
+  color: #3387BE;
+}
+
+span.blue {color: #557EBB;}
+span.red, em.red {color: #C83996}
+span.red, span.blue, em.red {background-color:transparent;}
+span.strong {
+	 font-weight:bolder;
+	 
+}
+
+code {font-weight:bolder;}
+
+div.statlink {  
+	color:#475245;
+	width: 164px;
+	min-height: 56px;
+	border:1px solid #ECECEC;
+	margin-left: 14px;
+	padding: 6px;
+}
+
+div.util {
+  clear: both;
+  height: 0px;
+  font-size: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+
+/* aktuality */
+span.fipaso_info {
+	display: block;	
+	margin: 7px 0px 7px 0px ;
+}
+/* aktuality */
+h2#news {
+	background-image:none;
+	margin-bottom:10px;
+	height: 17px;
+	font-size:10pt;
+	margin:0px 
+}
+.obsah .aktualita {
+	margin-top:7px;
+}
+
+
+
+/** Visual **/
+
+div#czwvisual,
+div#enwvisual {
+	 position:relative;
+	 width: 488px;
+	 z-index: 1;
+	 
+}
+div#czwvisual div#wleft,
+div#enwvisual div#wleft {
+	 width: 180px;
+	 min-height: 346px;
+	 float: left;
+}
+
+div#czwvisual div#wright,
+div#enwvisual div#wright {
+	width: 305px;
+	min-height: 346px;
+	float: right;
+	background-color:#f5f5f5;
+	/*overflow: hidden;*/
+}
+
+div#czwvisual div#wright div#wnews,
+div#enwvisual div#wright div#wnews {
+	margin: 5px;
+}
+
+div.inews {
+	margin: 0px 0px 5px 0px;
+	padding:0px;
+	z-index: 1;	
+}
+div.inews h2 {
+	margin-top:1px;
+	
+}
+
+div.inews h5,
+#main-content .obsah h5 { 
+	color: #557EBB;
+	background-color: transparent;
+	margin: 1px 0px 0px 1px;
+	padding: 0px;
+	font-size: 1em;
+	font-weight: bolder;
+}
+div.inews em,
+.obsah .datum {
+	font-style:normal;
+	color:#557EBB;
+	font-size: 7pt;
+	margin: 1px 0px 0px 1px;
+}
+
+div.inews p {
+	margin: 1px 0px 0px 1px;
+	padding: 0px;
+	font-size: 8pt;
+	}
+
+div#czwvisual #wleft #wtop, 
+div#czwvisual #wleft #wmiddle, 
+div#czwvisual #wleft #wbottom,
+div#enwvisual #wleft #wtop, 
+div#enwvisual #wleft #wmiddle, 
+div#enwvisual #wleft #wbottom {
+	width: 180px;
+	height: 116px;
+	margin-bottom: 0px;
+	background-color: transparent;
+	cursor:pointer;
+}
+div#czwvisual #wleft #wtop {
+	 background-image: url('/enumday/img/visual/w_oper.png');
+	 z-index: 1;
+}
+div#czwvisual #wleft #wmiddle {
+	 background-image: url('/enumday/img/visual/w_firm.png');
+	 z-index: 1;
+}
+div#czwvisual #wleft #wbottom {
+	 background-image: url('/enumday/img/visual/w_indi.png');
+	 z-index: 1;
+}
+/* EN VERSION */
+div#enwvisual #wleft #wtop {
+	 background-image: url('/enumday/img/visual/en_w_oper.png');
+	 z-index: 1;
+}
+div#enwvisual #wleft #wmiddle {
+	 background-image: url('/enumday/img/visual/en_w_firm.png');
+	 z-index: 1;
+}
+div#enwvisual #wleft #wbottom {
+	 background-image: url('/enumday/img/visual/en_w_indi.png');
+	 z-index: 1;
+}
+
+/** Mouse Overy **/
+div#czwvisual #wleft #wtop a#wtoplayer,
+div#czwvisual #wleft #wmiddle a#wmiddlelayer,
+div#czwvisual #wleft #wbottom a#wbottomlayer,
+div#enwvisual #wleft #wtop a#wtoplayer,
+div#enwvisual #wleft #wmiddle a#wmiddlelayer,
+div#enwvisual #wleft #wbottom a#wbottomlayer {
+	width:180px;
+	height:116px;
+	position: absolute;
+	background:transparent;
+	left: 0px;
+	display:block;
+	cursor:pointer;	
+}
+div#czwvisual #wleft #wtop a#wtoplayer,
+div#enwvisual #wleft #wtop a#wtoplayer {	
+	top:0px;
+	z-index:100; 
+}
+div#czwvisual #wleft #wmiddle a#wmiddlelayer,
+div#enwvisual #wleft #wmiddle a#wmiddlelayer { 
+	top:116px;
+	z-index:101; 
+}
+div#czwvisual #wleft #wbottom a#wtoplayer,
+div#enwvisual #wleft #wbottom a#wtoplayer { 
+	top:232px;
+	z-index:102;
+}
+
+div#czwvisual #wleft #wtop a#wtoplayer:hover,
+div#czwvisual #wleft #wmiddle a#wmiddlelayer:hover,
+div#czwvisual #wleft #wbottom a#wbottomlayer:hover,
+div#czwvisual #wleft #wtop a#wtoplayer.hover,
+div#czwvisual #wleft #wmiddle a#wmiddlelayer.hover,
+div#czwvisual #wleft #wbottom a#wbottomlayer.hover,
+
+div#enwvisual #wleft #wtop a#wtoplayer:hover,
+div#enwvisual #wleft #wmiddle a#wmiddlelayer:hover,
+div#enwvisual #wleft #wbottom a#wbottomlayer:hover,
+div#enwvisual #wleft #wtop a#wtoplayer.hover,
+div#enwvisual #wleft #wmiddle a#wmiddlelayer.hover,
+div#enwvisual #wleft #wbottom a#wbottomlayer.hover {
+	width:488px;
+	z-index: 100;
+	height:116px;
+	position: absolute;
+	left: 1px;
+	display:block;
+	cursor: pointer;	
+}
+
+div#czwvisual #wleft #wtop a#wtoplayer:hover,
+div#czwvisual #wleft #wtop a#wtoplayer.hover {	
+	background:url('/enumday/img/visual/w_oper_over.png');
+	top:0px;
+	z-index: 103;
+}
+div#czwvisual #wleft #wmiddle a#wmiddlelayer:hover,
+div#czwvisual #wleft #wmiddle a#wmiddlelayer.hover { 
+	background:url('/enumday/img/visual/w_firm_over.png');
+	top:116px;
+	z-index: 104; 
+}
+div#czwvisual #wleft #wbottom a#wbottomlayer:hover,
+div#czwvisual #wleft #wbottom a#wbottomlayer.hover { 
+	background:url('/enumday/img/visual/w_indi_over.png');
+	top:232px; 
+	z-index:105;
+}
+/* EN VERSION */
+div#enwvisual #wleft #wtop a#wtoplayer:hover,
+div#enwvisual #wleft #wtop a#wtoplayer.hover {	
+	background:url('/enumday/img/visual/en_w_oper_over.png');
+	top:0px;
+	z-index: 103;
+}
+div#enwvisual #wleft #wmiddle a#wmiddlelayer:hover,
+div#enwvisual #wleft #wmiddle a#wmiddlelayer.hover { 
+	background:url('/enumday/img/visual/en_w_firm_over.png');
+	top:116px;
+	z-index: 104; 
+}
+div#enwvisual #wleft #wbottom a#wbottomlayer:hover,
+div#enwvisual #wleft #wbottom a#wbottomlayer.hover { 
+	background:url('/enumday/img/visual/en_w_indi_over.png');
+	top:232px; 
+	z-index:105;
+}
+
+
+/*MAPA STRANEK*/
+div#map {
+	background-color:#f5f5f5;
+	width: 96%;
+	padding: 2%;
+}
+div#map ul {
+	margin-bottom: 5px;
+	 
+}
+div#map ul li {
+	margin-bottom: 5px;
+	
+}
+div#map ul li ul li {
+	font-size: 10px;
+	
+}
+div.publish {}
+h3.nalezeno {margin: 10px 0px 10px 0px;}
+
+div.oneverb {
+	padding:2px;
+}
+div.oneverb .heslo {font-weight:bolder;
+}
+h2.biggerh2 {
+  color: #557EBB;
+  font-size: 14px;
+  background-color:transparent;
+  margin-bottom: 15px;
+}
+ 
+
+form.enum-util{
+		display:block;
+		width:300px;
+                margin: 20px auto;
+		/* border:1px solid black; */
+		
+	}
+	form.enum-util p {
+		padding:2px 0px 2px 0px;
+		width:296px;
+	}
+	form.enum-util p.error {
+                border: 4px solid red;
+                padding: 3px;
+		width:290px;
+                text-align: center;
+	}
+	form.enum-util img {
+                display: block;
+                margin: 10px 0px;
+	}
+	div.line {
+		display:block;
+		width:300px;
+		/* border:1px solid red; */
+		position:relative;
+		height:20px;
+	}
+	div.line input.inline {
+		border:1px solid #d6d5d4;
+		/* float:right; */
+		height:16px;
+		padding-top:2px;
+		width:300px;
+		font-size:13px;
+	} 
+	div.line label {
+		padding-top:3px;
+		padding-left:0px;
+	}
+	div.twoline {
+	   text-align:right;
+	}
+	#submit_button, 
+	#reset_button {
+                margin-top: 35px;
+		width:127px;
+		height:22px;
+		background: url("/media/_img/button.png") transparent top left no-repeat;
+		color:white;
+		font-weight:bolder;
+	}

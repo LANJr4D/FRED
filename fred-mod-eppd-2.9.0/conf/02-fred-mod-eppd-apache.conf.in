@@ -1,0 +1,46 @@
+#
+# The default configuration file for mod_eppd apache module.
+# See mod_eppd's documentation for description of configuration directives.
+# Include this file in main httpd.conf configuration file or copy the content
+# of this file to httpd.conf.
+#
+
+#
+# The most preferred way of configuration is to put epp in virtual host.
+# This way you can continue to run http in normal way and besides that, if
+# somebody connects to port @PORT@ on @NSHOST@, EPP protocol will be activated
+# for that connection.
+#
+
+# EPP port, assigned by IANA
+Listen @PORT@
+
+#LoadModule corba_module modules/mod_corba.so
+LoadModule eppd_module  @MODULE_INSTALLDIR@/mod_eppd.so
+
+<VirtualHost *:@PORT@>
+   # mod_corba's configuration, you have to have installed mod_corba module
+   CorbaEnable       On
+   CorbaNameservice  @NSHOST@
+   CorbaObject       @OBJECTNAME@ EPP_alias
+   CorbaObject		 @LOGGER_OBJECTNAME@ Logger_alias
+
+   EPPprotocol       On
+   EPPobject         EPP_alias
+   EPPlogdObject	 Logger_alias
+   EPPlogdMandatory  Off
+   EPPschema         "@DATAROOTDIR@/@PACKAGE@/schemas/all.xsd"
+   EPPservername     "EPP server"
+   EPPlog            "@LOCALSTATEDIR@/log/fred-eppd.log"
+   EPPloglevel       info
+   EPPvalidResponse  Off
+ 
+   # SSL configuration
+   SSLEngine on
+   SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP
+   SSLVerifyClient       require
+   SSLCertificateFile    @DATAROOTDIR@/@PACKAGE@/ssl/test-cert.pem
+   SSLCertificateKeyFile @DATAROOTDIR@/@PACKAGE@/ssl/test-key.pem
+   SSLCACertificateFile  @DATAROOTDIR@/@PACKAGE@/ssl/test-cert.pem
+</VirtualHost>
+

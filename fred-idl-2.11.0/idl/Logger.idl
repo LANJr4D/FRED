@@ -1,0 +1,103 @@
+#ifndef LOGGER_IDL_
+#define LOGGER_IDL_
+
+
+#include "_dataTypes.idl"
+#include "Admin.idl"
+
+module Registry {
+  interface PageTable;
+};
+
+
+module ccReg {
+    interface Logger {
+        exception SESSION_NOT_EXISTS {};
+        exception REQUEST_NOT_EXISTS {};
+        exception REQUEST_TYPE_NOT_EXITS {};
+        exception RESPONSE_CODE_NOT_EXISTS {};
+        exception OBJECT_TYPE_NOT_EXISTS {};
+        exception INCORRECT_USAGE {};
+        exception INTERNAL_SERVER_ERROR {};
+        exception LIMITS_EXCEEDED {};
+        exception OBJECT_NOT_FOUND {};
+
+        typedef sequence< string > ObjectTypeList;
+
+        struct Detail {
+            ccReg::TID id;
+            string timeBegin;
+            string timeEnd;
+            string    sourceIp;
+            string service_type;
+            string action_type;
+            ccReg::TID session_id;
+            string user_name;
+            ccReg::TID user_id;
+            boolean is_monitoring;
+            string raw_request;
+            string raw_response;
+            long result_code;
+            string result_name; 
+            ccReg::RequestProperties props;
+            ccReg::ObjectReferences refs;
+        };
+
+
+        /* session_id is optional parameter */
+        TID createRequest(in string source_ip, in RequestServiceType serv,
+                      in string content, in RequestProperties props,
+                      in ObjectReferences refs, in RequestType action_type,
+                      in TID session_id)
+                      raises (INTERNAL_SERVER_ERROR);
+
+        /* session_id is optional parameter */
+        void closeRequest(in TID id, in string content, in RequestProperties props,
+                      in ObjectReferences refs, in long result_code, in TID session_id)
+                      raises (INTERNAL_SERVER_ERROR, REQUEST_NOT_EXISTS);
+
+        TID createSession (in TID user_id, in string user_name)
+                      raises (INTERNAL_SERVER_ERROR);
+
+        void closeSession (in TID id)
+                      raises (INTERNAL_SERVER_ERROR, SESSION_NOT_EXISTS);
+
+        RequestTypeList getRequestTypesByService(in RequestServiceType serv)
+                      raises (INTERNAL_SERVER_ERROR);
+
+        RequestServiceList getServices()
+                      raises (INTERNAL_SERVER_ERROR);
+
+        ResultCodeList getResultCodesByService(in RequestServiceType serv)
+                      raises (INTERNAL_SERVER_ERROR);
+
+        ObjectTypeList getObjectTypes()
+                      raises (INTERNAL_SERVER_ERROR);
+
+        /* OBSOLETE do not use in new applications (please) */
+        void addRequestProperties(in TID id, in RequestProperties props)
+                      raises (INTERNAL_SERVER_ERROR, REQUEST_NOT_EXISTS);
+
+
+        /* methods which allow to run logd on separate database/host */
+        Registry::PageTable createPageTable(in string session_id);
+
+        void deletePageTable(in string session_id);
+
+        Detail getDetail(in TID id)
+                      raises (OBJECT_NOT_FOUND);
+
+        /* request count for a specific user as logged in fredlog database */ 
+        unsigned long long getRequestCount(in string datetime_from, in string datetime_to, in string service, in string user)
+                      raises (INCORRECT_USAGE, INTERNAL_SERVER_ERROR);
+
+        /* request count for all users identified by handles in the output
+           - one of the handles may be an empty string
+        */
+        RequestCountInfo getRequestCountUsers(in string datetime_from, in string datetime_to, in string service)
+                      raises (INCORRECT_USAGE, INTERNAL_SERVER_ERROR);
+
+    };
+};
+
+#endif

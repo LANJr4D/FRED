@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: fred-transproc
+Version: 1.1.1
+Summary: FRED TransProc
+Home-page: http://fred.nic.cz/
+Author: Jan Kryl
+Author-email: developers@nic.cz
+License: GNU GPL
+Description: Component of FRED (Fast Registry for Enum and Domains)
+Platform: posix

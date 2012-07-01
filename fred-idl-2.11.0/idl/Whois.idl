@@ -1,0 +1,238 @@
+#ifndef WHOIS_IDL_
+#define WHOIS_IDL_
+
+
+//whois
+
+#include "_dataTypes.idl"
+#include "Registry.idl"
+
+module ccReg 
+{
+
+  /// Access structure
+  struct WhoisEPPAccess {
+    string password; ///< epp login password
+    string md5Cert; ///< md5 of certificate
+  };
+  
+  /// List of access structures
+  typedef sequence<WhoisEPPAccess> WhoisEPPAccessSeq;
+  
+  ///Zone access
+  struct WhoisZoneAccess
+  {
+      ccReg::TID id; ///record id
+      string name; ///zone name
+      DateType fromDate;  ///start of registrar's access to zone
+      DateType toDate; ///end of registrar's access to zone
+  };//struct ZoneAccess
+
+  /// List of zone structures
+  typedef sequence<WhoisZoneAccess> WhoisZoneAccessSeq;
+
+  /// Registrar detail structure
+  struct WhoisRegistrar {
+    TID id; ///< registrar ID
+    string ico;
+    string dic;
+    string varSymb;
+    boolean vat;
+    string handle; ///< registrar identification
+    string name; ///< registrar name
+    string organization; ///< organization name
+    string street1; ///< address part 1
+    string street2; ///< address part 2
+    string street3; ///< address part 3
+    string city; ///< city of registrar headquaters
+    string stateorprovince; ///< address part
+    string postalcode; ///< address part
+    Registry::CountryCode country; ///< country code
+    string telephone; ///< phne number
+    string fax; ///< fax number
+    string email; ///< contact email
+    string url; ///< URL
+    Registry::Money credit; ///< actual credit
+    WhoisEPPAccessSeq access; ///< list of epp access data
+    WhoisZoneAccessSeq zones; ///< list of active registrar's zones
+    boolean hidden; ///< hidden in PIF
+  };
+
+  // Type for list of registrars
+  typedef sequence<WhoisRegistrar> WhoisRegistrarList;
+
+
+  typedef sequence<string> ContactHandleSeq;
+  struct DomainDetail {
+     TID id;
+     string fqdn;
+     string roid;
+     string registrarHandle;
+     string createDate;
+     string transferDate;
+     string updateDate;
+     string createRegistrarHandle;
+     string updateRegistrarHandle;
+     string authInfo;
+     string registrantHandle;
+     string expirationDate;
+     string valExDate;
+     boolean publish; 
+     string nssetHandle;
+     string keysetHandle;
+     ContactHandleSeq admins;
+     ContactHandleSeq temps;
+     Registry::ObjectStatusSeq statusList;
+  };
+
+  struct ContactDetail {
+     TID id;
+     string handle;
+     string roid;
+     string registrarHandle;
+     string createDate;
+     string transferDate;
+     string updateDate;
+     string createRegistrarHandle;
+     string updateRegistrarHandle;
+     string authInfo;
+     string name;
+     string organization;
+     string street1;
+     string street2;
+     string street3;
+     string province;
+     string postalcode;
+     string city;
+     string country;
+     string telephone;
+     string fax;
+     string email;
+     string notifyEmail;
+     string ssn;
+     string ssnType;
+     string vat;
+     boolean discloseName;
+     boolean discloseOrganization;
+     boolean discloseEmail;
+     boolean discloseAddress;
+     boolean discloseTelephone;
+     boolean discloseFax;
+     boolean discloseIdent;
+     boolean discloseVat;
+     boolean discloseNotifyEmail;
+     Registry::ObjectStatusSeq statusList;
+  };
+
+  struct NSSetDetail {
+     TID id;
+     string handle;
+     string roid;
+     string registrarHandle;
+     string createDate;
+     string transferDate;
+     string updateDate;
+     string createRegistrarHandle;
+     string updateRegistrarHandle;
+     string authInfo;
+     ContactHandleSeq admins;
+     DNSHost hosts;
+     Registry::ObjectStatusSeq statusList;     
+     short reportLevel;
+  };
+
+  struct KeySetDetail {
+      TID id;
+      string handle;
+      string roid;
+      string registrarHandle;
+      string createDate;
+      string transferDate;
+      string updateDate;
+      string createRegistrarHandle;
+      string updateRegistrarHandle;
+      string authInfo;
+      ContactHandleSeq admins;
+      DSRecord dsrecords;
+      DNSKey dnskeys;
+      Registry::ObjectStatusSeq  statusList;
+  };
+
+  /// Sequence of domains is used in inverse whois queries
+  typedef sequence<DomainDetail> DomainDetails;
+  /// Sequence of nssets is used in inverse whois queries
+  typedef sequence<NSSetDetail> NSSetDetails;
+  /// Sequence of keysets is used in inverse whois queries
+  typedef sequence<KeySetDetail> KeySetDetails;
+  /// Type of inverse key used for domain search
+  enum DomainInvKeyType {
+    DIKT_REGISTRANT,
+    DIKT_ADMIN,
+    DIKT_TEMP,
+    DIKT_NSSET,
+    DIKT_KEYSET
+  };
+  
+  /// Type of inverse key used for nsset search
+  enum NSSetInvKeyType {
+    NIKT_NS,
+    NIKT_TECH
+  };
+  /// Type of inverse key used for keyset search
+  enum KeySetInvKeyType {
+      KIKT_TECH
+  };
+
+  /// public interface
+  interface Whois
+  {
+    /// exception thrown in case of failed search
+    exception ObjectNotFound{};
+    /// exception thrown in case of error
+    exception InternalServerError{};
+    
+    /// return one registrar with specified handle
+    WhoisRegistrar getRegistrarByHandle(in string handle)
+    	raises (ObjectNotFound, InternalServerError);
+    /// return complete list of registrars by access to zone
+    WhoisRegistrarList getRegistrarsByZone(in string zone)
+    	raises (InternalServerError);
+    /// return contact detail for specified handle
+    ContactDetail getContactByHandle(in string handle)
+        raises (ObjectNotFound, InternalServerError);
+
+    /// return nsset detail for specified handel
+    NSSetDetail getNSSetByHandle(in string handle)
+        raises (ObjectNotFound, InternalServerError);
+    /// return keyset detail for specified handle
+    KeySetDetail getKeySetByHandle(in string handle)
+        raises (ObjectNotFound, InternalServerError);
+    /// return domain detail for specified handel
+    DomainDetail getDomainByFQDN(in string fqdn)
+        raises (ObjectNotFound, InternalServerError);
+    /// Return list with descriptions of available object status for domain
+    Registry::ObjectStatusDescSeq getDomainStatusDescList(in string lang)
+        raises (InternalServerError);
+    /// Return list with descriptions of available object status for contact
+    Registry::ObjectStatusDescSeq getContactStatusDescList(in string lang)
+        raises (InternalServerError);
+    /// Return list with descriptions of available object status for nsset
+    Registry::ObjectStatusDescSeq getNSSetStatusDescList(in string lang)
+        raises (InternalServerError);
+    /// Return list with descriptions of available object status for keyset
+    Registry::ObjectStatusDescSeq getKeySetStatusDescList(in string lang)
+        raises (InternalServerError);
+    
+    /// get domains by registrant, admin or nsset handle
+    DomainDetails getDomainsByInverseKey(in string key, in DomainInvKeyType type, in long limit)
+        raises (InternalServerError);
+    /// get nsset by nameserver or technical contact handle
+    NSSetDetails getNSSetsByInverseKey(in string key, in NSSetInvKeyType type, in long limit)
+        raises (InternalServerError);
+    /// get keyset by technical contact handle
+    KeySetDetails getKeySetsByInverseKey(in string key, in KeySetInvKeyType type, in long limit)
+        raises (InternalServerError);
+  };//interface Whois
+};//module ccReg
+
+#endif

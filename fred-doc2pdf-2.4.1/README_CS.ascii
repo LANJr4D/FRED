@@ -1,0 +1,118 @@
+Fred2pdf
+
+Fred2pdf je system pro prevod dat do PDF. System je zalozen na sablonovacim frontendu 
+Tiny RML2PDF, ktery je postaven na knihovne The ReportLab Open Source PDF library 
+(the ReportLab Toolkit). Vsechny casti systemu jsou napsany v jazyce Python.
+
+System pouziva TrueType fonty. Pri instalaci je nutne nastavit cestu
+do slozky s temito fonty a overit, ze fonty skutecne podporuji ceske znaky.
+
+Pokud neni nutne pouzivat ceske nebo jine znaky, je mozne TrueType fonty vynechat
+a pouzivat primo modul trml2pdf.
+
+
+OBSAH:
+
+ * Navod k pouziti
+
+ * Popis jednotlivych casti
+
+    *** Reportlab
+    *** Tiny RML2PDF
+    *** xsltproc
+    *** Fred2pdf
+
+
+* Navod k pouziti
+
+
+Sabloby invoice.xml a advanced_invoice.xml vytvareji PDF pro fakturu a zalohovou fakturu.
+
+Ulozeni do souboru pdf:
+
+  $ xsltproc templates/invoice.xsl examples/invoice.xml | doc2pdf > test2.pdf
+
+Ulozeni primo do filemanageru:
+(Staci definovat xml, xsl a jmeno pdf.)
+
+  $ xsltproc templates/invoice.xsl examples/invoice.xml | doc2pdf | filemanager_client.py -t application/pdf -l test1.pdf
+
+
+Sablona auth_info.xsl slouzi pro prevod auth_info.xml zaznamu do PDF.
+
+V layoutu je pouzito logo cz_nic_logo.jpg, ktere je ulozeno v adresari templates/
+spolecne s touto sablonou. Je nutne nastavit spravne cestu, pokud se sablona nevola z adresare
+skriptu (fred2pdf/trunk):
+
+$ xsltproc --stringparam srcpath adresar/kde-je-logo/templates/ templates/auth_info.xsl examples/auth_info.xml
+
+nebo:
+
+$ xsltproc --param srcpath "'adresar/kde-je-logo/templates/'" templates/auth_info.xsl examples/auth_info.xml
+
+
+Jazykova verze se nastavuje parametrem lang:
+
+$ xsltproc --stringparam lang en templates/auth_info.xsl examples/auth_info.xml
+
+
+Validace XML zdrojovych dat.
+
+Pro oba typy faktur jsou vytvoreny DTD soubory pro overeni validity XML.
+Vlozte do XML tag DOCTYPE s URL kde se DTD nachazi a pak muzete dokument zvalidovat.
+
+Standardne se souboruy nachazeji ve slozce templates/ a jmenuji se fred_invoice.dtd a
+fred_advance_invoice.dtd.
+
+Ve slozce examples jsou dva testovaci XML, na kterych je mozne si validaci overit.
+Aby to fungovalo, musi se u nich nastavit spravna cesta k DTD souborum. V tagu je
+uvedena promenna $FRED2PDFPATH, ktera by mela obsahovat cestu k souboru. Je mozne ji
+prepsat primo v souboru nebo muzete validaci spustit takto:
+
+  Kdyz jste v adresari ~/enum/fred2pdf/trunk:
+
+  $ sed 's|$FRED2PDFPATH|'`pwd`'|' examples/invoice.xml | xmllint --noout --valid -
+  $ sed 's|$FRED2PDFPATH|'`pwd`'|' examples/advance_invoice.xml | xmllint --noout --valid -
+
+Pokud se nevypise zadny text, je XML dokument validni.
+
+
+
+* Popis jednotlivych casti
+
+*** Reportlab - The ReportLab Open Source PDF library
+
+Reportlab je knihovna pro generovani PDF. Cela je napsana v jazyce Python.
+Strany projektu jsou na http://www.reportlab.org/.
+
+
+*** Tiny RML2PDF
+
+Tiny RML2PDF je nadstavba nad reportlabem, ktera umoznuje generovat PDF pomoci
+sablon. Sablony jsou ve formatu RML - Report Markup Language.
+
+
+*** xsltproc - XSLT command line processor
+
+XSLT je XML jazyk pro definici transformace XML souboru z XML do nejakeho
+jineho formatu, jako je XML, HTML nebo prosty text za pouziti XSLT definice stylu.
+Pomoci xsltproc je mozne vygenerovat RML sablonu z predlohy v XSL a ze zdrojovych
+dat v XML.
+
+
+*** Fred2pdf
+
+Fred2pdf je nadstavba nad Tiny RML2PDF, ktera resi pouzivani ceskych fontu, spravne
+kodovani a upravuje nektere funkce v nizsich modulech. Predevsim je to implementace
+paginace, ktera neni v aktualni verzi nizsiho modulu zcela dokoncena.
+
+
+
+
+
+Zpracoval:
+Zdenek Böhm, zdenek.bohm@nic.cz
+30.12.2006
+5.1.2007
+10.1.2007
+

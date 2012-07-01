@@ -1,0 +1,14 @@
+@import url('global.css');
+@import url('layout.css');
+
+.cleaner { 
+	clear: both;
+	margin: 0px;
+	padding: 0px;
+}
+
+#traceback {
+    color: red;
+    font-family: monospace;
+    font-size: 12px;
+}

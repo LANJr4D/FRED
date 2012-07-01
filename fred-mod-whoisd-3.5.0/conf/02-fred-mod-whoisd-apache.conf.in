@@ -1,0 +1,34 @@
+#
+# The default configuration file for mod_whoisd apache module.
+# See mod_whoisd's documentation for description of configuration directives.
+# Include this file in main httpd.conf configuration file or copy the content
+# of this file to httpd.conf.
+#
+
+#
+# The most preferred way of configuration is to put whois in virtual host.
+# This way you can continue to run http in normal way and besides that, if
+# somebody connects to port @PORT@ on @NSHOST@, whoisd protocol will be activated
+# for that connection.
+#
+
+# Whois port, assigned by IANA
+Listen @PORT@
+
+#LoadModule corba_module modules/mod_corba.so
+LoadModule whoisd_module @MODULE_INSTALLDIR@/mod_whoisd.so
+
+<VirtualHost *:@PORT@>
+   # mod_corba's configuration, you have to have installed mod_corba module
+   CorbaEnable       On
+   CorbaNameservice  @NSHOST@
+   CorbaObject       @OBJECTNAME@ Whois_alias
+   CorbaObject	     @LOGGER_OBJECTNAME@ Logger_alias
+
+   WhoisProtocol     On
+   WhoisObject       Whois_alias   
+   WhoisLogdObject Logger_alias
+#   WhoisDisclaimer   "/etc/apache2/disclaimer.txt"
+   WhoisMojeidReg    REG-MOJEID
+</VirtualHost>
+

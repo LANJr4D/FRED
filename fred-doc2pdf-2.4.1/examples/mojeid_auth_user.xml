@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mojeid_auth>
+    <user>
+        <actual_date>2010-10-06</actual_date>
+
+        <name>Adam Adminovič</name>
+        <organization>International Trade Ltd.</organization>
+        <street>Nábřežní 14/456</street>
+        <city>Praha</city>
+        <stateorprovince>Praha - hl. město</stateorprovince>
+        <postal_code>120 00</postal_code>
+        <country>Česká republika</country>
+        
+        <account>
+            <username>admin</username>
+            <first_name>Adam</first_name>
+            <last_name>Adminovič</last_name>
+            <email>admin@nic.cz</email>
+        </account>
+        <auth>
+            <codes>
+                <pin2>2222222</pin2>
+                <pin3>3333333</pin3>
+            </codes>
+            <link>http://demo.mojeid.cz/identity/</link>
+        </auth>
+    </user>
+</mojeid_auth>

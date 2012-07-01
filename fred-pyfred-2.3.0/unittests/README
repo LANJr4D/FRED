@@ -1,0 +1,44 @@
+Unittests for pyfred framework
+------------------------------
+
+Unittests for pyfred framework are composed of distinct files, where each
+file tests one pyfred module and is independent of other files. Read
+http://docs.python.org/lib/module-unittest.html for information how to use
+unittest framework provided by python's standard library.
+
+Currently are implemented unittests for following modules:
+  * filemanager
+  * genzone
+  * techcheck
+
+Module mailer does not have associated unittests due to their relative
+complexity. Shell script create_environment.sh creates objects in database
+over EPP protocol, which are assummed to exist by unittests. If you set
+up a fresh database and you run the unittests firsttime, type:
+
+  $ ./create_environment.sh create
+
+This assumes that you have corretly setup fred_client, which is used
+extensively not only in this shell script, but in unittests as well.
+You can run the script with "destroy" argument, which will delete
+created objects from database, but beware that you can run into an issue
+with protection period and you might not be able to create objects again
+without deleting all their history records from database.
+
+Last not yet described file in unittests directory is zone-file-check.
+It is an awk script, which checks basic syntax of a zone file. It
+evolved from a debian script of same name, but was enhanced to support
+ipv6 addresses and $TTL expression. This script is used by test_genzone.py.
+
+Each unittest file contains quite good documention with hierarchical tree
+of performed unittests and detailed description of tests. Each unittest
+script has one option -v or --verbose and the number argument for this option
+is handed directly to python unittest framework. Higher number will result
+in more detailed messages.
+
+Quite a lot of constants, which should have been normally configurable in
+configuration file, are hardcoded directly in tests or global variables,
+which are set at the beginning of a file. Possible enhancement in future
+would be finding all those places and put there variables, which would be
+initialized from configuration file.
+

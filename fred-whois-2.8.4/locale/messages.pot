@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-09-18 19:24+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: whois.py:29
+msgid "No apache support, assuming console operations"
+msgstr ""
+
+#: whois.py:42
+msgid "Browsing"
+msgstr ""
+
+#: whois.py:43
+msgid "Browsing domain name"
+msgstr ""
+
+#: whois.py:44
+msgid "Browsing ENUM domain"
+msgstr ""
+
+#: whois.py:45
+msgid "Browsing registrar"
+msgstr ""
+
+#: whois.py:46
+msgid "Domain not found"
+msgstr ""
+
+#: whois.py:47 whois.py:48
+msgid "Search result"
+msgstr ""
+
+#: whois.py:49
+msgid "Invalid entry"
+msgstr ""
+
+#: whois.py:50
+msgid "Browsing contact"
+msgstr ""
+
+#: whois.py:51
+msgid "Browsing name server set"
+msgstr ""
+
+#: whois.py:52
+msgid "Entry not found"
+msgstr ""
+
+#: whois.py:53
+msgid "Searching in domain names, contacts and name server sets"
+msgstr ""
+
+#: whois.py:54 whois.py:55 whois.py:56 whois.py:61 whois.py:62
+msgid "Current registration"
+msgstr ""
+
+#: whois.py:57
+msgid "List of registrars"
+msgstr ""
+
+#: whois.py:58 whois.py:59 whois.py:60
+msgid "gettext:empty"
+msgstr ""
+
+#: whois.py:63
+msgid "No entry found"
+msgstr ""
+
+#: whois.py:64
+msgid "Private entry"
+msgstr ""
+
+#: whois.py:64
+msgid "http://www.nic.cz/cz/domeny/copyright.php"
+msgstr ""
+
+#: whois.py:65
+msgid "NIC.CZ"
+msgstr ""

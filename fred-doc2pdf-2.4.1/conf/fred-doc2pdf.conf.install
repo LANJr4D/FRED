@@ -1,0 +1,12 @@
+[main]
+#
+# Fred2PDF
+# Example of the configuration file
+#
+trml_module_name = TRML_MODULE_NAME
+module_path = MODULE_PATH
+true_type_path = TRUE_TYPE_PATH
+
+# Font names MUST be in this order:
+# basic style, obligue, bold, bold-obligue
+default_font_ttf = DEFAULT_FONT_TTF

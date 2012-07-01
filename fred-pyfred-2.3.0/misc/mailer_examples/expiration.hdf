@@ -1,0 +1,13 @@
+domain super-domena.cz
+registrar REG-HROZNY-PADOUCH
+exregdate 10.1.2009
+dnsdate 2.12.2008
+exdate 20.11.2008
+owner Zdeněk Omáčka
+checkdate 19.11.2008
+zone 0.2.4.e164.arpa
+nsset NSSID:OHONA-COMP
+valdate 3.12.2008
+administrators.1 ADMIN-01-HANDLE
+administrators.2 ADMIN-02-HANDLE
+administrators.3 ADMIN-03-HANDLE

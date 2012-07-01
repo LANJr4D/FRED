@@ -1,0 +1,49 @@
+README for the fred2pdf
+
+
+Installation
+
+Installing fred2pdf is a simple process. Just execute the setup.py script:
+
+$ sudo python setup.py install
+
+Please note that the installation has to be performed using 
+the administrators account (i.e. root on linux). Installation copy files
+into standard python modules folder and creates default configuration file.
+The default templates are copied into folder /usr/share/fred2pdf_docs/
+
+Dependences:
+
+fred2pdf requires these packages:
+
+  - Python
+  - PIL (Python Imaging Library)
+  - Reportlab
+  - Tiny RML2PDF
+
+Fonts:
+
+fred2pdf needs also truetype fonts. Installation looked for them in the path
+/usr/share/fonts
+
+
+
+Running
+
+Just call script doc2pdf.py. This script assumes RML template file and print PDF into
+standard output. The RML file you obtain from transformation the XSL template 
+with XML data file. Use some XSLT parser (i.e. xsltproc).
+You can join whole process into one pipe:
+
+$ xsltproc /usr/fred2pdf_docs/invoice.xsl /usr/fred2pdf_docs/invoice.xml | doc2pdf.py > invoice.pdf
+
+
+
+Translations:
+
+Translations of the templates are available by option lang.
+
+Example of the english translation (default is cs):
+
+$ xsltproc -stringparam lang en /usr/fred2pdf_docs/invoice.xsl /usr/fred2pdf_docs/invoice.xml | doc2pdf.py > invoice.pdf
+

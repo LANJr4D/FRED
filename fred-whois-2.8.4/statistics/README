@@ -1,0 +1,3 @@
+enum.cron            move to cron.d for statistics periodical update
+update_stats.pl      save statistics into proper file
+simple_stats.pl      simple corba statistics generator using stdout

@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<HeliosIQ_1>
+  <header>
+    <delivery>
+      <message>
+        <messageID>FaV110700001.XML</messageID>
+        <sent>2007-02-19T14:08:46:336</sent>
+      </message>
+      <to>
+        <address>C:\</address>
+      </to>
+      <from>
+        <address>CZ.NIC, z.s.p.o.</address>
+      </from>
+    </delivery>
+    <manifest>
+      <document>
+        <name>PohyboveDoklady</name>
+        <description>internal-format-HELIOS:lcs_cz:PohyboveDoklady</description>
+        <version>010020070125</version>
+      </document>
+    </manifest>
+  </header>
+  <body>
+    <PohyboveDoklady>
+      <cisloDokladu>200700001</cisloDokladu>
+      <DruhPohybuZbo>13</DruhPohybuZbo>
+      <TabDokladyZbozi>
+        <PopisDodavky>Přístup k zónovým soub. 24.1-23.1.2008</PopisDodavky>
+        <ZaokrouhleniFak>0</ZaokrouhleniFak>
+        <ZaokrouhleniFakVal>0</ZaokrouhleniFakVal>
+        <SazbaDPH>FK_1</SazbaDPH>
+        <SazbaDPH1>FK_2</SazbaDPH1>
+        <SumaKc>1190</SumaKc>
+        <CbezDPH1>1000</CbezDPH1>
+        <CsDPH1>1190</CsDPH1>
+        <CbezDPH1Val>1000</CbezDPH1Val>
+        <CsDPH1Val>1190</CsDPH1Val>
+        <DatPorizeni>2007-01-02 10:19:07.557</DatPorizeni>
+        <DatRealizace>2007-02-08 16:14:31.770</DatRealizace>
+        <Splatnost>2007-01-23 00:00:00.000</Splatnost>
+        <DUZP>2007-01-02 00:00:00.000</DUZP>
+        <DatPovinnostiFa>2007-01-15 10:19:07.557</DatPovinnostiFa>
+        <DatUctovani>2007-02-08 16:14:52.507</DatUctovani>
+        <UKod>FK_3</UKod>
+        <FormaUhrady>FK_4</FormaUhrady>
+        <IDBankSpoj>FK_5</IDBankSpoj>
+        <CisloOrg>FK_10</CisloOrg>
+        <Prijemce>FK_10</Prijemce>
+        <MistoUrceni>FK_10</MistoUrceni>
+        <RadaDokladu>FK_13</RadaDokladu>
+        <DIC>FK_12</DIC>
+        <Mena>FK_7</Mena>
+        <PoziceZaokrDPHHla>2</PoziceZaokrDPHHla>
+        <HraniceZaokrDPHHla>2</HraniceZaokrDPHHla>
+        <ZaokrNaPadesat>0</ZaokrNaPadesat>
+      </TabDokladyZbozi>
+      <TabPohybyZbozi>
+        <RegCis>02007</RegCis>
+        <Nazev1>Výnosy roku 2007 - účet 602 01</Nazev1>
+        <MJEvidence>FK_15</MJEvidence>
+        <MJ>FK_15</MJ>
+        <SazbaDPH>FK_2</SazbaDPH>
+        <MnOdebrane>0</MnOdebrane>
+        <JCbezDaniKC>936.99</JCbezDaniKC>
+        <JCsDPHKc>1115.02</JCsDPHKc>
+        <JCbezDaniVal>936.99</JCbezDaniVal>
+        <JCsDPHVal>1115.02</JCsDPHVal>
+        <CCbezDaniKc>936.99</CCbezDaniKc>
+        <CCsDPHKc>1115.02</CCsDPHKc>
+        <CCbezDaniVal>936.99</CCbezDaniVal>
+        <CCsDPHVal>1115.02</CCsDPHVal>
+        <JCsSDKc>936.99</JCsSDKc>
+        <JCsSDVal>936.99</JCsSDVal>
+        <JCbezDaniKcPoS>936.99</JCbezDaniKcPoS>
+        <JCsSDKcPoS>936.99</JCsSDKcPoS>
+        <JCsDPHKcPoS>1115.02</JCsDPHKcPoS>
+        <JCbezDaniValPoS>936.99</JCbezDaniValPoS>
+        <JCsSDValPoS>936.99</JCsSDValPoS>
+        <JCsDPHValPoS>1115.02</JCsDPHValPoS>
+        <CCsSDKc>936.99</CCsSDKc>
+        <CCsSDVal>936.99</CCsSDVal>
+        <CCbezDaniKcPoS>936.99</CCbezDaniKcPoS>
+        <CCsSDKcPoS>936.99</CCsSDKcPoS>
+        <CCsDPHKcPoS>1115.02</CCsDPHKcPoS>
+        <CCbezDaniValPoS>936.99</CCbezDaniValPoS>
+        <CCsSDValPoS>936.99</CCsSDValPoS>
+        <CCsDPHValPoS>1115.02</CCsDPHValPoS>
+        <PrepMnozstvi>1</PrepMnozstvi>
+        <MnozstviStorno>0</MnozstviStorno>
+        <Mnozstvi>1</Mnozstvi>
+        <Hmotnost>0</Hmotnost>
+        <CCevidPozadovana>0</CCevidPozadovana>
+        <MnOdebraneReal>0</MnOdebraneReal>
+        <MnozstviStornoReal>0</MnozstviStornoReal>
+        <CCevid>0</CCevid>
+        <EvMnozstvi>0</EvMnozstvi>
+        <EvStav>0</EvStav>
+        <MnozstviReal>0</MnozstviReal>
+        <DatPorizeni>2007-01-15 17:18:13.930</DatPorizeni>
+        <NastaveniSlev>4681</NastaveniSlev>
+        <DruhPohybuZbo>13</DruhPohybuZbo>
+        <SkupZbo>FK_16</SkupZbo>
+        <IDZboSklad>FK_17</IDZboSklad>
+        <KJKontrolovat>1</KJKontrolovat>
+        <KJSkontrolovano>1</KJSkontrolovano>
+        <Mena>FK_7</Mena>
+        <PrepocetMJSD>1</PrepocetMJSD>
+      </TabPohybyZbozi>
+      <TabPohybyZbozi>
+        <RegCis>02008</RegCis>
+        <Nazev1>Výnosy roku 2008 - účet 384 08</Nazev1>
+        <MJEvidence>FK_15</MJEvidence>
+        <MJ>FK_15</MJ>
+        <SazbaDPH>FK_2</SazbaDPH>
+        <MnOdebrane>0</MnOdebrane>
+        <JCbezDaniKC>63.01</JCbezDaniKC>
+        <JCsDPHKc>74.98</JCsDPHKc>
+        <JCbezDaniVal>63.01</JCbezDaniVal>
+        <JCsDPHVal>74.98</JCsDPHVal>
+        <CCbezDaniKc>63.01</CCbezDaniKc>
+        <CCsDPHKc>74.98</CCsDPHKc>
+        <CCbezDaniVal>63.01</CCbezDaniVal>
+        <CCsDPHVal>74.98</CCsDPHVal>
+        <JCsSDKc>63.01</JCsSDKc>
+        <JCsSDVal>63.01</JCsSDVal>
+        <JCbezDaniKcPoS>63.01</JCbezDaniKcPoS>
+        <JCsSDKcPoS>63.01</JCsSDKcPoS>
+        <JCsDPHKcPoS>74.98</JCsDPHKcPoS>
+        <JCbezDaniValPoS>63.01</JCbezDaniValPoS>
+        <JCsSDValPoS>63.01</JCsSDValPoS>
+        <JCsDPHValPoS>74.98</JCsDPHValPoS>
+        <CCsSDKc>63.01</CCsSDKc>
+        <CCsSDVal>63.01</CCsSDVal>
+        <CCbezDaniKcPoS>63.01</CCbezDaniKcPoS>
+        <CCsSDKcPoS>63.01</CCsSDKcPoS>
+        <CCsDPHKcPoS>74.98</CCsDPHKcPoS>
+        <CCbezDaniValPoS>63.01</CCbezDaniValPoS>
+        <CCsSDValPoS>63.01</CCsSDValPoS>
+        <CCsDPHValPoS>74.98</CCsDPHValPoS>
+        <PrepMnozstvi>1</PrepMnozstvi>
+        <MnozstviStorno>0</MnozstviStorno>
+        <Mnozstvi>1</Mnozstvi>
+        <Hmotnost>0</Hmotnost>
+        <CCevidPozadovana>0</CCevidPozadovana>
+        <MnOdebraneReal>0</MnOdebraneReal>
+        <MnozstviStornoReal>0</MnozstviStornoReal>
+        <CCevid>0</CCevid>
+        <EvMnozstvi>0</EvMnozstvi>
+        <EvStav>0</EvStav>
+        <MnozstviReal>0</MnozstviReal>
+        <DatPorizeni>2007-01-15 17:18:29.460</DatPorizeni>
+        <NastaveniSlev>4681</NastaveniSlev>
+        <DruhPohybuZbo>13</DruhPohybuZbo>
+        <SkupZbo>FK_16</SkupZbo>
+        <IDZboSklad>FK_20</IDZboSklad>
+        <KJKontrolovat>1</KJKontrolovat>
+        <KJSkontrolovano>1</KJSkontrolovano>
+        <Mena>FK_7</Mena>
+        <PrepocetMJSD>1</PrepocetMJSD>
+      </TabPohybyZbozi>
+    </PohyboveDoklady>
+    <PohyboveDoklady>
+      <cisloDokladu>110700001</cisloDokladu>
+      <DruhPohybuZbo>13</DruhPohybuZbo>
+      <TabDokladyZbozi>
+        <DodFak>27218791</DodFak>
+        <PopisDodavky>Daňový doklad na zálohu</PopisDodavky>
+        <ZaokrouhleniFak>0</ZaokrouhleniFak>
+        <ZaokrouhleniFakVal>0</ZaokrouhleniFakVal>
+        <VstupniCena>3</VstupniCena>
+        <SazbaDPH>FK_1</SazbaDPH>
+        <SazbaDPH1>FK_2</SazbaDPH1>
+        <SumaKc>119</SumaKc>
+        <CbezDPH1>100</CbezDPH1>
+        <CsDPH1>119</CsDPH1>
+        <CbezDPH1Val>100</CbezDPH1Val>
+        <CsDPH1Val>119</CsDPH1Val>
+        <DatPorizeni>2007-01-23 13:48:45.527</DatPorizeni>
+        <DatRealizace>2007-02-15 10:04:00.217</DatRealizace>
+        <Splatnost>2007-01-23 00:00:00.000</Splatnost>
+        <DUZP>2007-01-10 00:00:00.000</DUZP>
+        <DatPovinnostiFa>2007-02-08 13:48:45.527</DatPovinnostiFa>
+        <DatUctovani>2007-02-15 11:14:37.237</DatUctovani>
+        <UKod>FK_22</UKod>
+        <IDBankSpoj>FK_5</IDBankSpoj>
+        <CisloOrg>FK_23</CisloOrg>
+        <RadaDokladu>FK_26</RadaDokladu>
+        <DIC>FK_25</DIC>
+        <Mena>FK_7</Mena>
+        <PoziceZaokrDPHHla>2</PoziceZaokrDPHHla>
+        <HraniceZaokrDPHHla>2</HraniceZaokrDPHHla>
+        <ZaokrNaPadesat>0</ZaokrNaPadesat>
+      </TabDokladyZbozi>
+    </PohyboveDoklady>
+    <PohyboveDoklady>
+      <cisloDokladu>120700001</cisloDokladu>
+      <DruhPohybuZbo>13</DruhPohybuZbo>
+      <TabDokladyZbozi>
+        <DodFak>26460335</DodFak>
+        <PopisDodavky>Za období od 18.1.2007 - 31.1.2007</PopisDodavky>
+        <ZaokrouhleniFak>0</ZaokrouhleniFak>
+        <ZaokrouhleniFakVal>0</ZaokrouhleniFakVal>
+        <SazbaDPH>FK_1</SazbaDPH>
+        <SazbaDPH1>FK_2</SazbaDPH1>
+        <Zaloha>23.8</Zaloha>
+        <ZalohaVal>23.8</ZalohaVal>
+        <CbezDPH1>20</CbezDPH1>
+        <CsDPH1>23.8</CsDPH1>
+        <CbezDPH1Val>20</CbezDPH1Val>
+        <CsDPH1Val>23.8</CsDPH1Val>
+        <DatPorizeni>2007-02-13 14:26:09.957</DatPorizeni>
+        <DatRealizace>2007-02-15 14:27:58.037</DatRealizace>
+        <Splatnost>2007-02-13 00:00:00.000</Splatnost>
+        <DUZP>2007-01-31 00:00:00.000</DUZP>
+        <DatPovinnostiFa>2007-02-15 14:26:09.957</DatPovinnostiFa>
+        <DatUctovani>2007-02-15 14:28:06.150</DatUctovani>
+        <UKod>FK_27</UKod>
+        <FormaUhrady>FK_28</FormaUhrady>
+        <IDBankSpoj>FK_5</IDBankSpoj>
+        <CisloOrg>FK_29</CisloOrg>
+        <RadaDokladu>FK_32</RadaDokladu>
+        <PoziceZaokrDPH>1</PoziceZaokrDPH>
+        <DIC>FK_31</DIC>
+        <Mena>FK_7</Mena>
+        <IDReal>FK_33</IDReal>
+        <PoziceZaokrDPHHla>1</PoziceZaokrDPHHla>
+        <HraniceZaokrDPHHla>2</HraniceZaokrDPHHla>
+        <ZaokrNaPadesat>0</ZaokrNaPadesat>
+      </TabDokladyZbozi>
+      <TabDoplnkovePol>
+        <Auto>4</Auto>
+        <Cislo>1</Cislo>
+        <SazbaDPH>FK_2</SazbaDPH>
+        <KorekceZakladuDane>-20</KorekceZakladuDane>
+        <KorekceDane>-3.8</KorekceDane>
+        <KorekceZakladuDaneVal>-100</KorekceZakladuDaneVal>
+        <KorekceDaneVal>-19</KorekceDaneVal>
+        <ParovaciZnak>110700004</ParovaciZnak>
+      </TabDoplnkovePol>
+    </PohyboveDoklady>
+    <Reference>
+      <TabDPH>
+        <Polozka>
+          <Klic>FK_2</Klic>
+          <Sazba>19</Sazba>
+          <Nazev>Zákl. sazba EU</Nazev>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_1</Klic>
+          <Sazba>0</Sazba>
+          <Nazev>Nulová sazba</Nazev>
+        </Polozka>
+      </TabDPH>
+      <TabUKod>
+        <Polozka>
+          <Klic>FK_27</Klic>
+          <CisloKontace>26</CisloKontace>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_22</Klic>
+          <CisloKontace>27</CisloKontace>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_14</Klic>
+          <CisloKontace>17</CisloKontace>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_3</Klic>
+          <CisloKontace>200</CisloKontace>
+        </Polozka>
+      </TabUKod>
+      <TabFormaUhrady>
+        <Polozka>
+          <Klic>FK_28</Klic>
+          <FormaUhrady>Zálohou</FormaUhrady>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_4</Klic>
+          <FormaUhrady>Platebním příkazem</FormaUhrady>
+        </Polozka>
+      </TabFormaUhrady>
+      <TabBankSpojeni>
+        <Polozka>
+          <Klic>FK_5</Klic>
+          <NazevBankSpoj>zadejte b.spoj pro  účet221000</NazevBankSpoj>
+          <CisloUctu>123</CisloUctu>
+          <Prednastaveno>1</Prednastaveno>
+          <IDOrg>FK_6</IDOrg>
+          <Mena>FK_7</Mena>
+          <UcetniUcet>221000</UcetniUcet>
+          <Popis>účet 221000</Popis>
+          <IDUstavu>FK_8</IDUstavu>
+          <CilovaZeme>FK_9</CilovaZeme>
+        </Polozka>
+      </TabBankSpojeni>
+      <TabCisOrg>
+        <Polozka>
+          <Klic>FK_29</Klic>
+          <CisloOrg>10002</CisloOrg>
+          <Nazev>KRAXNET,s.r.o.</Nazev>
+          <JeOdberatel>1</JeOdberatel>
+          <JeDodavatel>1</JeDodavatel>
+          <Fakturacni>1</Fakturacni>
+          <PSC>FK_30</PSC>
+          <Ulice>Kamenická</Ulice>
+          <Misto>Praha 7</Misto>
+          <ICO>26460335</ICO>
+          <DIC>FK_31</DIC>
+          <IdZeme>FK_9</IdZeme>
+          <PopCislo>599</PopCislo>
+          <OrCislo>26</OrCislo>
+          <SlevaSozNa>2</SlevaSozNa>
+          <SlevaSkupZbo>2</SlevaSkupZbo>
+          <SlevaKmenZbo>2</SlevaKmenZbo>
+          <SlevaStavSkladu>2</SlevaStavSkladu>
+          <SlevaZbozi>2</SlevaZbozi>
+          <SlevaOrg>2</SlevaOrg>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_23</Klic>
+          <CisloOrg>10010</CisloOrg>
+          <Nazev>SW Systems s.r.o.</Nazev>
+          <JeOdberatel>1</JeOdberatel>
+          <JeDodavatel>1</JeDodavatel>
+          <Fakturacni>1</Fakturacni>
+          <PSC>142 00</PSC>
+          <Ulice>Bernolákova</Ulice>
+          <Misto>Praha 4</Misto>
+          <ICO>27218791</ICO>
+          <DIC>FK_25</DIC>
+          <IdZeme>FK_9</IdZeme>
+          <PopCislo>1190</PopCislo>
+          <OrCislo>4</OrCislo>
+          <SlevaSozNa>2</SlevaSozNa>
+          <SlevaSkupZbo>2</SlevaSkupZbo>
+          <SlevaKmenZbo>2</SlevaKmenZbo>
+          <SlevaStavSkladu>2</SlevaStavSkladu>
+          <SlevaZbozi>2</SlevaZbozi>
+          <SlevaOrg>2</SlevaOrg>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_10</Klic>
+          <CisloOrg>37</CisloOrg>
+          <Nazev>Trilogic,s.r.o.</Nazev>
+          <PSC>197 00</PSC>
+          <Ulice>Bousovská</Ulice>
+          <Misto>Praha 9</Misto>
+          <ICO>25784871</ICO>
+          <DIC>FK_12</DIC>
+          <PopCislo>1</PopCislo>
+          <SlevaSozNa>2</SlevaSozNa>
+          <SlevaSkupZbo>2</SlevaSkupZbo>
+          <SlevaKmenZbo>2</SlevaKmenZbo>
+          <SlevaStavSkladu>2</SlevaStavSkladu>
+          <SlevaZbozi>2</SlevaZbozi>
+          <SlevaOrg>2</SlevaOrg>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_6</Klic>
+        </Polozka>
+      </TabCisOrg>
+      <TabKodMen>
+        <Polozka>
+          <Klic>FK_7</Klic>
+          <Kod>CZK</Kod>
+          <Nazev>Česká koruna</Nazev>
+          <MinNasobek>0</MinNasobek>
+          <ZaokrouhleniFaktury>0</ZaokrouhleniFaktury>
+        </Polozka>
+      </TabKodMen>
+      <TabPenezniUstavy>
+        <Polozka>
+          <Klic>FK_8</Klic>
+          <KodUstavu>0100</KodUstavu>
+          <AlfaKodUstavu>KOMB</AlfaKodUstavu>
+          <NazevUstavu>Komerční banka, a.s.</NazevUstavu>
+          <SWIFTUstavu>KOMBCZPP</SWIFTUstavu>
+        </Polozka>
+      </TabPenezniUstavy>
+      <TabZeme>
+        <Polozka>
+          <Klic>FK_9</Klic>
+          <ISOKod>CZ</ISOKod>
+          <Nazev>Česká republika</Nazev>
+          <CelniKod>CZ</CelniKod>
+          <EU>1</EU>
+        </Polozka>
+      </TabZeme>
+      <TabDICOrg>
+        <Polozka>
+          <Klic>FK_31</Klic>
+          <DIC>CZ26460335</DIC>
+          <CisloOrg>FK_29</CisloOrg>
+          <ISOZeme>FK_9</ISOZeme>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_25</Klic>
+          <DIC>CZ27218791</DIC>
+          <CisloOrg>FK_23</CisloOrg>
+          <ISOZeme>FK_9</ISOZeme>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_12</Klic>
+          <DIC>CZ25784871</DIC>
+          <CisloOrg>FK_10</CisloOrg>
+          <ISOZeme>FK_9</ISOZeme>
+        </Polozka>
+      </TabDICOrg>
+      <TabDruhDokZbo>
+        <Polozka>
+          <Klic>FK_32</Klic>
+          <DruhPohybuZbo>13</DruhPohybuZbo>
+          <RadaDokladu>120</RadaDokladu>
+          <PosledniPC>700000</PosledniPC>
+          <Nazev>FV registrátoři ENUM - zúčtování</Nazev>
+          <PohybSkladu>1</PohybSkladu>
+          <DefOKReal>1</DefOKReal>
+          <DefOKUcto>1</DefOKUcto>
+          <UKod>FK_27</UKod>
+          <FormaUhrady>FK_28</FormaUhrady>
+          <UctoCislovani>1</UctoCislovani>
+          <VyrZaplZaloh>1</VyrZaplZaloh>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_26</Klic>
+          <DruhPohybuZbo>13</DruhPohybuZbo>
+          <RadaDokladu>110</RadaDokladu>
+          <PosledniPC>700000</PosledniPC>
+          <Nazev>DD na přijatou platbu</Nazev>
+          <PohybSkladu>1</PohybSkladu>
+          <VstupniCena>3</VstupniCena>
+          <DefOKReal>1</DefOKReal>
+          <DefOKUcto>1</DefOKUcto>
+          <UKod>FK_22</UKod>
+          <UctoCislovani>1</UctoCislovani>
+          <VyrZaplZaloh>1</VyrZaplZaloh>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_13</Klic>
+          <DruhPohybuZbo>13</DruhPohybuZbo>
+          <RadaDokladu>200</RadaDokladu>
+          <PosledniPC>700000</PosledniPC>
+          <Nazev>FV ostatní</Nazev>
+          <PohybSkladu>1</PohybSkladu>
+          <DefOKReal>1</DefOKReal>
+          <DefOKUcto>1</DefOKUcto>
+          <UKod>FK_14</UKod>
+          <FormaUhrady>FK_4</FormaUhrady>
+        </Polozka>
+      </TabDruhDokZbo>
+      <TabMJ>
+        <Polozka>
+          <Klic>FK_15</Klic>
+          <Kod>ks</Kod>
+          <Nazev>kusy</Nazev>
+        </Polozka>
+      </TabMJ>
+      <TabSkupinyZbozi>
+        <Polozka>
+          <Klic>FK_16</Klic>
+          <SkupZbo>900</SkupZbo>
+          <Nazev>Služby</Nazev>
+        </Polozka>
+      </TabSkupinyZbozi>
+      <TabStavSkladu>
+        <Polozka>
+          <Klic>FK_20</Klic>
+          <JizNaSklade>1</JizNaSklade>
+          <IDKmenZbozi>FK_21</IDKmenZbozi>
+          <IDSklad>FK_19</IDSklad>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_17</Klic>
+          <JizNaSklade>1</JizNaSklade>
+          <IDKmenZbozi>FK_18</IDKmenZbozi>
+          <IDSklad>FK_19</IDSklad>
+        </Polozka>
+      </TabStavSkladu>
+      <TabKmenZbozi>
+        <Polozka>
+          <Klic>FK_21</Klic>
+          <PrepMnozstvi>1</PrepMnozstvi>
+          <SazbaDPHVstup>FK_2</SazbaDPHVstup>
+          <SazbaDPHVystup>FK_2</SazbaDPHVystup>
+          <RegCis>02008</RegCis>
+          <Nazev1>Výnosy roku 2008 - účet 384 08</Nazev1>
+          <DruhSkladu>0</DruhSkladu>
+          <SkupZbo>FK_16</SkupZbo>
+          <MJEvidence>FK_15</MJEvidence>
+          <MJVstup>FK_15</MJVstup>
+          <MJVystup>FK_15</MJVystup>
+          <ZakladSDvSJ>0</ZakladSDvSJ>
+        </Polozka>
+        <Polozka>
+          <Klic>FK_18</Klic>
+          <PrepMnozstvi>1</PrepMnozstvi>
+          <SazbaDPHVstup>FK_2</SazbaDPHVstup>
+          <SazbaDPHVystup>FK_2</SazbaDPHVystup>
+          <RegCis>02007</RegCis>
+          <Nazev1>Výnosy roku 2007 - účet 602 01</Nazev1>
+          <DruhSkladu>0</DruhSkladu>
+          <SkupZbo>FK_16</SkupZbo>
+          <MJEvidence>FK_15</MJEvidence>
+          <MJVstup>FK_15</MJVstup>
+          <MJVystup>FK_15</MJVystup>
+          <ZakladSDvSJ>0</ZakladSDvSJ>
+        </Polozka>
+      </TabKmenZbozi>
+      <TabStrom>
+        <Polozka>
+          <Klic>FK_19</Klic>
+          <Cislo>001</Cislo>
+          <Nazev>Středisko 001</Nazev>
+          <DruhSkladu>1</DruhSkladu>
+        </Polozka>
+      </TabStrom>
+      <TabPSC>
+        <Polozka>
+          <Klic>FK_30</Klic>
+          <Cislo>170 00</Cislo>
+          <Mesto>Praha 7</Mesto>
+          <Posta>Praha 7</Posta>
+        </Polozka>
+      </TabPSC>
+      <TabZalFak>
+        <Polozka>
+          <Klic>FK_33</Klic>
+          <ZalohovaFaktura>
+            <IDZal>FK_34</IDZal>
+            <CsDPH1>23.8</CsDPH1>
+            <CbezDPH1>20</CbezDPH1>
+            <CastkaDPH1>3.8</CastkaDPH1>
+            <CsDPH1Val>23.8</CsDPH1Val>
+            <CbezDPH1Val>100</CbezDPH1Val>
+            <CastkaDPH1Val>19</CastkaDPH1Val>
+            <SazbaDPH1>FK_2</SazbaDPH1>
+            <Popis>110700004</Popis>
+            <Datum>2007-01-23 14:15:16.760</Datum>
+          </ZalohovaFaktura>
+        </Polozka>
+      </TabZalFak>
+      <TabDokladyZbozi>
+        <Polozka>
+          <Klic>FK_34</Klic>
+          <DruhPohybuZbo>13</DruhPohybuZbo>
+          <PoradoveCislo>700004</PoradoveCislo>
+          <RadaDokladu>110</RadaDokladu>
+          <DatPorizeni>2007-01-23 14:15:16.760</DatPorizeni>
+        </Polozka>
+      </TabDokladyZbozi>
+    </Reference>
+  </body>
+</HeliosIQ_1>

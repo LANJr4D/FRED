@@ -1,0 +1,5 @@
+[bdist_rpm]
+post-install=contrib/fedora/rpm-postinstall.sh
+pre-uninstall=contrib/fedora/rpm-preuninstall.sh
+requires=python-simpletal, mod_python, python-omniORB, python-imaging, omniORB-devel
+install-extra-opts=--prefix=/usr --sysconfdir=/etc --localstatedir=/var --no-check-deps

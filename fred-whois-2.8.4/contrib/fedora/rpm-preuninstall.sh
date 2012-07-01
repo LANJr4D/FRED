@@ -1,0 +1,1 @@
+test ! -f /etc/httpd/conf.d/fred-whois-apache.conf || rm /etc/httpd/conf.d/fred-whois-apache.conf

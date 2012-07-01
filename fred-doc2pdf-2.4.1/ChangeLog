@@ -1,0 +1,182 @@
+2012-05-15 Zdenek Bohm (2.4.0)
+
+   * invoice template fix (advance payments - bold text)
+
+   * new invoice examples
+
+2012-04-12 Zdenek Bohm (2.3.5)
+
+   * invoice template fix (summarize item line)
+
+2012-03-26 Zdenek Bohm (2.3.4)
+
+   * mojeid templates fixes
+
+2012-03-14 Zdenek Bohm, Juraj Vicenik (2.3.3)
+
+   * mojeid templates changes
+
+   * letter address format fix (stateorprovince)
+
+2011-11-04 Zdenek Bohm (2.3.2)
+
+   * account invoice fixes (translations)
+
+2011-11-02 Zdenek Bohm, Jaromir Talir (2.3.1)
+
+   * fix rpm build
+
+   * account invoice fixes (service codes)
+
+2011-10-18 Zdenek Bohm, Jaromir Talir, Jan Zima (2.3.0)
+
+   * updated FredTable constructor default parameters (to be compatible with
+     tinyerp-server-4.2.3.4-7)
+
+   * helios template update
+
+   * account invoice template update
+         - new template parameters
+         - formatting changes
+         - translations updates
+
+2011-06-02 Vit Vomacko (2.2.0)
+
+   * removed local freddist
+
+2010-12-13 Juraj Vicenik (2.1.7)
+
+   * If country is Czech republic, don't write it to the address
+
+   * Changed office hours in mojeID validation document
+
+2010-11-04 Juraj Vicenik (2.1.6)
+
+   * Modified documents for MojeID - validation
+
+   * Changed XML format for validation - handle is allowed
+
+2010-10-25 Juraj Vicenik (2.1.5)
+
+   * Fixes in mojeid letters
+
+2010-10-23 Jaromir Talir , Juraj Vicenik (2.1.4)
+
+   * Fixes in mojeid letters
+
+2010-10-18 Zdenek Bohm, Juraj Vicenik (2.1.3)
+
+   * New documents for Mojeid (identification and validation letters)
+
+2010-07-30 Jiri Sadek, Juraj Vicenik (2.1.2)
+
+    * Warning letter table fix (heading, padding)
+
+    * Compatibility with reportlab 2.4
+
+2010-07-23 Jiri Sadek (version 2.1.1)
+
+    * New cznic logo added
+
+    * Warning letter table format fix (padding)
+
+2010-06-28 Juraj Vicenik (version 2.1.0)
+
+    * Trimming of long names in some templates
+    
+    * Added template for notification about defunct contacts
+
+    * More templates moved to file with shared templates
+
+    * Moved registry-specific data from some files to translataion_ files
+
+2010-02-17 Zdenek Bohm,  Jaromir Talir (version 2.0.4)
+
+    * Template for accounting software helios updated to support new year
+      prefix for invoice numbers and new vat rate
+
+    * Added support for years fee
+
+    * Fixed incompability with reportlab version > 2.1
+
+2009-07-02 Jaromir Talir (version 2.0.3)
+
+    * Fixed czech translation for invoice template text
+    
+    * Added support for negative invoices to invoice template
+    
+    * Changed dependance on freefont to dejavu fonts
+
+2008-05-25 Jaromir Talir (version 2.0.2)
+
+    * bugfix doubled '-' sign in case of negative numbers in helios template  
+
+2008-12-17 Jaromir Talir (version 2.0.1)
+
+    * bugfix negative numbers in invoice template
+
+2008-11-10 Jaromir Talir (version 2.0.0)
+
+    * updating czech translation for warning letter (grammar corrections)
+    
+    * adding support for Keysets in public requests
+
+2008-08-19 Ales Dolezal
+
+	* new setup options, which provides way to manually set up some
+	  parameters (trml name and path and font names and path) if used
+	  with ``--no-check-deps'' option.
+
+2008-07-15 Jaromir Talir (version 1.4.2)
+
+    * update helios template 
+	- enhanced VAT string prependation
+
+    * added path to ubuntu font package path
+
+    * updated installation process
+	
+2008-06-05 Jaromir Talir 
+
+    * rpm build fixes
+	
+2008-06-05 Jaromir Talir, Ales Dolezal (version 1.4.1)
+
+    * small build process changes
+
+2008-05-30 Jaromir Talir, Ales Dolezal (version 1.4.0)
+
+    * new build system fred-dist
+
+    * impementation of new public request template
+	
+    * helios template update
+	- changing date because of request from VGD
+
+2008-03-06 Jaromir Talir (version 1.3.2)
+
+    * examples are out of distribution package
+
+    * helios template update
+	- fixing another removing of 0 from old invoice numbering schema
+
+2008-02-19 Jaromir Talir (version 1.3.1)
+
+    * helios template update
+	- fixing removing of 0 from old invoice numbering schema
+	- fixing generation of element DatPorizeni
+    * fred2pdf fixes made in r4415 was accidentaly revert, now are back
+
+2008-01-09 Jaromir Talir (version 1.3.0)
+	
+    * helios integration
+	
+    * new invoice design
+
+2007-11-15 Jaromir Talir (version 1.2)
+
+    * speed fixes of pdf generation in rml2pdf
+
+    * update template for invoices with new design
+
+    * new template for warning letter about expiration passing

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+
+<!-- advanced invoice -->
+<str name="NIC_author">CZ.NIC</str>
+<str name="Client">Odběratel</str>
+<str name="Invoice No">Faktura č.</str>
+<str name="Invoice / Vat voucher">Faktura / daňový doklad</str>
+<str name="Advance Payment Request / Vat voucher">Zálohová faktura / daňový doklad</str>
+<str name="Tax credit">Daňový dobropis</str>
+<str name="No">č</str>
+<str name="ICO">IČO</str>
+<str name="VAT number">DIČ</str>
+<str name="Customer residence">Sídlo odběratele</str>
+<str name="Supplier">Dodavatel</str>
+<str name="Tax document for deposit">Daňový doklad na zálohu</str>
+<str name="Variable symbol">Variabilní symbol</str>
+<str name="Invoice date">Datum vystavení faktury</str>
+<str name="Payment date">Datum přijetí zálohy</str>
+<str name="Sheet">List</str>
+<str name="Number of sheets">Počet listů</str>
+<str name="Supply sign">Označení dodávky</str>
+<str name="Draw by CZ.NIC invoice system">Vystaveno fakturačním systémem CZ.NIC</str>
+<str name="Reclamation">Reklamace</str>
+<str name="Invoice attachment no.">Příloha faktury č.</str>
+<str name="Invoice attachment">Příloha faktury</str>
+<str name="Sum">Úhrnem</str>
+<str name="VAT %">% DPH</str>
+<str name="Tax base">Základ daně</str>
+<str name="VAT CZK">Kč DPH</str>
+<str name="Total CZK">Kč celkem</str>
+<str name="To be paid">Celkem k úhradě</str>
+<str name="Voucher-for-call-VAT">Daňový doklad na zálohu, slouží k uplatnění nároku na odpočet DPH přijaté zálohy.</str>
+<str name="Insurance-by-law-and-VAT-liability">Místo plnění se dle zákona 235/2004
+  Sb. o DPH v souladu s §10 odst.6c) váže na sídlo, místo podnikání nebo
+  provozovnu příjemce služby. Povinnost přiznat a zaplatit daň má příjemce
+  služby dle platného zákona v místě jeho sídla, podnikání nebo provozovny.
+  (VAT liability is payable by the recipient of our services.)</str>
+<str name="Tax credit text">Dobropisujeme vám daňový doklad č.</str>
+  
+<!-- invoice -->
+<str name="Customer residence">Sídlo odběratele</str>
+<str name="Tax point">Datum uskutečnění zdaň.plnění</str>
+<str name="Vat_part1">Sazba</str>
+<str name="Vat_part2">daně</str>
+<str name="Total">Celkem</str>
+<str name="free of tax">bez daně</str>
+<str name="Paid">Uhrazeno</str>
+<str name="VAT">DPH</str>
+<str name="Change">Změna</str>
+<str name="Realized">Provedena</str>
+<str name="Domain">Doména</str>
+<str name="Service to">Služba do</str>
+<str name="Number">Počet</str>
+<str name="Price">Cena</str>
+<str name="Invoice no">č.fa.</str>
+<str name="Invoice number">číslo faktury</str>
+<str name="CZK draw">čerpáno Kč</str>
+<str name="Deposit balance CZK">zůstatek zálohy Kč</str>
+<str name="Deposit Total">záloha celkem</str>
+<str name="no VAT">bez DPH</str>
+<str name="with VAT">s DPH</str>
+
+<str name="Period from(date)">Za období od</str>
+<str name="to(date)">do</str>
+<str name="we-invoiced-you">Vám fakturujeme poskytnuté služby dle Smlouvy o spolupráci (viz příloha).</str>
+<str name="contractual-fine">Vám fakturujeme smluvní pokutu dle článku 4.3.1. Obchodních podmínek pro registrátory, které jsou součástí Smlouvy o spoluprácu při registraci doménových jmen</str>
+<str name="years-fee">Vám fakturujeme roční poplatek za připojení do Centrálního registru</str>
+<str name="Service codes">Kódy služeb</str>
+<str name="Domain name registration">registrace doménových jmen</str>
+<str name="Domain name record maintenance">udržování záznamu o doménovém jménu</str>
+<str name="Charged queries">zpoplatněné dotazy</str>
+<str name="VAT-settled-deposit">DPH byla vypořádána na daňových dokladech na přijatou
+platbu a činí v úrovni bez daně</str>
+<str name="SpZ">SpZ</str>
+<str name="department of the civil law agenda">odbor občanskoprávních agend</str>
+<str name="Municipal Prague cap.city, no ZS/30/3/98">Magistrát hl. m. Prahy, č. ZS/30/3/98</str>
+<str name="Vat voucher">Daňový doklad</str>
+
+<str name="mojeID service is operated by the CZ.NIC Association, an interest association of legal entities, registered in Registry of legal entities">Službu mojeID provozuje sdružení CZ.NIC, zájmové sdrzužení právnických osob zapsáno v registru zájmových sdružení právnických osob</str>
+<str name="at the Department of Civil Administration of the Municipal Council of Prague, nr. ZS 30/3/98.">u Magistrátu hl. m. Prahy, č. registrace ZS 30/3/98.</str>
+
+<!-- extension of registration -->
+<str name="CZ.NIC, z.s.p.o.">CZ.NIC, z.s.p.o.</str>
+<str name="Americka 23, 120 00 Prague 2">Americká 23, 120 00 Praha 2</str>
+<str name="Czech Republic">Česká republika</str>
+<str name="T">T</str>
+<str name="F">F</str>
+<str name="IC">IČ</str>
+<str name="DIC">DIČ</str>
+<str name="Prague">Praha</str>
+<str name="Subject: Extension of registration of">Věc: prodloužení registrace doménových jmen .cz</str>
+<str name="domain(subject)"></str>
+<str name="Dear holder of">Vážený držiteli doménového jména</str>
+<str name="domain name"></str>
+
+<str name="The CZ.NIC z.s.p.o. company, an administrator...">CZ.NIC, z.s.p.o., správce národní domény .cz, Vás upozorňuje, že dosud neobdrželo pokyn k obnovení registrace doménového jména, uvedeného výše. Doména je v současné době nefunkční, je vyřazena ze zóny .cz (viz Pravidla registrace v doméně .cz na adrese www.nic.cz).</str>
+
+<str name="Should you be interested in keeping this domain name...">Pokud máte zájem toto doménové jméno vlastnit i nadále, spojte se urychleně s určeným registrátorem, řešte případnou reklamaci a domluvte další postup. Rovněž máte možnost oslovit jiného registrátora a prodloužení registrace domény svěřit jemu.
+Aktuální seznam firem, se kterými má sdružení CZ.NIC uzavřenou smlouvu o statutu registrátora, najdete rovněž na www.nic.cz. </str>
+
+<str name="Please notice that unless...">Vezměte, prosím, na vědomí, že nebude-li registrace doménových jmen včas prodloužena, bude dne.</str>
+
+<str name="..and made avail..."> zrušena a uvolněna k registraci případným dalším zájemcům.</str>
+
+<str name="The date of...">Termín zrušení registrace již nelze změnit!</str>
+
+<str name="Yours sincerely">S pozdravem</str>
+
+<str name="Attachment">Příloha - seznam doménových jmen a jejich určených registrátorů</str> 
+
+
+<str name="warning01">sdružení CZ.NIC, z. s. p. o., správce národní domény .CZ, si Vás dovoluje zdvořile upozornit, že od Vašeho registrátora dosud neobdržel pokyn k prodloužení platnosti doménových jmen uvedených v příloze tohoto dopisu. Tato doménová jména jsou již v současnosti nefunkční (viz Pravidla registrace doménových jmen v ccTLD .cz na www.nic.cz).</str>
+
+<str name="warning02">Máte-li o tato doménová jména nadále zájem, </str>
+
+<str name="warning03">spojte se, prosím, urychleně s Vaším vybraným registrátorem </str>
+
+<str name="warning04">a dohodněte se s ním na dalším postupu. Můžete si rovněž vybrat jiného registrátora a prodloužení registrace svěřit jemu. Aktuální seznam společností, které jsou akreditovanými registrátory, najdete také na www.nic.cz.</str>
+
+<str name="warning05">Vezměte, prosím, na vědomí, že </str>
+
+<str name="warning06">nebude-li registrace doménových jmen včas prodloužena, bude dne </str>
+
+<str name="warning07">zrušena </str>
+
+<str name="warning08">a uvolněna k registraci případným dalším zájemcům. </str>
+
+
+<str name="The following information was recorded on the CZ.NIC Central database as of the date of issuance of this letter">CZ.NIC, z.s.p.o., evidovalo v centrální databázi ke dni vystavení tohoto dopisu následující údaje</str>
+
+<str name="Domain name">Jméno domény</str>
+<str name="Holder">Držitel</str>
+<str name="Designated registrar">Určený registrátor</str>
+<str name="Date of termination of the registration">Datum zrušení registrace</str>
+<str name="Operations manager, CZ.NIC, z.s.p.o.">Provozní ředitel, CZ.NIC, z.s.p.o.</str>
+<str name="Operations manager name">Ing. Martin Peterka</str>
+
+<!-- obsolete email notificatino (some strings from other section are reused, in transformation, so they're not redefined here) -->
+<str name="Subject: Notice re...">Věc: Upozornění na nefunkční email v evidenci registru doménových jmen .cz</str>
+<str name="Dear Sir or Madam">Vážená paní, vážený pane,</str>
+
+<!--
+<str name="Obsolete_email_warn_part1"> sdružení CZ.NIC zaznamenalo v rámci pravidelně probíhajících kontrol údajů v centrálním registru doménových jmen .cz, že v záznamu o Vaší kontaktní osobě je uveden nefunkční či neexistující e-mail
+</str>
+<str name="Obsolete_email_warn_part2"> Vzhledem k tomu, že e-mail je jedním z důležitých a povinných údajů v registru, žádáme Vás o jeho urychlenou (okamžitou) opravu. Níže naleznete výpis údajů, které jsou o Vaší osobě evidovány; zjistíte-li jakékoliv další neplatné či nesprávné údaje, opravte je, prosím, také.
+</str>
+-->
+
+<str name="Make the change..."> Změnu proveďte prostřednictvím svého registrátora</str>
+<str name="www">WWW registrátora: </str>
+<str name="Details recorded for your contact"> Evidované údaje o Vašem kontaktu:</str>
+<str name="organization">Organizace: </str>
+<str name="name">Jméno: </str>
+<str name="address">Adresa: </str>
+<str name="Identifier">Identifikátor: </str>
+<str name="Identification type">Typ identifikace: </str>
+<str name="ID">Identifikační údaj: </str>
+<str name="email">E-mail: </str>
+<str name="notify_email">E-mail pro oznámení: </str>
+<str name="telephone">Telefon: </str>
+<str name="fax">Fax: </str>
+<str name="Last update">Poslední aktualizace: </str>
+
+</strings>

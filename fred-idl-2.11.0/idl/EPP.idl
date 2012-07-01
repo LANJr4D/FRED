@@ -1,0 +1,990 @@
+#ifndef EPP_IDL_
+#define EPP_IDL_
+
+#include "_dataTypes.idl"
+
+module ccReg {
+
+    /// common EPP params for create,update,delete and transfer operations
+  struct EppParams {
+      TID requestID;  ///<ID of fred-logd request which represents this call
+                        /// setting it to 0 means no request ID will be saved in history 
+      TID loginID;  ///<ID of fred-logd session  (was login table before)
+      string clTRID;    ///< client transaction ID
+      string XML;       ///< raw content of EPP command
+  };
+
+    /// type of identification possibilities, define meaning of ident string
+  enum identtyp 
+  {
+    EMPTY, ///< unidentified
+    OP, ///< identity card number
+    PASS, ///< passport number
+    ICO, ///< identification number of organization
+    MPSV, ///< identification number of MPSV
+    BIRTHDAY ///< date of birth
+  };
+  /// type for meaning of disclose parameters
+  enum Disclose 
+  {
+    DISCL_EMPTY, ///< disclose section is missing, ignore disclose parameters
+    DISCL_HIDE, ///< all parameters with TRUE value will be hidden
+    DISCL_DISPLAY  ///< all parameters with TRUE value will be shown
+  };
+  /// type for result of check operation
+  enum CheckAvail 
+  {
+    Exist, ///< object exists and is not available for registration
+    NotExist, ///< object dosn't exist and is free for registration
+    BadFormat, ///< bad format of handle
+    BlackList, ///< admistrative ban for registration
+    DelPeriod, ///< handle is in protection period
+    NotApplicable ///< domain has invalid zone for this registry
+  };
+  /// Type for one item of check functions results list
+  struct CheckSeq 
+  {
+    CheckAvail avail; ///< How is result of check operation
+    string reason; ///< If it is avail!=NotExist, here is also shown text reason
+  };
+  /// Time unit used at specification of domain validation
+  enum TimeUnit
+  {
+    unit_month,
+    unit_year
+  };
+  /// Type for object state transfer
+  struct Status_str
+  {
+    string value; ///< Flag state name 
+    string text; ///< Supporting text to flag sate
+  };
+  /// Type for validation domain period transfer 
+  struct Period_str
+  {
+    short count; /// Number of time units
+    TimeUnit unit; /// Time unit
+  };
+
+  struct ZoneCredit_str
+  {
+    string zone_fqdn; ///< Zone name 
+    string price; ///< price
+  };
+
+  /// Type for registrar credit statement  
+  typedef sequence<ZoneCredit_str> ZoneCredit;
+
+  /// Type for general list of extension
+  typedef sequence <any> ExtensionList;  
+  /// Type for returning value of check functions
+  typedef sequence <CheckSeq> CheckResp;
+  /// Type for definition of identifiers list in check function parameter
+  typedef sequence <string> Check;
+  /// Type for definition of object states list
+  typedef sequence <Status_str> Status;
+  /// Type for definition of administrative contacts list
+  typedef sequence <string> AdminContact;
+  /// Type for transfer of translated error strings 
+  typedef sequence <string> ErrorStrings;
+  /// Type for indetification of place in parameters, in which error was found
+  enum ParamError 
+  {
+    poll_msgID, ///< Error in msgID poll message
+    contact_handle, ///< Error in contact handle
+    contact_cc, ///< Error in country code of contact
+    nsset_handle, ///< Error in nsset handle
+    nsset_tech, ///< Error in nsset of technical contact
+    nsset_dns_name, ///< Error in name of nameserver nsset
+    nsset_dns_addr, ///< Error in address of nameserver nsset
+    nsset_dns_name_add, ///< Error in nameserver name ns
+    nsset_dns_name_rem, ///< Error in nameserver name ns 
+    nsset_tech_add, ///< Error in added technical contact
+    nsset_tech_rem, ///< Error in removed technical contact
+    domain_fqdn, ///< Error in domain name
+    domain_registrant, ///< Error in domain registrant
+    domain_nsset, ///< Error in nsset of domain
+    domain_keyset,
+    domain_period, ///< Error in domain period
+    domain_admin, ///< Error in administrative contact of domain
+    domain_tmpcontact, ///< Error in temp contact of domain
+    domain_ext_valDate, ///< Error in validation date at domain creation
+    domain_ext_valDate_missing, ///< Validation date is missing for ENUM domain
+    domain_curExpDate, ///< Error in entered date of domain expiration 
+    domain_admin_add, ///< Error in added administrative contact 
+    domain_admin_rem, ///< Error in removed administrative contact 
+    keyset_handle,  ///< Error in keyset handle
+    keyset_tech, ///< Error in keyset technical contact
+    keyset_dsrecord,    ///< Error in DSRecord
+    keyset_dsrecord_add, ///< Error in added dsrecord
+    keyset_dsrecord_rem, ///< Error in removed dsrecord
+    keyset_tech_add,    ///< Error in added technical contact
+    keyset_tech_rem,    ///< Error in removed technical contact
+    registrar_autor,    ///< Registrar is not owner of object
+    keyset_dnskey,      ///< Error in dnskey
+    keyset_dnskey_add,  ///< Error in dnskey to add
+    keyset_dnskey_rem   ///< Error in dnskey to remove
+  };
+  /// Errors specification already detected at XML processing in mod_eppd 
+  enum XmlError
+  {
+    xml_not_valid, ///< libxml validation error
+    poll_msgID_missing, ///< Parameter msgID is missing in xml
+    contact_identtype_missing, ///< Attribute type at ident is missing in xml
+    transfer_op ///< Parameter op is missing at transfer in XML 
+  };
+  /// Sequence of error specification already detected in mod_eppd
+  typedef sequence <XmlError> XmlErrors;
+  /// Indetification of missing elements in list (potentionaly buried in lists)
+//   typedef sequence <short> ErrorPosition;
+  /// Type for item of error messages list
+  struct Error
+  {
+    ParamError code; ///< Error code identified wrong parameter 
+    string reason; ///< Error reason, text description
+    short position; ///< Identification of error place in list 
+  };
+  /// Type for error messages transfer
+  typedef sequence <Error> Errors;
+  /// Type for returning value of all EPP function
+  struct Response
+  {
+    short code; ///< Returning code defined via EPP protocol
+    string msg; ///< Message belongs to returning code (according to language)
+    string svTRID; ///< Server transaction ID
+  };
+  /// Type for transfer data after info_contact call 
+  struct Contact
+  {
+    string handle; ///< Contact handle
+    string ROID; ///< Contact Identifier - ID repository 
+    string ClID; ///< Registrar identifier, which has to right for change
+    string CrID; ///< Registrar identifier, which created a contact
+    string UpID; ///< Registrar identifier, which realized changes
+    Status stat; ///< List of contact states
+    timestamp CrDate; ///< Creation date and time 
+    timestamp UpDate; ///< Date and time of last change
+    timestamp TrDate; ///< Date and time of last transfer
+    string Name; ///< Contact name or title
+    string Organization; ///< Organisation name
+    Lists Streets; ///< Address - maximum is 3 parts
+    string City; ///< Address - city
+    string StateOrProvince; ///< Address - region (country part)
+    string PostalCode; ///< ZIP code
+    string CountryCode; ///< Country Code - 2 placed ISO country code 
+    string Telephone; ///< Telephone number 
+    string Fax; ///< Fax number
+    string Email; ///< Contact e-mail for messages about expiration
+    string NotifyEmail; ///< Alerting e-mail for messages about changes 
+    string VAT; ///< Value Added Tax 
+    string ident; ///< ident - unique identifier of contact
+    identtyp identtype; ///< Ident type - defines meaning of ident field 
+    string AuthInfoPw; ///< password for contact transfer
+    Disclose DiscloseFlag; ///< disclose flag determines meaning of disclose param.
+    boolean DiscloseName; ///< Visibility for Name parameter 
+    boolean DiscloseOrganization; ///< Visibility for Organisation parameter
+    boolean DiscloseAddress; ///< Visibility for Addrss parameter
+    boolean DiscloseTelephone; ///< Visibility for Telephone parametr
+    boolean DiscloseFax; ///< Visibility for Fax parameter
+    boolean DiscloseEmail; ///< Visibility for Email parameter
+    boolean DiscloseVAT; ///< Visibility for VAT parameter
+    boolean DiscloseIdent; ///< Visibility for ident parameter
+    boolean DiscloseNotifyEmail; ///< Visibility for NotifyEmail parameter
+  };
+  /// Type for transfer data after call [create|update]_contact
+  struct ContactChange
+  {
+    string Name; ///< Contact name or title
+    string Organization; ///< Organisation name
+    Lists Streets; ///< Address - maximum is 3 parts
+    string City; ///< Address - city
+    string StateOrProvince; ///< Address - region(country part)
+    string PostalCode; ///< ZIP code
+    string CC; ///< Country Code - 2 placed ISO country code 
+    string Telephone; ///< Telephone number 
+    string Fax; ///< Fax number
+    string Email; ///< Contact e-mail for messages about expiration
+    string NotifyEmail; ///< Alerting email for messages about changes
+    string VAT; ///< Value Added Tax 
+    string ident; ///< ident - unique contact identifier
+    identtyp identtype; ///< Ident type - defines meaning of ident field
+    string AuthInfoPw; ///< Password for contact transfer 
+    Disclose DiscloseFlag; ///< Disclose flag determines meaning of disclose param.
+    boolean DiscloseName; ///< Visibility for Name parameter 
+    boolean DiscloseOrganization; ///< Visibility for Organisation parameter
+    boolean DiscloseAddress; ///< Visibility for Address parameter
+    boolean DiscloseTelephone; ///< Visibility for Telephone parameter
+    boolean DiscloseFax; ///< Visibility for Fax parameter
+    boolean DiscloseEmail; ///< Visibility for Email parameter
+    boolean DiscloseVAT; ///< Visibility for VAT parameter
+    boolean DiscloseIdent; ///< Visibility for ident parameter
+    boolean DiscloseNotifyEmail; ///< Visibility for NotifyEmail parameter
+  };
+  /// Type for transfer data in info_nsset function
+  struct NSSet
+  {
+    string handle; ///< Nsset handle 
+    string ROID; ///< Nsset identifier - repository ID
+    string ClID; ///< Registrar identifier, which has to right for change
+    string CrID; ///< Registrar identifier, which created contact
+    string UpID; ///< Registrar identifier, which realized changes
+    Status stat; ///< nsset states list
+    timestamp CrDate; ///< Creation date and time 
+    timestamp UpDate; ///< Date and time of last change
+    timestamp TrDate; ///< Date and time of last transfer
+    string AuthInfoPw; ///< Password for nsset transfer
+    DNSHost dns; ///< List of DNS nameservers 
+    TechContact tech; ///< List of technical contacts identifier
+    short level; ///< Technical tests level
+  };
+  /// Type for transfer data in info_keyset function
+  struct KeySet
+  {
+      string handle; ///< KeySet handle
+      string ROID; ///< KeySet identifier - repository ID
+      string ClID; ///< registrar identifier, which has to right for change
+      string CrID; ///< Registrar identifier, which created contact
+      string UpID; ///< Registrar identifier, which realized changes
+      Status stat; ///< KeySet states list
+      timestamp CrDate; ///< Creation date and time
+      timestamp UpDate; ///< Date and time of last change
+      timestamp TrDate; ///< Date and time of last transfer
+      string AuthInfoPw; ///< Password for keyset transfer
+      DSRecord dsrec; ///< List of ds records
+      DNSKey dnsk;      ///< List of dnskeys
+      TechContact tech; ///< List of technical contacts identifier
+  };
+  /// Type for transfer data info_domain function
+  struct Domain
+  {
+    string ROID; ///< Domain identifier - repository ID
+    string name; ///< Fqdn - domain name
+    string Registrant; ///< Handle of domain registrant
+    string nsset; ///< NSSET handle
+    string keyset; ///< KEYSET handle
+    Status stat; ///< Domain state list
+    string ClID; ///< Registrar identifier, which has right for change
+    string CrID; ///< Registrar identifier, which created contact
+    string UpID; ///< Registrar identifier, which realized changes
+    timestamp CrDate; ///< Creation date and time 
+    timestamp UpDate; ///< Date and time of last changes
+    timestamp TrDate; ///< Date and time of last transfer
+    timestamp ExDate; ///< Date and time of domain expiration
+    string AuthInfoPw; ///< Password for domain transfer
+    AdminContact admin; ///< List of administrative contacts
+    ExtensionList ext; ///< General extension information  
+    AdminContact tmpcontact; ///< List of admnistrative contacts
+  };
+  /// Type for validation date disposition at ENUM domain
+  struct ENUMValidationExtension {
+    date valExDate; ///< Expiration date of valadation validity
+    Disclose publish; ///< Should the ENUM domain be published in ENUM dictionary
+  };
+  /// Info function type.
+  enum InfoType {
+    IT_LIST_CONTACTS,
+    IT_LIST_DOMAINS,
+    IT_LIST_NSSETS,
+    IT_LIST_KEYSETS,
+    IT_DOMAINS_BY_NSSET,
+    IT_DOMAINS_BY_CONTACT,
+    IT_DOMAINS_BY_KEYSET,
+    IT_NSSETS_BY_CONTACT,
+    IT_NSSETS_BY_NS,
+    IT_KEYSETS_BY_CONTACT
+  };
+ 
+  /// Type of poll message.
+  enum PollType
+  {
+    polltype_none, ///< No message in queue.
+    polltype_transfer_contact, ///< Contact was transferred.
+    polltype_delete_contact,   ///< Contact was deleted because not used.
+    polltype_transfer_nsset,   ///< Nsset was transferred.
+    polltype_delete_nsset,     ///< Nsset was deleted because not used.
+    polltype_transfer_keyset,  ///< KeySet was transferred.
+    polltype_delete_keyset,    ///< KeySet was deleted because not used.
+    polltype_techcheck,        ///< Technical check results.
+    polltype_transfer_domain,  ///< Domain was transferred.
+    polltype_impexpiration,    ///< Domain will expire in near future.
+    polltype_expiration,       ///< Domain expired.
+    polltype_impvalidation,    ///< Domain validation will expire in near future
+    polltype_validation,       ///< Domain validation expired.
+    polltype_outzone,          ///< Domain was outaged from zone.
+    polltype_delete_domain,    ///< Domain was deleted.
+    polltype_lowcredit,        ///< Warning about low credit of registrator.
+    polltype_request_fee_info  ///< Information about requests done and price
+  };
+
+  /// Poll message structure used for transfers.
+  struct PollMsg_HandleDateReg
+  {
+    string handle;   ///< Object handle.
+    string date;     ///< Date of event.
+    string clID;     ///< Registrar's handle.
+  };
+
+  /// Poll message structure used for impexpiration, expiration, outzone types.
+  struct PollMsg_HandleDate
+  {
+    string handle;   ///< Object handle.
+    string date;     ///< Date of event.
+  };
+
+  /// Information about one technical test.
+  struct TechcheckItem
+  {
+    string testname;   ///< Name (identifier) of technical test.
+    boolean status;    ///< Result (true = OK or Unknown, false = Failure).
+    string note;       ///< Optional text note (not used yet).
+  };
+
+  typedef sequence <TechcheckItem> TechcheckList;
+
+  /// Poll message containing results of all executed technical tests.
+  struct PollMsg_Techcheck
+  {
+    string handle;       ///< Handle of tested nsset.
+    Lists  fqdns;        ///< Extra list of tested domains.
+    TechcheckList tests; ///< List of executed tests.
+  };
+
+  struct PollMsg_LowCredit
+  {
+    string zone;
+    unsigned long limit;
+    unsigned long credit;
+  };
+
+  // Poll message for requests fee information
+  typedef RequestFeeInfoData PollMsg_RequestFeeInfo;
+
+  /// Server interface for EPP protocol implementation 
+  interface EPP
+  {
+    /** Exception that can return anyone from EPP functions in case 
+     *  that parameter was wrongly entered or whenever answer is wrong  
+     *  (code 2xxx).
+     */
+    exception EppError {
+      short errCode; ///< Returning code defined with EPP protocol
+      string errMsg; ///< Message belonged to returning code (according to language)
+      string svTRID; ///< Server transaction ID
+      Errors errorList; ///< Error list
+    };
+    /** Exception which returns at poll commands if message queue is empty. */
+    exception NoMessages {
+      short code; ///< Returning code defined with EPP protocol
+      string msg; ///< Message belonged to returning code (according to language)
+      string svTRID; ///< Server transaction ID
+    };
+    /// It returns version number of server and actual time 
+    /** Detect version number and actual date for Greeting message.
+     * \param datetime actual local time 
+     * \return version number */
+    string version(
+      out timestamp datetime
+    );
+
+    /// disconnect registrar with specified ID from central registry
+    void destroyAllRegistrarSessions(
+      in long regid
+    );
+
+    /// session cleanup on closing tcp session
+    void sessionClosed(in unsigned long long clientID);
+
+    /// Recording of unsuccessful operation recieved from EPP protocol.
+    /** If error was yet discovered at EPP server side, this calling 
+        saves founded error in action evidence and returns generated srvTRID.  
+     \param errCode Returning error code for recording this code 
+     \param clientID Session identification obtained by ClientLogin call.
+     If client isn't logged (and error was happend before login)
+     is written 0 value here
+     \param requestID fred-logd request ID associated with login command
+     \param clTRID Transaction number given by client for his recording 
+     \param errorCodes Input errors codes sended for translation in CR 
+     \param errorStrings Output translated strings corresponding to error codes
+     \return General reply with operation result and error messages */
+    Response GetTransaction (
+      in short errCode,
+      in unsigned long long clientID,
+      in TID requestID,
+      in string clTRID,
+      in XmlErrors errorCodes,
+      out ErrorStrings errStrings
+    ) raises (EppError);
+    /// Mesage confirmation obtained by PollRequest.
+    /** It marks given message as readed if a message with given ID belongs to logged registrar.
+      It returns number of remaining messages and identification of next messages in front for continue of processing messages.
+     \param msgID Id messages which confirmates only number value is right 
+     \param msgID Id of accepted message
+     \param count Messages Number which are after removing of this message in front
+     \param newmsgID Id of next first message
+     \param params common parametres
+     \return Genreal reply with operation result and error messages */
+    Response PollAcknowledgement (
+      in string msgID,
+      out short count,
+      out string newmsgID,
+      in EppParams params
+    ) raises (EppError, NoMessages);
+    /// Obtaining of next unreaded message.
+    /** It returns content of next first message of logged registrar, which isn't still marked as readed
+     and which date of its expiration doesn't expire.
+     \param msgID ID of returning message
+     \param count Messages number in front
+     \param qDate Date of inserting message in front
+     \param mesg Message text
+     \param params common parametres
+     \return General answer with operation results and error messages */   
+    Response PollRequest (
+      out string msgID,
+      out short count,
+      out timestamp qDate,
+      out PollType type,
+      out any mesg,
+      in EppParams params
+    ) raises (EppError, NoMessages);
+    /// Realise client authentication and login in system
+    /** Find out entered registrar in evidence and check up his password and client 
+	certificate fingerprint of SSL communication. If it is all right, save a new 
+	session record, set up requested language and eventually change a password. 
+     \param ClID Identifier of login registrar
+     \param passwd Password for login
+     \param newpass New password if there is request for change
+     \param clTRID Transaction number given by client for its evidence 
+     \param XML Complete XML message which came through EPP protocol
+     \param clientID Return new session identification 
+     \param requestID fred-logd request ID associated with login command
+     \param certID MD5 Client certificate fingerprint used at login
+     \param lang Requested communication language
+     \return General reply with operation results and error messages */   
+    Response ClientLogin (
+      in string ClID,
+      in string passwd,
+      in string newpass,
+      in string clTRID,
+      in string XML,
+      out unsigned long long clientID,
+      in TID requestID,
+      in string certID,
+      in Languages lang
+    ) raises (EppError);
+    /// Realise communication closing
+    /** It closes existing session record in database. 
+     \param params common parametres
+     \return General reply with result operation and errot messages */   
+    Response ClientLogout (
+      in EppParams params
+    ) raises (EppError);
+
+    ///  return credit high of registrar for single zones
+    /** 
+     \param credit credit high ( from all received payment) according to single zones 
+     \param params common parametres
+     \return General reply wih operation result and error messages */   
+    Response ClientCredit (
+      out ZoneCredit credit,
+      in EppParams params
+    ) raises (EppError);
+
+    /// Checking of possibility to register a contact with given identifier
+    /** It enables mass searching of several identifiers. It discovers 
+     validity of used identifier for each, it converts it to upper case and 
+     find out, whether this identifier isn't already registered or isn't
+     in protectvie time period for its deleting. It still returns result 
+     in list form.	
+     \param handle List of identifiers 
+     \param a Reply list for single identifiers
+     \param params common parametres
+     \return General reply with operation results and error message */   
+    Response ContactCheck (
+      in Check handle,
+      out CheckResp a,
+      in EppParams params
+    ) raises (EppError);
+    /// Obtain information of registered contact
+    /** Find out with given identifier. If logged registrar isn't 
+        registrar of contact, AuthInfoPw item shows him empty.
+     \param handle Identifier of requested object
+     \param c Data structure with reply
+     \param params common parametres
+     \return General reply with operation results and error message */   
+    Response ContactInfo (
+      in string handle,
+      out Contact c,
+      in EppParams params
+    ) raises (EppError);
+    /// Deleting of registered contact 
+    /** If it isn't contact in some linkage with other object and 
+	if object state doesn't contain clientDeleteProhibited or serverDeleteProhibited,
+	then is realised its deletion. Contact can be deleted only by specified registrar.
+	Contact is saved in history before deletion.
+     \param handle Identifier of requested object
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response ContactDelete (
+      in string handle,
+      in EppParams params
+    ) raises (EppError);
+    /// Data change of registered contact
+    /** If state doesn't contain clientUpdateProhibited or serverUpdateProhibited,
+	update data at basis of requests at contact.
+	If it is set up clientUpdateProhibited flag, it can be deleted only this
+	attribute. Contact can be only updated by its specified registrar.
+	Actual object data are saved in history before update. Time stamp (upDate)
+	is set up at actual time.
+     \param handle Requested object identifier
+     \param c Structure with requested changes in contact
+     \param params common parametres
+     \return General reply with operation results abd error messages */   
+    Response ContactUpdate (
+      in string handle,
+      in ContactChange c,
+      in EppParams params
+    ) raises (EppError);
+    /// New contact registration
+    /** If identifier passes test from ContactCheck function, new contact 
+     is established and assigned to creative registrar. New contact is saved
+     in history after creating, so that at least one copy always was in history.
+     If it is given empty password, it is automatically generated.
+     \param handle Identifier of requested object
+     \param c Structure with requested values in cotact
+     \param crDate Returned date of creation 
+     \param params common parametres
+     \return General reply with operation results and error messagess */   
+    Response ContactCreate (
+      in string handle,
+      in ContactChange c,
+      out timestamp crDate,
+      in EppParams params
+    ) raises (EppError);
+    /// Contact transfer to another registrar
+    /** Verify entered password with password given at contact and if object
+	state doesn't contain clientTransferProhibited or serverTransferProhibited
+	it changes specified registrar to actual logged registrar. 
+	An actual copy is saved in history before a change. New password is
+	automatically generated after a change.
+     \param handle Identifier of requsted object
+     \param authInfo Password for control with date at object
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response ContactTransfer (
+      in string handle,
+      in string authInfo,
+      in EppParams params
+    ) raises (EppError);
+    /// Statement of all contacts at given registrar 
+    /** Return list of contact identifiers belongs to logged registrar. 
+     \param contacts List of contacts identifiers 
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response ContactList (
+      out Lists contacts,
+      in EppParams params
+    ) raises (EppError);
+    /// Checking a possibility to register nsset with given identifier
+    /** It enables mass searching of several identifiers. It discovers validity
+      of used identifier for each, it converts to upper case and 
+      find out, whether this identifier isn't already registered or isn't
+      in protective time period for its deleting. It still returns result 
+      in list form.	
+     \param handle List of identifiers
+     \param a Reply list for single identifiers 
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response NSSetCheck (
+      in Check handle,
+      out CheckResp a,
+      in EppParams params
+    ) raises (EppError);
+    /// Obtaining informations about registered nsset
+    /** Find out nsset with given identifier. If logged registrar isn't 
+        registrar of nsset, AuthInfoPw item shows him empty.
+     \param handle Identifier of requested object
+     \param n Data structure with reply 
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response NSSetInfo (
+      in string handle,
+      out NSSet n,
+      in EppParams params
+    ) raises (EppError);
+    /// Deletion of registered nsset
+    /** If it isn't nsset in some linkage with other object and 
+	if object state doesn't contain clientDeleteProhibited or serverDeleteProhibited,
+	then is realised its deletion. Nsset can be deleted only by specified registrar.
+	Nsset is saved in history before deletion.
+     \param handle Identifier of requested object
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response NSSetDelete (
+      in string handle,
+      in EppParams params
+    ) raises (EppError);
+    /// Date change of registered nsset 
+    /** If state doesn't contain clientUpdateProhibited or serverUpdateProhibited,
+	update data at basis of requests at nsset.
+	If it is set up clientUpdateProhibited flag, it can be deleted only this
+	attribute. Nsset can be only updated by its specified registrar.
+	Actual object data are saved in history before update. It is neccesity to
+	observe the terms that there have to be at least two dns hosts in nsset and at least one
+	technical contact. DNS hosts, which have specified IP address (GLUE), must
+        have a hostname from zone which is maintained from this register. It is allowed
+	used IPv4 and IPv6 address from public address range. Time stamp (upDate) 
+	is set up at actual time.
+     \param handle Identifier of requested object
+     \param authInfo_chg Password change for transfer
+     \param dns_add Identifier of added host
+     \param dns_rem Identifier of removed host
+     \param tech_add Identifier of added technical contact
+     \param tech_rem Identifier of removed technical contact
+     \param level Level oftechnical test (-1 is equal not entered)
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response NSSetUpdate (
+      in string handle,
+      in string authInfo_chg,
+      in DNSHost dns_add,
+      in DNSHost dns_rem,
+      in TechContact tech_add,
+      in TechContact tech_rem,
+      in short level,
+      in EppParams params
+    ) raises (EppError);
+    /// Registration of new nsset
+    /** If identifier passes test from NSSetCheck function, new nsset 
+     is established and assigned to creative registrar. If it is 
+     given empty password, it is automatically generated.
+     New nsset is saved  in history after creating, so that at least 
+     one copy always was in history. Same rules are valid for creation as those,
+     which are mentioned in description of NSSetUpdate function.
+     \param handle Identifier of requested object
+     \param authInfoPw Password for transfer
+     \param tech List of technical contacts 
+     \param dns List of hosts (nameservers)
+     \param level Level of technical test (-1 is equal not entered)
+     \param crDate Returned date of creation
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response NSSetCreate (
+      in string handle,
+      in string authInfoPw,
+      in TechContact tech,
+      in DNSHost dns,
+      in short level,
+      out timestamp crDate,
+      in EppParams params
+    ) raises (EppError);
+    /// Nsset transfer to another registrar
+    /** Verify entered password with password given at nsset and if object
+	state doesn't contain clientTransferProhibited or serverTransferProhibited
+	it changes specified registrar to actual logged registrar. 
+	An actual copy is saved in history before a change. New password is
+	automatically generated after a change.
+     \param handle Identifier of requested object
+     \param authInfo Password for control with data at object
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response NSSetTransfer (
+      in string handle,
+      in string authInfo,
+      in EppParams params
+    ) raises (EppError);
+    /// List of all nssets of given registrar
+    /** Returns list of nssets identifier belongs to logged registrar
+     \param nssets List of nsset identifier
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response NSSetList (
+      out Lists nssets,
+      in EppParams params 
+    ) raises (EppError);
+    /// Asynchronous calling of nsset technical control 
+    /**
+     \param handle Nsset identifier
+     \param fqdns Domain names, which have to be tested with nsset
+     \param level Level of technical test (-1 is equal not entered)
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response nssetTest (
+      in string handle,
+      in short level,
+      in Lists fqdns,
+      in EppParams params
+    ) raises (EppError);
+    Response KeySetCheck (
+        in Check handle,
+        out CheckResp a,
+        in EppParams params
+    ) raises (EppError);
+    Response KeySetInfo(
+        in string handle,
+        out KeySet k,
+        in EppParams params
+    ) raises (EppError);
+    Response KeySetDelete (
+        in string handle,
+        in EppParams params
+    ) raises (EppError);
+    Response KeySetUpdate (
+        in string handle,
+        in string authInfo_chg,
+        in TechContact tech_add,
+        in TechContact tech_rem,
+        in DSRecord dsrec_add,
+        in DSRecord dsrec_rem,
+        in DNSKey dnsk_add,
+        in DNSKey dnsk_rem,
+        in EppParams params
+    ) raises (EppError);
+    Response KeySetCreate (
+        in string handle,
+        in string authInfoPw,
+        in TechContact tech,
+        in DSRecord dsrec,
+        in DNSKey dnsk,
+        out timestamp crDate,
+        in EppParams params
+    ) raises (EppError);
+    Response KeySetTransfer (
+        in string handle,
+        in string authInfo,
+        in EppParams params
+    ) raises (EppError);
+    Response KeySetList (
+        out Lists keysets,
+        in EppParams params
+    ) raises (EppError);
+
+    /// Checking possibility to register domain with given name
+    /** It enables mass searchig of several identifiers. It discovers 
+     validity of used identifier for each, it converts it to lower case and 
+     find out, whether this identifier isn't already registered or isn't
+     in protective time period for its deleting. It still returns result 
+     in list form. Domain has to be from zone which is maintained by registrar
+     and has to fulfil rules according to domain name (including special rules for
+     enum domains) which are given by relevant RFC (1035,2916). Number of level 
+     has not get over as zone parameter (e.g. for cz it is 1, for enum domain it is maximum
+     length of number). It is not possible to register domain if subdomain 
+     or parentdomain already exists.
+     \param fqdn List of identifiers
+     \param a List of replies for singles identifiers
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response DomainCheck (
+      in Check fqdn,
+      out CheckResp a,
+      in EppParams params
+    ) raises (EppError);
+    /// Obtaing information about registered domain
+    /** At first check up validity of identifier with same way as in DomainCheck.
+	Find out domain with the same name or parentdomain name or subdomain
+ 	name. If logged registrar isn't registrar of founded domain, AuthInfoPw
+	item shows him empty. If it case of enum domain, domain registrant and 
+	administrative contact don't show to this foreign registar. In addition
+	validation date is returning at enum domain in general extension list.
+     \param fqdn Domain name
+     \param d Data structure with reply
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response DomainInfo (
+      in string fqdn,
+      out Domain d,
+      in EppParams params
+    ) raises (EppError);
+    /// Deletion of registered domain
+    /** If object state doesn't contain clientDeleteProhibited or 
+     serverDeleteProhibited, its deletion is realized. Domain can 
+     be deleted only by specified registrar. Domain saved in history
+     before deletion. Registrar has the rights for this operation 
+     in zone of given domain.
+     \param fqdn Domain name
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response DomainDelete (
+      in string fqdn,
+      in EppParams params
+    ) raises (EppError);
+    /// Data change of registered domain
+    /** First consider validy of domain as in operation DomainCheck.
+     If domain status doesn't contain serverUpdateProhibited, domain 
+     domain is updated by requested data. Only owning registrar can
+     update domain. After update, domain data are copied into history.
+     Registrar need accress rights for zone of this domain. Timestamp upDate
+     is set to current time. Extenstion with date of validation can appear
+     only in ENUM domains. There is a limit of 6 month into the future for
+     this attribute. There is a period of 14 days before the date of 
+     validation when validation can be set as just on the day of 
+     validation
+     \param fqdn Domain name
+     \param registrant_chg Password domain registrant
+     \param authInfo_chg Password change for transfer
+     \param nsset_chg Nsset change
+     \param keyset_chg KeySet chage
+     \param admin_add Identifier of added administrative contact
+     \param admin_rem Identifier of removed administrative contact
+     \param params common parametres
+     \param ext Extension contains next data (e.g. validation at ENUM domains)
+     \return General reply with operation result and error messages */   
+    Response DomainUpdate (
+      in string fqdn,
+      in string registrant_chg,
+      in string authInfo_chg,
+      in string nsset_chg,
+      in string keyset_chg,
+      in AdminContact admin_add,
+      in AdminContact admin_rem,
+      in AdminContact tmpcontact_rem,
+      in EppParams params,
+      in ExtensionList ext
+    ) raises (EppError);
+    /// New domain registration
+    /** If domain name is accepted in test from DomainCheck operation and 
+     registrar has access rights for zone of this domain, new domain is
+     created. New authInfo password is generated automaticaly in case it is
+     empty. After creation, domain data are copied into history. 
+     If there is no period specified, expiration is set to minimal period 
+     according to zone parameters. If it is specified it must correspond to 
+     other zone parametrs maximal period and step of minimal period. There
+     should be enough credit for this operation and this credit id updated
+     according to price list. In creation of ENUM domain, there must be
+     filled extension with validation date. It cannot be greater then 6 month
+     from date of creation.
+     \param fqdn Domain name
+     \param Registrant Contact identifier of registrant
+     \param nsset Identifier of associated nsset (or empty string)
+     \param keyset Identifier of associated keyset (or empty string)
+     \param AuthInfoPw Password for transfer
+     \param period Initial period of expiration in months
+     \param admin List of administrative contacts
+     \param crDate Returned date of creation
+     \param exDate Returns counted date of expiration at period base 
+     \param params common parametres
+     \param ext Extension contains next date (e.g. validation at ENUM domain)
+     \return General reply with operation result and error messages */   
+    Response DomainCreate (
+      in string fqdn,
+      in string Registrant,
+      in string nsset,
+      in string keyset,
+      in string AuthInfoPw,
+      in Period_str period,
+      in AdminContact admin,
+      out timestamp crDate,
+      out date exDate,
+      in EppParams params,
+      in ExtensionList ext
+    ) raises (EppError);
+    /// Move expiration date by requested period
+    /** First consider validy of domain as in operation DomainCheck.
+     If domain status doesn't contain serverRenewProhibited, add period 
+     to current expiration date. Enum domains can change last date of 
+     validation in this command. There are the same rules as during 
+     creation of domain. Renew id allowed only if there id enough credit
+     and registrar has access rights to this zone. After change domain is
+     copied into history.
+     \param fqdn Domain name
+     \param curExpDate Actual date of expiration (detected from Info function)
+     \param period Number of moth added to expiration date
+     \param exDate New expiration date
+     \param params common parametres
+     \param ext Extenstion with addional informations (validation date)
+     \return General reply with operation result and error messages */   
+    Response DomainRenew (
+      in string fqdn,
+      in date curExpDate,
+      in Period_str period,
+      out timestamp exDate,
+      in EppParams params,
+      in ExtensionList ext
+    ) raises (EppError);
+    /// Domain transfer to other registrar
+    /** Compare given password with password stored in domain and if status 
+     od domain doesn't include serverTransferProhibited, change current
+     registrar of domain to calling registrar. Current data are copied into
+     history after change. After switch new authinfo id generated 
+     automaticaly. Registrar must have access rights to zone of requested
+     domain for this operation.
+     \param fqdn Domain name which is going to be transfered
+     \param authInfo Pasword for transfer authorization
+     \param params common parametres
+     \return General reply with operation result and error messages */   
+    Response DomainTransfer (
+      in string fqdn,
+      in string authInfo,
+      in EppParams params
+    ) raises (EppError);
+    /// List of all domains of given registrar
+    /** It returns list of domain names belongs to logged registrar
+     \param domains List of domain names
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response DomainList (
+      out Lists domains,
+      in EppParams params
+    ) raises (EppError);
+    /// Requesting of authinfo for domain registrant
+    /**
+     \param fqdn Name of domain for which is required authInfo
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response domainSendAuthInfo (
+      in string fqdn,
+      in EppParams params
+    ) raises (EppError);
+    /// Requesting of authinfo for contact holder
+    /**
+     \param handle Handle of contact for which is required authInfo
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response contactSendAuthInfo (
+      in string handle,
+      in EppParams params
+    ) raises (EppError);
+    /// Requesting of authinfo for nsset holder
+    /**
+     \param handle Handle of nsset for which is required authInfo
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response nssetSendAuthInfo (
+      in string handle,
+      in EppParams params
+    ) raises (EppError);
+    /// Requesting of authinfo for keyset holder
+    /**
+     \param handle Handle of keyset for which is required authInfo
+     \param params common parametres
+     \return General reply with operation result and error messages */
+    Response keysetSendAuthInfo (
+        in string handle,
+        in EppParams params
+    ) raises (EppError);
+    /// This function incases all extension info function
+    /**
+     \param type Type of searching function, see enum InfoType.
+     \param handle Handle which is pattern for searching
+     \param count Number of founded results
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response info (
+      in InfoType type,
+      in string handle,
+      out long count,
+      in EppParams params
+    ) raises (EppError);
+    /// Get list of info function results
+    /**
+     \param handles List of returned handles
+     \param params common parametres
+     \return General reply with operation result and error messages */       
+    Response getInfoResults (
+      out Lists handles,
+      in EppParams params
+    ) raises (EppError);
+  }; // interface EPP
+  
+}; // module ccReg
+
+#endif

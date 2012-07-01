@@ -1,0 +1,372 @@
+#ifndef FILTERS_IDL_
+#define FILTERS_IDL_
+
+#include "_dataTypes.idl"
+
+module ccReg {
+
+  module Filters {
+
+    exception SqlQueryTimeout {};
+
+    interface Base
+    {
+      readonly attribute string name;
+      attribute boolean neg;
+      /// Returns true, when attribute 'value' was set
+      boolean isActive();
+    };
+
+    interface Iterator
+    {
+      exception INVALID {};
+      void reset();
+      void setNext();
+      boolean hasNext();
+      Base getFilter() raises (INVALID);
+      void clearF();
+    };
+
+    interface Simple : Base
+    {
+    };
+  
+    interface Int : Simple
+    {
+      attribute short value;
+    };
+
+    interface IntInterval : Simple
+    {
+      attribute ccReg::IntInterval value;
+    };
+
+   // types encapsulating enums from Logging
+    interface ServiceType : Simple
+    {
+      attribute ccReg::RequestServiceType value;
+    };   
+
+    interface RequestType : Simple
+    {
+      attribute ccReg::RequestType value;
+    };
+
+    interface Id : Simple
+    {
+      attribute TID value;
+    };
+
+    interface Bool : Simple
+    {
+      attribute boolean value;
+    };
+
+    interface Date : Simple
+    {
+      attribute DateInterval value;
+    };
+
+    interface DateTime : Simple
+    {
+      attribute DateTimeInterval value;
+    };
+  
+    interface Str : Simple
+    {
+      attribute string value;
+    };
+
+    interface Compound : Base
+    {
+      Iterator getIterator();
+    };
+
+
+    interface ZoneNs : Compound
+    {
+        Id addId();
+        Id addZoneId();
+        Str addFqdn();
+        Str addAddrs();
+    };
+
+    interface Zone : Compound
+    {
+      Id addId();
+      Str addFqdn();
+      Int addExPeriodMin();
+      Int addExPeriodMax();
+      Int addValPeriod();
+      Int addDotsMax();
+      Bool addEnumZone();
+      ZoneNs addZoneNs();
+    };
+
+    interface ZoneSoa : Zone
+    {
+    	Id addZoneId();
+    	Int addTtl();
+    	Str addHostmaster();
+    	Int addSerial();
+    	Int addRefresh();
+    	Int addUpdateRetr();
+    	Int addExpiry();
+    	Int addMinimum();
+    	Str addNsFqdn();
+    };
+
+
+    interface Registrar : Compound
+    {
+      Id addId();
+      Str addIco();
+      Str addDic();
+      Str addVarSymbol();
+      Bool addVat();
+      Str addHandle();
+      Str addName();
+      Str addOrganization();
+      Str addStreet();
+      Str addCity();
+      Str addStateOrProvince();
+      Str addPostalCode();
+      Str addCountryCode();
+      Str addTelephone();
+      Str addFax();
+      Str addEmail();
+      Str addUrl();
+      Str addZoneFqdn();
+      Id addGroupId();
+    };
+
+    interface ObjectState : Compound 
+    {
+      Id addStateId();
+      DateTime addValidFrom();
+      DateTime addValidTo();
+    };
+
+    interface Obj : Compound
+    {
+      Str addHandle();
+      Str addAuthInfo();
+      DateTime addCreateTime();
+      DateTime addUpdateTime();
+      DateTime addTransferTime();
+      DateTime addDeleteTime();
+      Registrar addCreateRegistrar();
+      Registrar addUpdateRegistrar();
+      Registrar addRegistrar();
+      ObjectState addObjectState();
+    };
+
+    interface RequestPropertyValue : Compound
+    {
+      Str addName();
+      Str addValue();
+      Bool addOutputFlag();
+    };
+
+    interface RequestData : Compound
+    {
+      Str addContent();
+      Bool addResponseFlag();
+    };
+
+    interface ResultCode : Compound
+    {
+      Id addServiceId();
+      Int addResultCode();
+      Str addName();
+    };
+
+    interface RequestObjectRef : Compound
+    {
+      Str addObjectType();
+      Id addObjectId();
+    };
+
+    interface Request : Compound
+    {
+      Id addId();
+      DateTime addTimeBegin();
+      DateTime addTimeEnd();
+      Str addSourceIp();
+      Str addUserName();
+      Id addUserId(); 
+      Bool addIsMonitoring();
+      ServiceType addServiceType();      
+      RequestType  addRequestType();
+      RequestData addRequestData();
+      RequestPropertyValue addRequestPropertyValue();
+      ResultCode addResultCode();
+      RequestObjectRef addRequestObjectRef();
+    };
+
+    interface Session: Compound
+    {
+      Id addId();
+      Str addUserName();
+      Id addUserId(); 
+      DateTime addLoginDate();
+      DateTime addLogoutDate();
+    };
+
+    interface Contact : Obj
+    {
+      Id addId();
+      Str addName();
+      Str addOrganization();
+      Str addCity();
+      Str addEmail();
+      Str addNotifyEmail();
+      Str addVat();
+      Str addSsn();
+      Str addPhoneNumber();
+    };
+    
+    interface NSSet : Obj
+    {
+      Id addId();
+      Str addHostFQDN();
+      Str addHostIP();
+      Contact addTechContact();
+    };
+
+    interface KeySet : Obj
+    {
+        Id addId();
+        Contact addTechContact();
+    };
+
+    interface Domain : Obj
+    {
+      Id addId();
+      Date addExpirationDate();
+      Date addOutZoneDate();
+      Date addCancelDate();
+      //Date addValidationExpirationDate();
+      Contact addRegistrant();
+      Contact addAdminContact();
+      Contact addTempContact();
+      NSSet addNSSet();
+      KeySet addKeySet();
+      Bool addPublish();
+    };
+
+    interface Filter : Compound
+    {
+      Id addUserId(); // virtual filter (userid column will not be in result set)
+      Id addGroupId();
+      Int addType();
+    };
+
+    interface PublicRequest : Compound
+    {
+      Id addId();
+      Int addType();
+      Int addStatus();
+      DateTime addCreateTime();
+      DateTime addResolveTime();
+      Str addReason();
+      Str addEmailToAnswer();
+      Object addObject();
+      Registrar addRegistrar();
+    };
+
+    interface File : Compound 
+    {
+      Id addId();
+      Str addName();
+      Str addPath();
+      Str addMimeType();
+      DateTime addCreateTime();
+      Int addSize();
+      Int addType();
+    };
+
+    interface Invoice : Compound
+    {
+      Id addZoneId();
+      Int addType();
+      Str addNumber();
+      DateTime addCreateTime();
+      Date addTaxDate();
+      Registrar addRegistrar();
+      Obj addObject();
+      File addFile();
+    };
+    
+    interface Mail : Compound
+    {
+      Id addId();
+      Int addType();
+      Str addHandle();
+      DateTime addCreateTime();
+      DateTime addModifyTime();
+      Int addStatus();
+      Int addAttempt();
+      Str addMessage();
+      File addAttachment();
+    };
+
+    interface Table
+    {
+      Compound add();
+      void reload() raises(ccReg::Filters::SqlQueryTimeout);
+      void clear();
+      Iterator getIterator();
+      void loadFilter(in TID filterId);  //maybe move these two to Filters pagetable
+      void saveFilter(in string name);
+    };
+
+    interface StatementItem: Compound
+    {
+        Id addId();
+        Str addAccountNumber();
+        Str addBankCode();
+        Int addCode();
+        Int addType();
+        Str addConstSymb();
+        Str addVarSymb();
+        Str addAccountEvid();
+        Date addAccountDate();
+        Str addAccountName();
+        DateTime addCrTime();
+        Str addAccountMemo();
+        Id addAccountId();
+    };
+
+    interface StatementHead : Compound
+    {
+        Id addId();
+        Id addAccountId();
+        Date addCreateDate();
+        Date addBalanceOldDate();
+        Str addAccountNumber();
+        Str addBankCode();
+        Str addConstSymbol();
+        Str addVarSymbol();
+        Str addSpecSymbol();
+    };
+
+    interface Message: Compound
+    {
+        Id addId();
+        DateTime addCrDate();
+        DateTime addModDate();
+        Int addAttempt();
+	    Int addStatus();
+        Int addCommType();
+        Int addMessageType();
+        Str addSmsPhoneNumber();
+        Str addLetterAddrName();
+        Contact addMessageContact();
+    };
+
+  };
+
+};
+
+#endif

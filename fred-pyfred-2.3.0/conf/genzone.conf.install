@@ -1,0 +1,24 @@
+#
+# Examplar configuration file of genzone client
+#
+
+[general]
+# host[:port]
+nameservice= NAMESERVICE
+context   = CONTEXT
+reload    = 1
+verbose   = 0
+# if empty all zones will be generated
+zones     = 
+
+#[0.2.4.e164.arpa]
+#chunk     = 3
+#maxchanges= 30
+#backupdir = ZONEBACKUPDIR/0.2.4.e164.arpa
+#zonedir   = /etc/bind
+
+#[cz]
+#chunk     = 100
+#maxchanges= 10%
+#backupdir = ZONEBACKUPDIR/cz
+#zonedir   = /etc/bind

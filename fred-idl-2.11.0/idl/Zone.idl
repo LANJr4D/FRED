@@ -1,0 +1,75 @@
+#ifndef ZONE_IDL_
+#define ZONE_IDL_
+
+module ccReg {
+
+  /// Structure for zone parameters
+  struct Zone
+  {
+   long id; 
+   string  fqdn; ///< name of zone (e.g. cz)
+   short ex_period_min; ///< Minimal period for renew
+   short ex_period_max; ///< Maximal period for rene
+   short val_period; ///< Period of validation
+   short dots_max; ///< Maximal number of parts in zone
+   boolean enum_zone; ///< This zone is for ENUM
+  };
+
+  /// Zone list
+  typedef sequence < Zone > Zones;
+
+  ///Zone interface
+  interface ZoneIf
+  {
+	  boolean createZone(
+			  in string fqdn,
+              in long ex_period_min,
+              in long ex_period_max,
+              in long ttl,
+              in string hostmaster,
+              in long refresh,
+              in long update_retr,
+              in long expiry,
+              in long minimum,
+              in string ns_fqdn);
+
+	  boolean updateZoneByFqdn(
+			  in string fqdn,
+              in long ex_period_min,
+              in long ex_period_max,
+              in long ttl,
+              in string hostmaster,
+              in long refresh,
+              in long update_retr,
+              in long expiry,
+              in long minimum,
+              in string ns_fqdn);
+
+	  boolean updateZoneById(
+			  in unsigned long long id,
+			  in string fqdn,
+              in long ex_period_min,
+              in long ex_period_max,
+              in long ttl,
+              in string hostmaster,
+              in long refresh,
+              in long update_retr,
+              in long expiry,
+              in long minimum,
+              in string ns_fqdn);
+
+	  boolean createZoneNs(
+			  in string zone_fqdn,
+			  in string fqdn,
+			  in string addr);
+
+      boolean updateZoneNs(
+    		  in unsigned long long id,
+			  in string zone_fqdn,
+			  in string fqdn,
+			  in string addr);
+
+  };//interface Zone
+};
+
+#endif

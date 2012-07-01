@@ -1,0 +1,914 @@
+<div xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal" id="whois">
+
+<pre class="error" tal:condition="result/proxy_errors">
+    <div tal:omit-tag="" tal:repeat="error result/proxy_errors">
+        <div tal:omit-tag="" tal:content="error">Some ccregproxy error.</div><br tal:condition="not:repeat/error/end" />
+    </div>
+</pre>
+
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+    <h1 tal:condition="python:result['qtype'] == 'query'" tal:content="default">ENUM whois</h1>
+    <h1 tal:condition="python:result['qtype'] == 'registrars'" tal:content="default">Domain not found</h1>
+    <h1 tal:condition="python:result['qtype'] == 'notfound'" tal:content="default">Handle not found</h1>
+    <h1 tal:condition="python:result['qtype'] == 'invalid_gid'" tal:content="default">Registrar group not found</h1>	
+</div>
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+    <h1 tal:condition="python:result['qtype'] == 'query'" tal:content="default">Whois</h1>
+    <h1 tal:condition="python:result['qtype'] == 'notfound'" tal:content="default">Handle not found</h1>
+    <h1 tal:condition="python:result['qtype'] == 'invalid_gid'" tal:content="default">Registrar group not found</h1>
+</div>
+<h1 tal:condition="python:result['qtype'] == 'publicrequest'" tal:content="default">Request for password for transfer and enhanced object security in CZ.NIC database</h1>
+<h1 tal:condition="python:result['qtype'] == 'error_proxy'" tal:content="default">Temporarily out of order</h1>
+
+<div tal:omit-tag="" tal:condition="python:result['qtype'] in ('enum', 'domain','registrar', 'contact', 'nsset', 'keyset', 'multiple', 'invalid')"
+     tal:content="default">
+    <h1>Whois</h1>
+    <p><strong tal:content="result/query/queryHandle">$query</strong> search results.</p>
+    <h2 tal:condition="python:result['qtype'] == 'enum'" tal:content="default">Browsing ENUM domain</h2>
+    <h2 tal:condition="python:result['qtype'] == 'domain'" tal:content="default">Browsing domain name</h2>
+    <h2 tal:condition="python:result['qtype'] == 'registrar'" tal:content="default">Browsing registrar</h2>
+    <h2 tal:condition="python:result['qtype'] == 'contact'" tal:content="default">Browsing contact</h2>
+    <h2 tal:condition="python:result['qtype'] == 'nsset'" tal:content="default">Browsing name server set</h2>
+    <h2 tal:condition="python:result['qtype'] == 'keyset'" tal:content="default">Browsing keyset</h2>
+    <h2 tal:condition="python:result['qtype'] == 'multiple'" tal:content="default">Multiple entries found</h2>
+    <h2 tal:condition="python:result['qtype'] == 'invalid'" tal:content="default">Invalid entry</h2>
+</div>
+
+<div tal:omit-tag="" tal:condition="result/redirected_error">
+Service is temporarily out of order, please come back later. If you still experince the problem, contact the <a href="/page/357/kontakt/">infoline</a>.
+</div>
+
+<div tal:condition="python:result['qtype'] == 'query'" tal:omit-tag="">
+<!-- /* SELECT ACTION START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_searchform_top">Extra content whois form - top</div>
+
+<p tal:condition="python:result['apptype'] == 'enum'">Searching in ENUM domain names, contacts and name server sets. Rights restriction described in the document:<br /><a href="#" tal:attributes="href common/who_is_disclaimer/url" tal:content="common/who_is_disclaimer/text">Intended use of supplied data and information</a></p>
+<p tal:condition="python:result['apptype'] == 'whois'">Searches the domain names, contacts and name server sets. 
+Enter domain names as domainname.cz including .cz at the end and without www (ie. nic.cz). 
+Contact and name server set handles fill in as plain text. 
+Rights restriction is described in the document:<br /><a href="#" tal:attributes="href common/who_is_disclaimer/url" tal:content="common/who_is_disclaimer/text">Intended use of supplied data and information</a></p>
+
+<div tal:omit-tag="" tal:content="structure result/extra_content_searchform_above">Extra content whois form - above</div>
+
+<form class="enum-util" name="request" method="post" action="?" onsubmit="return checkFormWhois()">
+    <fieldset>
+<input type="hidden" tal:condition="result/captchakey" id="captchakey" name="captchakey" tal:attributes="value result/captchakey" />
+
+<p class="error" tal:condition="result/errors">
+    <span tal:omit-tag="" tal:condition="python:'missing_handle' in result.get('errors')">Handle missing.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'captcha' in result.get('errors')">Security code does not match or code validity has expired, retype new code.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'missing_captcha' in result.get('errors')">You must fill in correct Security code to continue.<br/></span>
+</p>
+
+<table>
+<tr>
+    <th>
+        <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+                <label tal:omit-tag="" for="request_name">Number handle<small>*</small></label>
+            </div>
+            <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+                <label tal:omit-tag="" for="request_name">Domain&nbsp;&nbsp;handle</label>
+            </div>
+    </th>
+    <td id="missing_handle" 
+        tal:attributes="class python:'missing_handle' in result.get('errors') and 'missing' or None"><input 
+        tal:attributes="value result/query;type python:('text', 'hidden')[result.get('hidehandle',0)]" class="inline" id="q" name="q" maxlength="66" type="text" /> <span tal:condition="result/hidehandle" tal:content="result/query">domain</span></td>
+</tr>
+<div tal:omit-tag="" tal:condition="result/captchakey">
+    <tr>
+        <th></th>
+        <td id="captcha_frame"><div id="captcha_updating" style="visibility:hidden"><img src="/media/img/mozilla_blu.gif" width="16" height="16" /><br/>Image is loading.<br/>Please wait...</div><img 
+            id="captcha_img" tal:attributes="src string:/whois/captcha.py?id=${result/captchakey};width result/form/captcha_img/width;height result/form/captcha_img/height" /></td>
+    </tr>
+    <tr>
+        <th>Security code&nbsp;(retype from image)</th>
+        <td id="missing_captcha" 
+            tal:attributes="class python:('missing_captcha' in result.get('errors') or 'captcha' in result.get('errors')) and 'missing' or None">
+            <input type="text" id="captcha" class="inline" name="captcha" />
+        </td>
+    </tr>
+</div>
+<tr>
+    <th></th>
+    <td><button id="submit_button" type="submit">Search</button></td>
+</tr>
+</table>
+
+    </fieldset>
+</form>
+
+        <p tal:condition="python:result['apptype'] == 'enum'"><small>
+	  * Enter numbers in local format (ie. 222745111) or in one of  international formats (ie. +420222745111, 00420222745111), or as ENUM domain (ie. 1.1.1.5.4.7.2.2.2.0.2.4.e164.arpa). Handles must be in format NSSID:XXXXX (nsset), CID:XXXXXX (contact), KEYID:XXXXX (keyset) or REG-XXX (registrar).
+        </small></p>
+<div tal:omit-tag="" tal:content="structure result/extra_content_searchform_bottom">Extra content whois form - bottom</div>
+<!-- /* SELECT ACTION END */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'multiple'" tal:omit-tag="" class="debugframe">
+<!-- /* MULTIPLE CHOICE START */ -->
+<p>
+There are multiple records with given handle. Continue with selection of requested type.
+</p>
+<div tal:condition="result/links/domain">
+Domain: <a href="#" tal:attributes="href string:?d=${result/links/domain}" tal:content="result/links/domain">&lt;domena&gt;</a>
+</div>
+<div tal:condition="result/links/enum">
+ENUM: <a href="#" tal:attributes="href string:?e=${result/links/enum}" tal:content="result/links/enum">&lt;enum&gt;</a>
+</div>
+<div tal:condition="result/links/contact">
+Contact: <a href="#" tal:attributes="href string:?c=${result/links/contact}" tal:content="result/links/contact">&lt;contact&gt;</a>
+</div>
+<div tal:condition="result/links/nsset">
+NSSet: <a href="#" tal:attributes="href string:?n=${result/links/nsset}" tal:content="result/links/nsset">&lt;nsset&gt;</a>
+</div>
+<div tal:condition="result/links/keyset">
+KeySet: <a href="#" tal:attributes="href string:?k=${result/links/keyset}" tal:content="result/links/keyset">&lt;keyset&gt;</a>
+</div>
+<div tal:condition="result/links/registrar">
+Registrar: <a href="#" tal:attributes="href string:?r=${result/links/registrar}" tal:content="result/links/registrar">&lt;registrar&gt;</a>
+</div>
+<!-- /* MULTIPLE CHOICE END */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'domain'" tal:omit-tag="" class="debugframe">
+<!-- /* DOMAIN DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_domain_top">Extra content domain - top</div>
+
+<table class="result">
+<tbody>
+<tr>
+    <th>Domain name</th>
+    <td tal:content="result/domain/fqdn">&lt;domain name&gt;</td>
+</tr>
+
+<span tal:omit-tag="" tal:condition="not:result/omit_domain_data">
+
+	<tr>
+	    <th>Registered since</th>
+	    <td tal:content="python:localtime(result['domain']['createDate'], short=1)">01.01.1970</td>
+	</tr>
+	<tr>
+	    <th>Last update date</th>
+	    <td tal:content="python:localtime(result['domain']['updateDate'])">01.01.1970</td>
+	</tr>
+	<tr>
+	    <th>Expiration</th>
+	    <td tal:content="python:localtime(result['domain']['expirationDate'])">01.01.1970</td>
+	</tr>
+	
+	<tr>
+	    <th>Holder</th>
+	    <td><a href="#" tal:attributes="href python:'?c=%s' % result['domain']['registrant']['handle']" tal:content="result/domain/registrant/handle">&lt;registrant handle&gt;</a>
+	    <span tal:content="python:(result['domain']['registrant'].get('discloseName') and [result['domain']['registrant'].get('name')] or [result['domain']['registrant'].get('handle')])[0]">&lt;registrant name&gt;</span>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th>Administrative contact</th>
+	    <td>
+	        <div tal:repeat="admin result/domain/admins">
+	        <a href="#" tal:attributes="href python:'?c=%s' % admin['handle']" tal:content="admin/handle">&lt;admin handle&gt;</a>
+	        <span tal:content="python:(admin['discloseName'] and [admin['name']] or [admin['handle']])[0]">&lt;admin name&gt;</span><span
+	                tal:omit-tag="" tal:condition="not:repeat/admin/end">, </span>
+	        </div>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th>Temporary contact</th>
+	    <td>
+	        <div tal:repeat="temp result/domain/temps">
+	            <a href="#" tal:attributes="href python:'?c=%s' % temp['handle']" tal:content="temp/handle">&lt;temp handle&gt;</a>
+	            <span tal:content="python:(temp['discloseName'] and [temp['name']] or [temp['handle']])[0]">&lt;temp name&gt;</span><span
+	                tal:omit-tag="" tal:condition="not:repeat/temp/end">, </span>
+	        </div>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th>Sponsoring registrar</th>
+	    <td>
+	        <a href="#" tal:attributes="href python:'?r=%s' % result['domain']['registrar']['handle']" tal:content="result/domain/registrar/handle">&lt;registrator handle&gt;</a>
+	        <span tal:content="result/domain/registrar/name">&lt;registrar name&gt;</span><span tal:omit-tag="" tal:condition="result/domain/registrar/name"> since</span>
+	        <span tal:content="python:(result['domain'].get('transferDate') and [localtime(result['domain']['transferDate'])] or [localtime(result['domain'].get('createDate'))])[0]">01.01.1970</span>
+	    </td>
+	</tr>
+	
+	<tr>
+	    <th><a href="http://www.nic.cz/dnssec/">DNSSEC</a> secured</th>
+	    <td>
+	        <img tal:condition="result/domain/keyset" src="/media/img/icon-yes.gif" alt="Yes" />
+	        <img tal:condition="not:result/domain/keyset" src="/media/img/icon-no.gif" alt="No" />
+	    </td>
+	</tr>
+
+</span>
+
+<tr>
+    <th>Status</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/status_names">
+            <span tal:omit-tag="" tal:content="name">status</span><br tal:condition="not:repeat/name/end" />
+        </div>
+    </td>
+</tr>
+
+</tbody>
+</table>
+
+<div id="nsset_record" tal:condition="result/domain/nsset">
+<div metal:use-macro="macropage/macros/nsset">NSset macro here</div>
+</div>
+
+<div id="keyset_record" tal:condition="result/domain/keyset">
+<div metal:use-macro="macropage/macros/keyset">Keyset macro here</div>
+</div>
+<div tal:omit-tag="" tal:content="structure result/extra_content_domain_bottom">Extra content domain - bottom</div>
+<!-- /* DOMAIN DATA END */ -->
+</div>
+
+
+<div tal:condition="python:result['qtype'] == 'enum'" tal:omit-tag="" class="debugframe">
+<!-- /* ENUM DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_enum_top">Extra content enum - top</div>
+
+<p tal:condition="python:(result['query']['resultHandleType'] == 'ENUM_NUMBER') and (result['query']['resultHandleClass'] == 'REGISTRED')">Number <strong tal:content="result/query/queryHandle">123</strong> forms ENUM domain <strong tal:content="result/handle">3.2.1.0.2.4.e164.arpa</strong></p>
+<p tal:condition="python:(result['query']['resultHandleType'] == 'ENUM_NUMBER') and (result['query']['resultHandleClass'] == 'REGISTRED_PARENT')">Doména <strong tal:content="result/query/queryTranslatedHandle">3.2.1.0.2.4.e164.arpa</strong> odpovídající číslu <strong tal:content="result/query/queryHandle">123</strong> spadá pod registrovaný blok ENUM domény <strong tal:content="result/handle">3.2.1.0.2.4.e164.arpa</strong></p>
+<table class="result">
+<tbody><tr>
+<th>Domain name</th>
+<td tal:content="result/domain/fqdn">&lt;domain name&gt;</td>
+</tr>
+<tr>
+<th>Registered since</th>
+<td tal:content="python:localtime(result['domain']['createDate'], short=1)">01.01.1970</td>
+</tr>
+<tr>
+<th>Last update</th>
+<td tal:content="python:localtime(result['domain']['updateDate'])">01.01.1970</td>
+</tr>
+<tr>
+<th>Expiration</th>
+<td tal:content="python:localtime(result['domain']['expirationDate'])">01.01.1970</td>
+</tr>
+<tr>
+<th>Validation expiration date</th>
+<td tal:content="python:localtime(result['domain']['valExDate'])">01.01.1970</td>
+</tr>
+
+<tr>
+    <th><a href="http://www.nic.cz/dnssec/">DNSSEC</a> secured</th>
+    <td>
+        <img tal:condition="result/domain/keyset" src="/media/img/icon-yes.gif" alt="Yes" />
+        <img tal:condition="not:result/domain/keyset" src="/media/img/icon-no.gif" alt="No" />
+    </td>
+</tr>
+
+<tr>
+    <th>Status</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/status_names">
+            <span tal:omit-tag="" tal:content="name">status</span><br tal:condition="not:repeat/name/end" />
+        </div>
+    </td>
+</tr>
+
+</tbody></table>
+<table tal:condition="result/domain/registrar">
+<tbody><tr>
+<th>Registrar</th>
+<th>Handle</th>
+<th>Since</th>
+</tr>
+<tr>
+<td tal:content="result/domain/registrar/name">&lt;registrar name&gt;</td>
+<td><a href="#" tal:attributes="href python:'?r=%s' % result['domain']['registrar']['handle']" tal:content="result/domain/registrar/handle">&lt;registrator handle&gt;</a></td>
+<td tal:content="python:(result['domain']['transferDate'] and [localtime(result['domain']['transferDate'])] or [localtime(result['domain']['createDate'])])[0]">01.01.1970</td>
+</tr>
+</tbody></table>
+<div tal:omittag="" tal:condition="result/nsset">
+<div metal:use-macro="macropage/macros/nsset">NSset macro here</div>
+</div>
+<div tal:omittag="" tal:condition="result/keyset">
+<div metal:use-macro="macropage/macros/keyset">Keyset macro here</div>
+</div>
+<div tal:omit-tag="" tal:content="structure result/extra_content_enum_bottom">Extra content enum - bottom</div>
+<!-- /* ENUM DATA END */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'nsset'" tal:omit-tag="" class="debugframe">
+<!-- /* NSSET DATA START / MACRO */ -->
+<div metal:use-macro="macropage/macros/nsset">Nsset macro here</div>
+<!-- /* NSSET DATA END / MACRO */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'keyset'" tal:omit-tag="" class="debugframe">
+<!-- /* KEYSET DATA START / MACRO */ -->
+<div metal:use-macro="macropage/macros/keyset">Keyset macro here</div>
+<!-- /* KEYSET DATA END / MACRO */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'contact' and not result.get('mojeID')" tal:omit-tag="" class="debugframe">
+<!-- /* CONTACT DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_contact_top">Extra contact content - top</div>
+
+<table class="result">
+<tr>
+<th>Handle</th>
+<td>
+    <span tal:omit-tag="" tal:content="result/contact/handle">&lt;contact handle&gt;</span>
+    <div tal:omit-tag="" tal:condition="result/mojeid_transfer_endpoint">
+        <div metal:use-macro="macropage/macros/mojeid_forms">MojeID forms macro here</div>
+    </div>
+</td>
+</tr>
+<tr>
+<th>Organisation</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseOrganization')]" tal:content="python:(result['contact'].get('discloseOrganization') and [result['contact'].get('organization')] or [common['private']])[0]">&lt;organization&gt;</td>
+</tr>
+<tr>
+<th>Name</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseName')]" tal:content="python:(result['contact'].get('discloseName') and [result['contact'].get('name')] or [common['private']])[0]">&lt;name&gt;</td>
+</tr>
+<tr>
+<th>VAT number</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseVat')]">
+    <div tal:omit-tag="" tal:content="python:(result['contact'].get('discloseVat') and [result['contact'].get('vat')] or [common['private']])[0]">&lt;vat&gt;</div>
+</td>
+</tr>
+
+<tr>
+<th>Identification type</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseIdent')]">
+    <div tal:omit-tag="" tal:content="python:(result['contact'].get('discloseIdent') and [result['contact'].get('ssnType')] or [common['private']])[0]">&lt;ssnType&gt;</div>
+</td>
+</tr>
+<tr>
+<th>Identification data</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseIdent')]">
+    <div tal:omit-tag="" tal:content="python:(result['contact'].get('discloseIdent') and [result['contact'].get('ssn')] or [common['private']])[0]">&lt;ssn&gt;</div>
+</td>
+</tr>
+
+<tr>
+<th>E-mail</th>
+<td>
+    <div tal:omit-tag="" tal:condition="result/contact/discloseEmail">
+        <div tal:omit-tag="" tal:repeat="email result/contact/emails">
+            <a href="#" tal:attributes="href python:'mailto:%s'%email" tal:content="email">email</a><span
+                tal:omit-tag="" tal:condition="not:repeat/email/end">, </span>
+        </div>
+    </div>
+    <div tal:omit-tag="" tal:condition="not:result/contact/discloseEmail">
+        <div class="private" tal:content="common/private">private</div>
+    </div>
+</td>
+</tr>
+
+<tr>
+<th>Notify e-mail</th>
+<td>
+    <div tal:omit-tag="" tal:condition="result/contact/discloseNotifyEmail">
+        <div tal:omit-tag="" tal:repeat="email result/contact/notifyEmails">
+            <a href="#" tal:attributes="href python:'mailto:%s'%email" tal:content="email">email</a><span
+                tal:omit-tag="" tal:condition="not:repeat/email/end">, </span>
+        </div>
+    </div>
+    <div tal:omit-tag="" tal:condition="not:result/contact/discloseNotifyEmail">
+        <div class="private" tal:content="common/private">private</div>
+    </div>
+</td>
+</tr>
+
+<tr>
+<th>Phone</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseTelephone')]" tal:content="python:(result['contact'].get('discloseTelephone') and [result['contact'].get('telephone')] or [common['private']])[0]">&lt;telephone no.&gt;</td>
+</tr>
+<tr>
+<th>Fax</th>
+<td tal:attributes="class python:('private', None)[result['contact'].get('discloseFax')]" tal:content="python:(result['contact'].get('discloseFax') and [result['contact'].get('fax')] or [common['private']])[0]">&lt;fax no.&gt;</td>
+</tr>
+<tr>
+<th>Registered since</th>
+<td tal:content="python:localtime(result['contact']['createDate'], short=1)">01.01.1970</td>
+</tr>
+<tr>
+<th>Creating registrar</th>
+<td>
+    <a tal:attributes="href python:'?r=%s' % result['contact']['createRegistrar']['handle']" tal:content="result/contact/createRegistrar/handle">&lt;createRegistrar&gt;</a>
+    <span tal:content="result/contact/createRegistrar/name">&lt;createRegistrar_name&gt;</span>
+</td>    
+</tr>
+<tr>
+<th>Last update</th>
+<td tal:content="python:localtime(result['contact']['updateDate'])">&lt;updateDate&gt;</td>
+</tr>
+<tr>
+<th>Last transfer</th>
+<td tal:content="python:localtime(result['contact']['transferDate'])">&lt;transferDate&gt;</td>
+</tr>
+<tr>
+    <th>Address</th>
+    <td tal:attributes="class python:('private', None)[result['contact'].get('discloseAddress')]"><div tal:omit-tag="" tal:content="structure python:(result['contact']['discloseAddress'] and [', '.join([ x for x in [result['contact']['street1'], result['contact']['street2'], result['contact']['street3'], result['contact']['postalcode'], result['contact']['city'], result['contact']['province'], result['contact']['country']] if x ])] or [common['private']])[0]">&lt;postal address&gt;</div></td>
+</tr>
+<tr>
+    <th>Sponsoring registrar</th>
+    <td>
+    <a tal:attributes="href python:'?r=%s' % result['contact']['registrar']['handle']" tal:content="result/contact/registrar/handle">&lt;registrar&gt;</a>
+    <span tal:content="result/contact/registrar/name">&lt;registrar_name&gt;</span>
+    </td>
+</tr>
+<tr>
+    <th>Status</th>
+    <td>
+        <div tal:omit-tag="" tal:repeat="name result/status_names">
+            <span tal:omit-tag="" tal:content="name">status</span><br tal:condition="not:repeat/name/end" />
+        </div>
+    </td>
+</tr>
+
+</table>
+<div tal:omit-tag="" tal:content="structure result/extra_content_contact_bottom">Extra contact content - bottom</div>
+<!-- /* CONTACT DATA END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'contact' and result.get('mojeID')" tal:omit-tag="" class="debugframe">
+Contact <strong tal:content="result/contact/handle">&lt;contact handle&gt;</strong> is used in mojeID.
+</div>
+
+<div tal:condition="python:result['qtype'] == 'invalid'" tal:omit-tag="" class="debugframe">
+<!-- /* INVALID ENTRY START */ -->
+
+<div tal:condition="python:result['query']['resultHandleClass'] != 'UNREGISTRABLE'">
+    <p>Search string <strong tal:content="result/query/queryHandle">string</strong> doesn't conform to rules for creating numbers, domain names, contacts or name server sets.</p>
+    <p tal:condition="python:result['apptype'] == 'enum'"><small>Enter numbers in local format (ie. 222745111) or in one of  international formats (ie. +420222745111, 00420222745111), or as ENUM domain (ie. 1.1.1.5.4.7.2.2.2.0.2.4.e164.arpa). Handles must be in format NSSID:XXXXX (nsset), CID:XXXXXX (contact), KEYID:XXXXXX (keyset) or REG-XXX (registrar).</small></p>
+</div>
+
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+    <p tal:condition="python:result['query']['resultHandleClass'] == 'UNREGISTRABLE'">
+        <span tal:omit-tag="" tal:condition="python:result['query']['resultHandleType'] == 'ENUM_NUMBER'">This registry servers only domains in zone <strong>.0.2.4.e164.arpa</strong> (ENUM). For information about domain <strong tal:content="result/query/queryTranslatedHandle">domain</strong> you have to find appropriate registry at <a href="http://www.ripe.net/enum/request-archives/">http://www.ripe.net/enum/request-archives/</a></span>
+        <span tal:omit-tag="" tal:condition="python:result['query']['resultHandleType'] == 'ENUM_DOMAIN'">This registry servers only domains in zone <strong>.0.2.4.e164.arpa</strong> (ENUM). For information about domain <strong tal:content="result/query/queryHandle">domain</strong> you have to find appropriate registry at <a href="http://www.ripe.net/enum/request-archives/">http://www.ripe.net/enum/request-archives/</a></span>
+    </p>
+</div>
+
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+    <p tal:condition="python:result['query']['resultHandleClass'] in ('UNREGISTRABLE', 'UNREGISTRABLE_LONG')">
+    Registry contains <strong>.cz</strong> and <strong>.0.2.4.e164.arpa</strong> (<a href="http://enum.nic.cz">ENUM</a>) 
+    domains records only. Find appropriate registry administrator for other domains at 
+    <a href="http://www.iana.org/cctld/cctld-whois.htm">IANA</a> or 
+    <a href="http://www.ripe.net/enum/request-archives/">RIPE</a> websites.
+    </p>
+</div>
+
+<!-- /* INVALID ENTRY END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'notfound'" tal:omit-tag="" class="debugframe">
+<!-- /* NOTFOUND DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_notfound_top">Extra content Not found - top</div>
+<p>Not found. No domain, contact or name server set matches <strong tal:content="result/query/queryHandle">$query</strong> query.</p>
+
+<h1>Register this domain name?</h1>
+<p>Find step-by-step instructions how to register a domain name in the manual <a href="http://www.dobradomena.cz/setlang/?language=en&amp;next=/dobradomena/manual.pdf" title="Document PDF, 552kB">How to register a Good domain</a>.</p>
+<tal:comment replace="nothing"><!-- EN {data file,786}, CZ {data file,787} --></tal:comment>
+<p>If you already know how to do it, choose a registrar from the registrar list:</p>
+<a href="/whois/registrars/"><button>Registrar list</button></a>
+
+<div tal:omit-tag="" tal:content="structure result/extra_content_notfound_bottom">Extra content Not found - bottom</div>
+<!-- /* NOTFOUND DATA END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'invalid_gid'" tal:omit-tag="" class="debugframe">
+<!-- /* INVALID GID */ -->
+<p>Invalid group ID <strong tal:content="result/query/queryHandle">$query</strong> provided.</p>
+<!-- /* INVALID GID END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'xxx'" tal:omit-tag="" class="debugframe">
+<!-- /* XXX DATA START */ -->
+<!-- /* XXX DATA END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'registrar'" tal:omit-tag="" class="debugframe">
+<!-- /* REGISTRAR DATA START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrar_top">Extra content Registrar - top</div>
+<table class="result">
+<tr>
+<th>Handle</th>
+<td tal:content="result/registrar/handle">&lt;registrar handle&gt;</td>
+</tr>
+<tr>
+<th>Name</th>
+<td tal:content="result/registrar/name">&lt;name&gt;</td>
+</tr>
+
+<tal:comment replace="nothing">
+<tr>
+    <th>E-mail</th>
+    <td><a href="#" tal:attributes="href python: 'mailto:%s' % result['registrar']['email']" tal:content="result/registrar/email">&lt;email&gt;</a></td>
+</tr>
+</tal:comment>
+
+<tr>
+<th>Phone</th>
+<td tal:content="result/registrar/telephone">&lt;telephone no.&gt;</td>
+</tr>
+<tr>
+<th>Fax</th>
+<td tal:content="result/registrar/fax">&lt;fax no.&gt;</td>
+</tr>
+<tr>
+<th>URL</th>
+<td><a href="#" tal:attributes="href result/registrar/url" tal:content="result/registrar/url">&lt;registrar url&gt;</a></td>
+</tr>
+<tr>
+    <th>Address</th>
+    <td>
+        <div tal:omit-tag="" tal:content="structure python:', '.join([ x for x in [result['registrar']['street1'], result['registrar']['street2'], result['registrar']['street3'], result['registrar']['postalcode'], result['registrar']['city'], result['registrar']['stateorprovince']] if x ])">&lt;postal address&gt;</div>
+    </td>
+</tr>
+</table>
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrar_bottom">Extra content Registrar - bottom</div>
+<!-- /* REGISTRAR DATA END */-->
+</div>
+
+<div tal:condition="python:result['qtype'] in ['registrars', 'registrars-list']" tal:omit-tag="" class="debugframe">
+<!-- /* REGISTRARS LINKS START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrarslinks_top">Extra content Registrars links - top</div>
+<div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+<p tal:condition="not:result/query | nothing">Following registrars register ENUM domains:</p>
+<div tal:condition="result/query">
+<div tal:condition="python:result['query']['resultHandleClass'] == 'FREE'">
+<p tal:condition="python:result['query']['resultHandleType'] == 'ENUM_NUMBER'">ENUM domain <strong tal:content="result/query/queryTranslatedHandle">domain</strong> matching number <strong tal:content="result/query/queryHandle">number</strong> was not found in register. If you want to register this domain, contact any of acreditated registrars on this list.</p>
+<p tal:condition="python:result['query']['resultHandleType'] == 'ENUM_DOMAIN'">ENUM domain <strong tal:content="result/query/queryHandle">domain</strong> was not found in register. If you want to register this domain, contact any of acreditated registrars on this list.</p>
+</div>
+<div tal:condition="python:result['query']['resultHandleClass'] == 'REGISTRED_CHILD'">
+<p>ENUM domain for this block number id not registred, but there are registred domains for some numbers from this block. If you still want to register this block, contact any of acreditated registrars on this list.</p>
+</div>
+</div>
+</div>
+
+
+<div tal:condition="python: result.get('registrars') and (result.get('technology') or result.get('show_certifications'))" style="padding-bottom: 1.5em;">
+    <div tal:condition="python: 'dnssec' in result['technology']">
+        <img src="/media/img/technology/dnssec.png" style="vertical-align: middle" /> Registrar supports secured domains <a href="http://www.dnssec.cz/">DNSSEC</a>
+    </div>
+    <div tal:condition="python: 'mojeid' in result['technology']">
+        <img src="/media/img/technology/mojeid.png"  style="vertical-align: middle" /> Registrar supports <a href="http://www.mojeid.cz/">mojeID</a>
+    </div>
+    <div tal:condition="python: 'ipv6' in result['technology']">
+        <img src="/media/img/technology/ipv6.png" style="vertical-align: middle" /> Registrar supports IPv6
+    </div>
+    <div tal:condition="result/show_certifications">
+        <img src="/media/img/smooth-star.png" style="vertical-align: middle" /> Registrar <a href="https://www.nic.cz/page/928/">Certified</a> for Retail
+    </div>
+</div>
+
+<table tal:condition="python: result.get('registrars')">
+<tbody>
+<tr>
+    <th>Registrar</th>
+    <th>Website</th>
+    <th tal:condition="result/technology" class="regtech">Technologies</th>
+    <th tal:condition="result/show_certifications">Certification</th>
+    <th tal:condition="result/show_certifications">Evaluation protocol</th>
+    <th tal:condition="result/goodomain">How to register a <a href="http://www.dobradomena.cz/" title="How to register a Good domain">Good Domain</a></th>
+</tr>
+<span tal:repeat="reg result/registrars" tal:omit-tag="">
+<tr tal:define="odd repeat/reg/odd" tal:attributes="class python:test(odd, 'odd')">
+    <td tal:content="reg/name">&lt;registrar&gt;</td>
+    <td><a href="#" tal:content="reg/url" tal:attributes="href reg/url">&lt;url&gt;</a></td>
+    <td tal:condition="result/technology" class="regtech" style="white-space: nowrap;">
+        <img tal:repeat="tech reg/technology" 
+             tal:attributes="src python: '/media/img/technology/%s.png' % tech; alt tech" />
+    </td>
+    <td tal:condition="result/show_certifications"><div style="white-space: nowrap;"><tal:loop tal:repeat="item/number python: [] if not reg.get('certification') else range(0,int(reg.get('certification').get('score', 0)))"><img src="/media/img/smooth-star.png"/></tal:loop></div></td>
+    <td tal:condition="result/show_certifications"><a href="#" tal:condition="python:reg.get('certification') and reg.get('certification').get('evaluation_file_id')" tal:attributes="href python: '/whois/registrars/list/download_eval/%s/' % reg.get('id')"><img src="/media/img/mimetypes/ico_pdf.gif" alt="PDF" /></a></td>    
+    <td tal:condition="result/goodomain"><a href="#" tal:condition="python:result['goodomain'].get(reg['goodomain'])" tal:attributes="href python:result['goodomain'][reg['goodomain']]['href']"><img src="/media/img/mimetypes/ico_pdf.gif" alt="PDF" /></a></td>
+</tr></span>
+</tbody>
+</table>
+
+
+<div tal:omit-tag="" tal:condition="python:common['become_registrar']['url'] != '#'">
+    <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'enum'">
+        <p>Follow the instructions <a href="#" tal:attributes="href python:'http://www.nic.cz%s' % common['become_registrar']['url']">here</a> to become ENUM domains registrar.</p>
+    </div>
+    <div tal:omit-tag="" tal:condition="python:result['apptype'] == 'whois'">
+        <p>Follow the instructions <a href="#" tal:attributes="href common/become_registrar/url">here</a> to become .cz domains registrar.</p>
+    </div>
+</div>
+
+<div tal:omit-tag="" tal:content="structure result/extra_content_registrarslinks_bottom">Extra content Registrars links - bottom</div>
+<!-- /* REGISTRARS LINKS END */ -->
+</div>
+
+<div tal:condition="python:result['qtype'] == 'publicrequest'" tal:omit-tag="" class="debugframe">
+<!-- /* PUBLICREQUEST START */ -->
+<div tal:omit-tag="" tal:content="structure result/extra_content_publicrequest_top">Extra content Public request - top</div>
+<div tal:condition="not:result/handle">
+
+<h2>Form for sending the request for a password</h2>
+<p>This form sends <a href="#request_form" onclick="setRequestType('authinfo');">the request for a password required to change sponsoring registrar</a> of an object in the registry (domains, contacts or name server set). Use the form in case you are not able to get this password directly from current sponsoring registrar.</p>
+
+<h2>Request for enhanced object security in CZ.NIC database.</h2>
+<p>Through this form, you may request <a href="#request_form" onclick="setRequestType('block_transfer');">blocking of the change of the sponsoring registrar</a> for domain, contact, or name server set, 
+or <a href="#request_form" onclick="setRequestType('block_changes');">blocking of the change</a> of the domain, contact, or name server set data. </p>
+<p>In case blocking of the change of the sponsoring registrar is activated, you cannot transfer the particular object to another registrar or request the sending of a password required to make any changes to the e-mail entered in the central registry.</p>
+<p>In case blocking of the change of data is activated, you cannot make any changes to the data pertaining to the particular object and entered in the central registry.
+If you wish to cancel the above-specified blocking options, please continue to the next paragraph.</p>
+
+<h2>Request for cancellation of enhanced object security in CZ.NIC database.</h2>
+<p>Through this form, you may request <a href="#request_form" onclick="setRequestType('unblock_transfer');">cancellation of the activated blocking of the change of the sponsoring registrar</a> or 
+<a href="#request_form" onclick="setRequestType('unblock_changes');">the activated blocking of any changes</a> of the domain, contact, or name server sets.</p> 
+
+<form class="enum-util" name="request" method="post" action="?" onsubmit="return checkFormPublicRequest()">
+    <fieldset>
+<p class="error" tal:condition="result/errors">
+    <span tal:omit-tag="" tal:condition="python:'missing_handle' in result.get('errors')">Handler missing.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'mail_missing' in result.get('errors')">Email missing. If "Sending method" is set to "to specified Email..." than email is required.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'reason_missing' in result.get('errors')">Other reason missing. If Reason for request is set to "Other (specify below)" is reason required.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'captcha' in result.get('errors')">Security code does not match or code validity has expired, retype new code.<br/></span>
+    <span tal:omit-tag="" tal:condition="python:'missing_captcha' in result.get('errors')">You must fill in correct Security code to continue.<br/></span>
+</p>
+
+<table id="request_form">
+<tr>
+    <th>Request:</th>
+    <td><select class="inline" id="requestType" name="requestType" onchange="switchRequestType(this);">
+            <option value="authinfo" tal:attributes="selected python:result['form']['requestType']=='authinfo' and 'selected' or None">Sending password for transfer</option>
+            <option value="block_transfer" tal:attributes="selected python:result['form']['requestType']=='block_transfer' and 'selected' or None">Blocking of transfer</option>
+            <option value="unblock_transfer" tal:attributes="selected python:result['form']['requestType']=='unblock_transfer' and 'selected' or None">Unlocking of transfer</option>
+            <option value="block_changes" tal:attributes="selected python:result['form']['requestType']=='block_changes' and 'selected' or None">Blocking of all changes</option>
+            <option value="unblock_changes" tal:attributes="selected python:result['form']['requestType']=='unblock_changes' and 'selected' or None">Unblocking of all changes</option>
+            </select></td>
+</tr>
+<tr>
+    <td>Object type:</td>
+    <td><select class="inline" id="objtype" name="objectType">
+            <option value="domain" tal:attributes="selected python:result['form']['objectType']=='domain' and 'selected' or None">Domain</option>
+            <option value="contact" tal:attributes="selected python:result['form']['objectType']=='contact' and 'selected' or None">Contact</option>
+            <option value="nsset" tal:attributes="selected python:result['form']['objectType']=='nsset' and 'selected' or None">Name server set</option>
+            <option value="keyset" tal:attributes="selected python:result['form']['objectType']=='keyset' and 'selected' or None">Keyset</option>            
+            </select></td>
+</tr>
+<tr>
+    <td>Handle:<small tal:condition="python:result['apptype'] == 'enum'">*</small></td>
+    <td id="missing_handle" tal:attributes="class python:'missing_handle' in result.get('errors') and 'missing' or None"><input class="inline" type="text" id="handle" name="handle" tal:attributes="value result/form/handle" /></td>
+</tr>
+<tr id="confirmMethodTR">
+    <td>Confirmation method:</td>
+    <td><select class="inline" id="confirmMethod" name="confirmMethod">
+            <option value="signedemail" tal:attributes="selected python:result['form']['confirmMethod']=='signedemail' and 'selected' or None">Email signed by a qualified certificate</option>
+            <option value="snailmail" tal:attributes="selected python:result['form']['confirmMethod']=='snailmail' and 'selected' or None">Officially authenticated signature</option>
+            </select></td>
+</tr>
+<tr id="sendingMethodTR">
+    <td>Sending method:</td>
+    <td><select class="inline" id="sendingMethod" name="sendingMethod" onchange="switchReplymail(this);">
+            <option value="auto" tal:attributes="selected python:result['form']['sendingMethod']=='auto' and 'selected' or None">to Email in registry</option>
+            <option value="signedemail" tal:attributes="selected python:result['form']['sendingMethod']=='signedemail' and 'selected' or None">to specified Email - I will use an electronic signature</option>
+            <option value="snailmail" tal:attributes="selected python:result['form']['sendingMethod']=='snailmail' and 'selected' or None">to specified Email - I will use a notarized signature</option>
+            </select></td>
+</tr>
+<tr id="replymailTR">
+    <td>Send password by Email:</td>
+    <td id="mail_missing"
+        tal:attributes="class python:'mail_missing' in result.get('errors') and 'missing' or None">
+        <input class="inline" type="text" id="replymail" name="replyMail"
+            tal:attributes="disabled python:result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'auto' and 'disabled' or None;value result/form/replyMail" /></td>
+</tr>
+<tr id="reasonTR">
+    <td>Reason for request:</td>
+    <td><select class="inline" id="reason" name="reason" onchange="switchReason(this);">
+            <option value="1" tal:attributes="selected python:result['form']['reason']=='1' and 'selected' or None">I can not obtain this information from my registrar</option>
+            <option value="2" tal:attributes="selected python:result['form']['reason']=='2' and 'selected' or None">Forgotten password</option>
+            <option value="3" tal:attributes="selected python:result['form']['reason']=='3' and 'selected' or None">Other (specify below)</option>
+            </select></td>
+</tr>
+<tr id="txtreasonTR">
+    <td>Other reason:</td>
+    <td id="reason_missing"
+        tal:attributes="class python:'reason_missing' in result.get('errors') and 'missing' or None"><input class="inline" type="text" id="txtreason" name="txtreason" 
+        tal:attributes="disabled python:result['form']['reason']!='3' and 'disabled' or None; value result/form/txtreason" /></td>
+</tr>
+<div tal:omit-tag="" tal:condition="result/captchakey">
+    <tr>
+        <td></td>
+        <td id="captcha_frame"><div id="captcha_updating" style="visibility:hidden"><img src="/media/img/mozilla_blu.gif" width="16" height="16" /><br/>Image is loading.<br/>Please wait...</div><img 
+            id="captcha_img" tal:attributes="src string:/whois/captcha.py?id=${result/captchakey};width result/form/captcha_img/width;height result/form/captcha_img/height" /></td>
+    </tr>
+    <tr>
+        <td>Security code (retype from image):</td>
+        <td id="missing_captcha" 
+            tal:attributes="class python:('missing_captcha' in result.get('errors') or 'captcha' in result.get('errors')) and 'missing' or None">
+            <input class="inline" type="text" id="captcha" name="captcha" />
+            <input type="hidden" id="captchakey" name="captchakey" tal:attributes="value result/captchakey" />
+        </td>
+    </tr>
+</div>
+<tr>
+    <td></td>
+    <td><button id="submit_button" type="submit">Send</button></td>
+</tr>
+
+</table>
+
+    </fieldset>
+</form>
+<p tal:condition="python:result['apptype'] == 'enum'"><small>
+  * Enter numbers as ENUM domain (ie. 1.1.1.5.4.7.2.2.2.0.2.4.e164.arpa). Handles must be in format NSSID:XXXXX (nsset), CID:XXXXXX (contact), KEYID:XXXXXX (keyset) or REG-XXX (registrar).
+</small></p>
+
+</div>
+
+<div tal:condition="result/handle">
+<div tal:condition="python: result.get('reply') and result.get('reply') != 'error' and result.get('found')">
+
+    <div tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'auto'">
+        <div tal:condition="python: result['form']['objectType'] == 'domain'">
+        Request for password for domain <strong tal:content="result/handle">$domain</strong> sponsoring registrar change was successfully received. Email containing password will be sent to the email address of domain holder and admin contacts.
+        </div>
+
+        <div tal:condition="python: result['form']['objectType'] == 'contact'">
+        Request for password for contact <strong tal:content="result/handle">$contact</strong> sponsoring registrar change was successfully received. Email containing password will be sent to the email address from the registry.
+        </div>
+        
+        <div tal:condition="python: result['form']['objectType'] == 'nsset'">
+        Request for password for nameserver set <strong tal:content="result/handle">$nsset</strong> sponsoring registrar change was successfully received. Email containing password will be sent to the email addresses of technical contacts related to the set.
+        </div>
+
+        <div tal:condition="python: result['form']['objectType'] == 'keyset'">
+        Request for password for keyset <strong tal:content="result/handle">$keyset</strong> sponsoring registrar change was successfully received. Email containing password will be sent to the email addresses of technical contacts related to the set.
+        </div>
+    </div>
+
+	<div tal:omit-tag="" tal:condition="python: (result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'signedemail') or (result['form']['requestType'] != 'authinfo' and result['form']['confirmMethod'] == 'signedemail') ">
+	<p>Copy following text and insert it into an email body, sign the email with your digital signature 
+	and sent it at <a href="mailto:podpora@nic.cz">podpora@nic.cz</a>.</p>
+	</div>
+	
+    <div tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'signedemail'">
+<pre class="confirmation">
+I hereby confirm my request to obtain password for <span 
+    tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'domain'" tal:replace="default">domain name</span><span 
+    tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'contact'" tal:replace="default">contact</span><span 
+    tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'nsset'" tal:replace="default">name server set</span><span
+    tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'keyset'" tal:replace="default">keyset</span> <span 
+    tal:omit-tag="" tal:replace="result/handle">handle</span>,
+submitted through a web form at the 
+<span tal:omit-tag="" tal:replace="result/url">URL</span> on <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>, assigned 
+id number <span tal:omit-tag="" tal:replace="result/id">id</span>. Please send the password 
+to <span tal:omit-tag="" tal:replace="result/form/replyMail">mail</span>
+</pre>
+    </div>
+	
+	<div tal:condition="python: result['form']['requestType'] == 'authinfo' and result['form']['sendingMethod'] == 'snailmail'">
+	<!--
+	<pre>
+	Re : Confirmation of Request for password for <span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'domain'" tal:replace="default">domain name</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'contact'" tal:replace="default">contact</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'nsset'" tal:replace="default">name server set</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span>.
+	
+	I hereby confirm my request to obtain password for <span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'domain'" tal:replace="default">domain name</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'contact'" tal:replace="default">contact</span><span tal:omit-tag="" tal:condition="python: result['form']['objectType'] == 'nsset'" tal:replace="default">name server set</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span>,
+	submitted through a web form at the 
+	<span tal:omit-tag="" tal:replace="result/url">URL</span> on <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>, assigned 
+	id number <span tal:omit-tag="" tal:replace="result/id">id</span>. Please send the password 
+	to <span tal:omit-tag="" tal:replace="result/form/replyMail">mail</span>
+	
+	Name and signature of responsible person:
+	
+	
+	 ..................................
+	
+	</pre>
+	-->
+	
+    Please print this <a href="/whois/pdf.py" title="Open or save request."><strong>Trasfer password request</strong></a>, sign it (a notarized signature required) and send the signed original to the following address:<br />
+	<blockquote>
+	<address>
+	Zákaznická podpora<br />
+	CZ.NIC, z. s. p. o.
+	Americká 23<br />
+	120 00 Praha 2
+	</address>
+	</blockquote>
+	Signatories whose name is not listed in the Central registry of domain names must attach an original or a notarized copy of a document authorizing them to perform the relevant request.
+	If you cannot open document or it is not displayed correctly, download the latest version of the PDF viewer <a href="http://www.adobe.com/products/acrobat/readstep2.html">Adobe Reader</a>.
+	</div>
+    
+    <div tal:condition="python: result['form']['requestType'].startswith('block') and result['form']['confirmMethod'] == 'signedemail'">
+<pre class="confirmation">Subject: Confirmation of request for blocking of <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'"
+    tal:replace="default">domain</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">contact</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">name server set</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">keyset</span> <span 
+    tal:omit-tag="" tal:replace="result/handle">handle</span>:
+
+I hereby confirm the request for blocking <span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_transfer'">of the change of the sponsoring registrar of the</span><span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_changes'">all changes made to</span>
+<span
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'" tal:replace="default">domain</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">contact</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">name server set</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">keyset</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span> submitted through the web form
+on the web site <span tal:omit-tag="" tal:replace="result/url">URL</span> on <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>,
+with the assigned identification number <span tal:omit-tag="" tal:replace="result/id">id</span> and I request the activation of the specified blocking option.
+I agree that with respect to the particular <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'"
+    tal:replace="default">domain</span><span
+        tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">contact</span><span 
+        tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">name server set</span><span 
+        tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">keyset</span> <span 
+            tal:omit-tag="" tal:replace="result/handle">handle</span> <span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_transfer'">no change of the sponsoring registrar</span><span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'block_changes'">no change</span>
+will be possible until I cancel the blocking option using the applicable form on www.nic.cz.
+
+Authorised person:
+</pre>
+    </div>
+    
+    <div tal:condition="python: result['form']['requestType'].startswith('block') and result['form']['confirmMethod'] == 'snailmail'">
+	    Print this <a href="/whois/pdf.py" title="Open or save request.">Blocking Request<strong></strong></a> (PDF), sign the request (an officially authenticated signature is required) and send the signed original to the address:
+	    <blockquote>
+	    <address>
+	    Zákaznická podpora<br />
+	    CZ.NIC, z. s. p. o.
+	    Americká 23<br />
+	    120 00 Praha 2
+	    </address>
+	    </blockquote>
+	    
+	    In the event the signatory is not entered in the Central Domain Name Registry, an original or a certified copy of an instrument authorising the person to make such a request should be appended to the request. If you cannot open the document or the document is displayed incorrectly, download the latest version of <a href="http://www.amsoft.cz/produkty/adobe/acrobat/readstep.html">Adobe Reader</a>. 
+    </div>
+        
+    <div tal:condition="python: result['form']['requestType'].startswith('unblock') and result['form']['confirmMethod'] == 'signedemail'">
+<pre class="confirmation">Subject: Confirmation of request for cancellation of blocking of <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'"
+    tal:replace="default">domain</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">contact</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">name server set</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">keyset</span> <span 
+    tal:omit-tag="" tal:replace="result/handle">handle</span>:
+
+I hereby confirm the request for cancellation of the blocking <span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'unblock_transfer'">of the change of the sponsoring registrar of the</span><span tal:omit-tag="" tal:condition="python: result['form']['requestType'] == 'unblock_changes'">all changes made to</span>
+<span
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'" tal:replace="default">domain</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">contact</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">name server set</span><span 
+    tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">key set</span> <span tal:omit-tag="" tal:replace="result/handle">handle</span> submitted through the web form
+on the web site <span tal:omit-tag="" tal:replace="result/url">URL</span> on <span tal:omit-tag="" tal:replace="result/currentTime">currentTime</span>,
+with the assigned identification number <span tal:omit-tag="" tal:replace="result/id">id</span> and I request the cancellation of the specified blocking option.
+
+Authorised person:
+</pre>
+    </div>
+    
+    <div tal:condition="python: result['form']['requestType'].startswith('unblock') and result['form']['confirmMethod'] == 'snailmail'">
+    Print this <a href="/whois/pdf.py" title="Open or save request.">Unblocking Request<strong></strong></a> (PDF), sign the request (an officially authenticated signature is required) and send the signed original to the address:
+        <blockquote>
+    <address>
+    Zákaznická podpora<br />
+    CZ.NIC, z. s. p. o.
+    Americká 23<br />
+    120 00 Praha 2
+    </address>
+    </blockquote>
+    
+    In the event the signatory is not entered in the Central Domain Name Registry, an original or a certified copy of an instrument authorising the person to make such a request should be appended to the request. If you cannot open the document or the document is displayed incorrectly, download the latest version of <a href="http://www.amsoft.cz/produkty/adobe/acrobat/readstep.html">Adobe Reader</a>. 
+    </div>
+    
+</div>
+
+<div tal:condition="python: result['form']['requestType'] == 'error' or result.get('reply') == 'error'">
+    <div tal:condition="not:result/error_type">
+        An unexpected error occurred while processing the request. Please try again later.
+    </div>
+    <div tal:condition="python: result.get('error_type') in ('error_request_blocked', 'error_request_not_blocked')">
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'domain'" tal:replace="default">Domain</span>
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'contact'" tal:replace="default">Contact</span>
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'nsset'" tal:replace="default">Name server set</span>
+        <span tal:omit-tag="" tal:condition="python: result['form'].get('objectType') == 'keyset'" tal:replace="default">Keyset</span>
+        <strong tal:content="result/handle">handle</strong>
+        is
+        <span tal:condition="python: result.get('error_type') == 'error_request_not_blocked'"> not </span>
+        blocked, request cannot be accepted.
+    </div>
+</div>
+
+<div tal:condition="not:result/found">
+    <p tal:condition="not:result/error">Can not send. There is no object named <strong tal:content="result/handle">object</strong> in the domain registry.</p>
+</div>
+
+</div>
+<div tal:omit-tag="" tal:content="structure result/extra_content_publicrequest_bottom">Extra content Public request - bottom</div>
+<!-- /* PUBLICREQUEST END */ -->
+</div>
+
+<!-- /* BACK LINK START */ -->
+<div tal:condition="python:result['qtype'] != 'query'" tal:omit-tag="" class="debugframe">
+<div tal:condition="python:result['apptype'] in ('enum', 'whois')">
+<p tal:condition="python:result['qtype'] not in ('publicrequest', 'registrars-list')">
+<div class="goback"><a href="/whois" title="New search in registry">New search in registry</a></div>
+</p>
+</div>
+<!-- /* BACK LINK END */ -->
+
+</div>
+</div>

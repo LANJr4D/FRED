@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: fred-pylogger
+Version: 1.1.1
+Summary: Library contains wrapper for FRED Logger
+Home-page: http://www.nic.cz/
+Author: Tomáš Diviš, CZ.NIC
+Author-email: vlastimil.zima@nic.cz
+License: GNU GPL
+Description: UNKNOWN
+Platform: posix

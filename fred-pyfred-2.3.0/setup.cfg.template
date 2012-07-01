@@ -1,0 +1,4 @@
+[bdist_rpm]
+requires=python-omniORB, omniORB-servers, python-clearsilver, postgresql-python, python-dns, ldns
+build-requires=python-omniORB, omniORB-devel, fred-distutils, fred-idl
+install-extra-opts=--prefix=/usr --sysconfdir=/etc --localstatedir=/var --include-scripts --no-check-deps

@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: fred-doc2pdf
+Version: 2.4.1
+Summary: PDF creator module
+Home-page: http://fred.nic.cz
+Author: Zdenek Bohm, CZ.NIC
+Author-email: zdenek.bohm@nic.cz
+License: GNU GPL
+Description: The module of the FRED system
+Platform: UNKNOWN

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings>
+
+<!-- advanced invoice -->
+<str name="NIC_author">CZ.NIC</str>
+<str name="Client">Ship to</str>
+<str name="Invoice No">Invoice No</str>
+<str name="Invoice / Vat voucher">Invoice / Vat voucher</str>
+<str name="Advance Payment Request / Vat voucher">Advance Payment Request / Vat voucher</str>
+<str name="Tax credit">Tax credit</str>
+<str name="No">No</str>
+<str name="ICO">Company reg. No</str>
+<str name="VAT number">VAT reg. No</str>
+<str name="Customer residence">Customer seat</str>
+<str name="Supplier">Supplier</str>
+<str name="Tax document for deposit">Tax document for deposit</str>
+<str name="Variable symbol">Payment ref.:</str>
+<str name="Invoice date">Invoice date</str>
+<str name="Payment date">Payment date</str>
+<str name="Sheet">Sheet</str>
+<str name="Number of sheets">Number of sheets</str>
+<str name="Supply sign">Description</str>
+<str name="Draw by CZ.NIC invoice system">Draw by CZ.NIC invoice system</str>
+<str name="Reclamation">Reclamation</str>
+<str name="Invoice attachment no.">Invoice attachment no.</str>
+<str name="Invoice attachment">Invoice attachment</str>
+<str name="Sum">Subtotal</str>
+<str name="VAT %">VAT %</str>
+<str name="Tax base">Tax base</str>
+<str name="VAT CZK">VAT CZK</str>
+<str name="Total CZK">Total CZK</str>
+<str name="To be paid">To be paid</str>
+<str name="Voucher-for-call-VAT">You deposit tax document can be used to claim VAT deduction for the deposit received. </str>
+<str name="Insurance-by-law-and-VAT-liability">VAT liability is payable by the recipient of our services. Pursuant to section 10 of Value Added tax act, the place of taxable supply is abroad</str>
+<str name="Tax credit text">Tax credit of invoice no.</str>
+
+<!-- invoice -->
+<str name="Customer residence">Customer seat</str>
+<str name="Tax point">Tax date</str>
+<str name="Vat_part1">VAT</str>
+<str name="Vat_part2"></str>
+<str name="Total">Total</str>
+<str name="free of tax">free of tax</str>
+<str name="Paid">Paid</str>
+<str name="VAT">VAT</str>
+<str name="Change">Change</str>
+<str name="Realized">Effected</str>
+<str name="Domain">Domain Name</str>
+<str name="Service to">Service to</str>
+<str name="Number">Number</str>
+<str name="Price">Price</str>
+<str name="Invoice no">Invoice no</str>
+<str name="Invoice number">Invoice no</str>
+<str name="CZK draw">CZK draw</str>
+<str name="Deposit balance CZK">Deposit balance CZK</str>
+<str name="Deposit Total">Deposit Total</str>
+<str name="no VAT">no VAT</str>
+<str name="with VAT">with VAT</str>
+
+<str name="Period from(date)">For the period from</str>
+<str name="to(date)">through</str>
+<str name="we-invoiced-you">We have issued an invoice for the services provided according to the Cooperation Contract for Domain Name Registration</str>
+<str name="contractual-fine">We are charging you a contractual fine according to the Article 4.3.1 of the Business Conditions for Registrars included in the Cooperation Contract for Domain Name Registration</str>
+<str name="years-fee">We are charging you an annual fee for the connection to the Central Registry</str>
+<str name="Service codes">Service codes</str>
+<str name="Domain name registration">Domain name registration</str>
+<str name="Domain name record maintenance">Domain name record maintenance</str>
+<str name="Charged queries">Charged requests</str>
+<str name="VAT-settled-deposit">VAT has been settled through deposit tax documents</str> 
+<str name="SpZ">Reg # ZS/30/3/98</str> 
+<str name="department of the civil law agenda">Registered in the registry of legal entity interest</str> 
+<str name="Municipal Prague cap.city, no ZS/30/3/98">associations of the Municipal Council of Prague</str> 
+<str name="Vat voucher">Tax document</str>
+
+<str name="mojeID service is operated by the CZ.NIC Association, an interest association of legal entities, registered in Registry of legal entities">mojeID service is operated by the CZ.NIC Association, an interest association of legal entities, registered in Registry of legal entities</str>
+<str name="at the Department of Civil Administration of the Municipal Council of Prague, nr. ZS 30/3/98.">at the Department of Civil Administration of the Municipal Council of Prague, nr. ZS 30/3/98.</str>
+
+<!-- extension of registration -->
+<str name="CZ.NIC, z.s.p.o.">CZ.NIC, z.s.p.o.</str>
+<str name="Americka 23, 120 00 Prague 2">Americka 23, 120 00 Prague 2</str>
+<str name="Czech Republic">Czech Republic</str>
+<str name="T">T</str>
+<str name="F">F</str>
+<str name="IC">IC</str>
+<str name="DIC">DIC</str>
+<str name="Prague">Prague</str>
+<str name="Subject: Extension of registration of">Subject: Prolonging the registration of .cz domain names</str>
+<str name="domain(subject)">domain</str>
+<str name="Dear holder of">Dear holder of</str>
+<str name="domain name">domain name</str>
+
+<str name="The CZ.NIC z.s.p.o. company, an administrator...">The association CZ.NIC, z. s. p. o., administrator of the top level .CZ domain, hereby informs you that your registrar has not yet submitted a request to prolong the validity of domain names listed in the attachment to this letter. These domain names are currently out of operation (please refer to Rules for Registering Domain Names in the ccTLD .cz at www.nic.cz).
+</str>
+
+<str name="Should you be interested in keeping this domain name...">Should you still be interested in these domain names, please contact your assigned registrar urgently and agree on how to proceed. You can also choose another registrar and entrust them with prolonging your registration. An up-to-date list of companies which are accredited registrars can also be found at www.nic.cz.</str>
+
+<str name="Please notice that unless...">Please notice than unless the registration of the domain names is prolonged by the deadline, they will be cancelled on</str> 
+
+<str name="..and made avail...">and made available for other interested subjects.</str>
+
+<str name="The date of...">The date of registration cancellation cannot be changed.</str>
+
+<str name="Yours sincerely">Yours sincerely</str>
+
+<str name="Attachment">Attachment – list of domain names and their assigned registrars</str> 
+
+
+<str name="warning01">The association CZ.NIC, z. s. p. o., administrator of the top level .CZ domain, hereby informs you that your registrar has not yet submitted a request to prolong the validity of domain names listed in the attachment to this letter. These domain names are currently out of operation (please refer to Rules for Registering Domain Names in the ccTLD .cz at www.nic.cz).</str>
+
+<str name="warning02">Should you still be interested in these domain names, </str>
+
+<str name="warning03">please contact your assigned registrar urgently </str>
+
+<str name="warning04">and agree on how to proceed. You can also choose another registrar and entrust them with prolonging your registration. An up-to-date list of companies which are accredited registrars can also be found at www.nic.cz.</str>
+
+<str name="warning05">Please notice that </str> 
+
+<str name="warning06">unless the registration of the domain names is prolonged by the deadline, they will be cancelled on</str>   
+
+<str name="warning07"></str>
+
+<str name="warning08">and made available for other interested subjects. </str>
+
+
+<str name="The following information was recorded on the CZ.NIC Central database as of the date of issuance of this letter">The following information was recorded on the CZ.NIC Central database as of the date of issuance of this letter</str>
+
+<str name="Domain name">Domain name</str>
+<str name="Holder">Holder</str>
+<str name="Designated registrar">Designated registrar</str>
+<str name="Date of termination of the registration">Date of termination of the registration</str>
+<str name="Operations manager, CZ.NIC, z.s.p.o.">Operations manager, CZ.NIC, z.s.p.o.</str>
+<str name="Operations manager name">Martin Peterka</str>
+
+<!-- obsolete email notificatino (some strings from other section are reused, in transformation, so they're not redefined here) -->
+<str name="Subject: Notice re...">Subject: Notice re non-functional email in the records of the .cz domain name registry</str>
+<str name="Dear Sir or Madam">Dear Sir or Madam,</str>
+
+<!--
+<str name="Obsolete_email_warn_part1"> During regular data checks in the central .cz domain name registry, the CZ.NIC Association has noticed that in the record for your contact person the given email does not work or does not exist.</str>
+<str name="Obsolete_email_warn_part2"> Since the email is one of the important and mandatory details in the registry, we ask you to  fix this urgently (immediately). Below you will find an extract of the details which are recorded for your contact person; if you notice any other invalid or incorrect details, please correct them too. </str>
+-->
+
+<str name="Make the change..."> Make the change via your registrar</str>
+<str name="www">Registrar WWW: </str>
+<str name="Details recorded for your contact"> Details recorded for your contact: </str>
+<str name="organization">Organization: </str>
+<str name="name">Name: </str>
+<str name="address">Address: </str>
+<str name="Identifier">Identifier: </str>
+<str name="Identification type">Identification type: </str>
+<str name="ID">Identification details: </str>
+<str name="email">Email: </str>
+<str name="notify_email">Email for notifications: </str>
+<str name="telephone">Phone: </str>
+<str name="fax">Fax: </str>
+<str name="Last update">Last update: </str>
+
+</strings>

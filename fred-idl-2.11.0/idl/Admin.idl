@@ -1,0 +1,285 @@
+
+#ifndef ADMIN_IDL_
+#define ADMIN_IDL_
+
+#include "_dataTypes.idl"
+#include "Filters.idl"
+#include "Registry.idl"
+
+module ccReg {
+
+  // Type of handle in handle classification
+  enum HandleType {
+    HT_ENUM_NUMBER, ///< Handle is number (converting)
+    HT_ENUM_DOMAIN, ///< Handle is enum domain
+    HT_DOMAIN, ///< Handle is non enum domain
+    HT_CONTACT, ///< Handle is contact
+    HT_NSSET, ///< Handle is nsset
+    HT_KEYSET, ///< Handle is keyset
+    HT_REGISTRAR, ///< Handle is registrar
+    HT_OTHER ///< Invalid handle
+  };
+
+  /// Type of detail of handle status
+  enum CheckHandleClass {
+    CH_UNREGISTRABLE, ///< Handle is outside of register
+    CH_UNREGISTRABLE_LONG, ///< Handle is too long
+    CH_REGISTRED, ///< Handle is registred
+    CH_REGISTRED_PARENT, ///< Handle id registred under super domain
+    CH_REGISTRED_CHILD, /// < Handle has registred subdomain
+    CH_PROTECTED, //< Handle is in protected period or on blacklist
+    CH_FREE ///< Handle is free for registration or has unknown stattus
+  };
+
+  /// Type for one classification record
+  struct CheckHandleType {
+    string newHandle; ///< Translated handle
+    string conflictHandle; ///< Handle in conflict
+    CheckHandleClass handleClass; ///< Výsledek klasifikace handle
+    HandleType hType; ///< Type of handle
+  };
+
+  /// Return type for checkHandle function
+  typedef sequence<CheckHandleType> CheckHandleTypeSeq;
+  
+    /// Access structure
+  struct AdminEPPAccess {
+    string password; ///< epp login password
+    string md5Cert; ///< md5 of certificate
+  };
+  
+  /// List of access structures
+  typedef sequence<AdminEPPAccess> AdminEPPAccessSeq;
+  
+  ///Zone access
+  struct AdminZoneAccess
+  {
+      ccReg::TID id; ///record id
+      string name; ///zone name
+      DateType fromDate;  ///start of registrar's access to zone
+      DateType toDate; ///end of registrar's access to zone
+  };//struct ZoneAccess
+
+  /// List of zone structures
+  typedef sequence<AdminZoneAccess> AdminZoneAccessSeq;
+
+  /// Registrar detail structure
+  struct AdminRegistrar {
+    TID id; ///< registrar ID
+    string ico;
+    string dic;
+    string varSymb;
+    boolean vat;
+    string handle; ///< registrar identification
+    string name; ///< registrar name
+    string organization; ///< organization name
+    string street1; ///< address part 1
+    string street2; ///< address part 2
+    string street3; ///< address part 3
+    string city; ///< city of registrar headquaters
+    string stateorprovince; ///< address part
+    string postalcode; ///< address part
+    Registry::CountryCode country; ///< country code
+    string telephone; ///< phne number
+    string fax; ///< fax number
+    string email; ///< contact email
+    string url; ///< URL
+    Registry::Money credit; ///< actual credit
+    AdminEPPAccessSeq access; ///< list of epp access data
+    AdminZoneAccessSeq zones; ///< list of active registrar's zones
+    boolean hidden; ///< hidden in PIF
+  };
+
+  // Type for list of registrars
+  typedef sequence<AdminRegistrar> RegistrarList;
+  
+
+  struct AdminEPPAction {
+    TID id; ///< id of action
+    string time; /// < processing time
+    string xml; ///< xml of request
+    string xml_out; ///< xml of response
+    string type; ///< typename of request
+    string objectHandle; ///< handle of major object
+    string registrarHandle; ///< handle of registrar processiong request
+    short result; ///< result code
+    string clTRID; ///< token provided by registrar
+    string svTRID; ///< token attached by server
+  };
+
+  typedef string SessionIDType;
+
+  /// forward declaration
+  interface Session;
+
+  /// types for ENUM dictionary
+  struct TAddress {
+    string street1;
+    string street2;
+    string street3;
+    string city;
+    string postalcode;
+    string province;
+    string country;
+  };
+
+  struct EnumDictRow {
+    string name;
+    TAddress address;
+    string domain;
+  };
+
+  typedef sequence<EnumDictRow> EnumDictList;
+  
+  //report a problem
+  exception ErrorReport 
+  {
+      string reason;
+  };
+  
+  ///enum type for id-string list 
+  struct EnumListItem 
+  {
+  	unsigned long long id;
+  	string name;
+  };
+  typedef sequence <EnumListItem> EnumList;
+
+
+  typedef RequestFeeInfoData RegistrarRequestCountInfo;
+
+  /// interface for administration application
+  interface Admin
+  {
+    /// Exception for internal server error
+    exception InternalServerError {};
+    /// exception thrown i.e. in case adifd needs to call logd but it's not running
+    exception ServiceUnavailable {};
+    /// exception thwown in case of failed search
+    exception ObjectNotFound {};
+    /// exception thrown in case of update failure
+    exception UpdateFailed {};
+    /// exception thrown when authentification failed
+    exception AuthFailed {};
+    /// exception thrown by unblockRegistrar
+    exception ObjectNotBlocked {};
+    /// authenticate user against database
+    void authenticateUser(in string username, in string password) raises (AuthFailed);
+    /// create new session for administrator interface 
+    SessionIDType createSession(in string username) raises (AuthFailed);
+    /// destroy session
+    void destroySession(in string sessionID);
+    /// get session
+    Session getSession(in SessionIDType sessionID) raises (ObjectNotFound);
+
+    /// return complete list of registrars
+    RegistrarList getRegistrars();
+    /// return registrar detail for specified id
+    AdminRegistrar getRegistrarById(in TID id) raises (ObjectNotFound);
+
+    /// Return count of registred ENUM domains
+    long getDomainCount(in string zone);
+    /// Return count of signed domains
+    long getSignedDomainCount(in string _fqdn);
+    /// Return count of numbers described by all registred ENUM domains
+    long getEnumNumberCount();
+    /// Classify input handle according to registry policy
+    void checkHandle(
+      in string handle, ///< input handle for classification
+      out CheckHandleTypeSeq ch ///< output structure with classification
+    );
+    /// Return country code list
+    Registry::CountryDescSeq getCountryDescList();
+    /// Return default country code
+    Registry::CountryCode getDefaultCountry();
+    /// Return list with descriptions of all available object states
+    Registry::ObjectStatusDescSeq getObjectStatusDescList(in string lang) raises (InternalServerError);
+
+    /// Exception for common invalid input data
+    exception INVALID_INPUT {};
+    /// Exception for unspecified email in ([AUTO|POST]_PIF) request
+    exception BAD_EMAIL {};
+    /// Exception for bad object id
+    exception OBJECT_NOT_FOUND {};
+    /// Exception for bad EPP action id in EPP request
+    exception ACTION_NOT_FOUND {};
+    /// Exception for bad EPP action id in EPP request
+    exception SQL_ERROR {};
+    /// Exception for unsent emails
+    exception MAILER_ERROR {};
+    /// Exception for request blocation
+    exception REQUEST_BLOCKED {};
+
+    typedef sequence<TID> ObjectIdList;
+    TID createPublicRequest(
+        in Registry::PublicRequest::Type type,
+        in string reason,
+        in string emailToAnswer,
+        in ObjectIdList objectIds,
+        in TID requestId 
+	) raises (
+	  BAD_EMAIL, OBJECT_NOT_FOUND, ACTION_NOT_FOUND, SQL_ERROR, 
+	  INVALID_INPUT, REQUEST_BLOCKED
+	);
+    /// Process request by sending email with auth_info
+    void processPublicRequest(in TID id, in boolean invalid) 
+      raises (OBJECT_NOT_FOUND, SQL_ERROR, MAILER_ERROR, REQUEST_BLOCKED);
+    typedef sequence<octet> Buffer;
+    Buffer getPublicRequestPDF(in TID id, in string lang)
+      raises (OBJECT_NOT_FOUND, SQL_ERROR);      
+
+    /// return credit for registrer and zone
+    Registry::Money getCreditByZone(in string registrar, in TID zone)
+      raises (SQL_ERROR);
+    /// generate letter with warning about registration expiration
+    void generateLetters();
+    /// manually insert domain into the zone
+    boolean setInZoneStatus(in TID domainId);
+
+    unsigned long long countEnumDomainsByRegistrant(in string name, in boolean by_person, in boolean by_org) raises (InternalServerError);
+    EnumDictList getEnumDomainsByRegistrant(in string name, in boolean by_person, in boolean by_org, in long offset, in long limit) raises (InternalServerError);
+    EnumDictList getEnumDomainsRecentEntries(in long count) raises (InternalServerError);
+
+
+    Registry::Registrar::Certification::Manager getCertificationManager();
+    Registry::Registrar::Group::Manager getGroupManager();
+    
+    EnumList getBankAccounts()//list of bank accounts
+      raises (ErrorReport);
+
+    RegistrarRequestCountInfo getRegistrarRequestCount(in string registrar)
+        raises (ObjectNotFound, InternalServerError);
+
+    boolean isRegistrarBlocked(in TID reg_id) raises(InternalServerError, ObjectNotFound);
+    boolean blockRegistrar(in TID reg_id) raises(InternalServerError, ObjectNotFound);
+    void unblockRegistrar(in TID reg_id, in TID request_id) raises(InternalServerError, ObjectNotFound, ObjectNotBlocked);
+  };
+
+  /// Main interface for registrar session
+
+  interface BankingInvoicing {
+      enum OperationType {
+          OT_CREATE,
+          OT_RENEW
+      };
+
+      boolean pairPaymentRegistrarId(in unsigned long long paymentId,
+              in unsigned long long registrarId);
+      boolean pairPaymentRegistrarHandle(in  unsigned long long paymentId,
+              in string registrarHandle);
+      boolean setPaymentType(in unsigned long long payment_id, in short payment_type);
+
+  };
+  interface Session {
+    Registry::PageTable getPageTable(in FilterType type) raises (ccReg::Admin::ServiceUnavailable);
+    any getDetail(in FilterType type, in TID id) raises (ccReg::Admin::ObjectNotFound, ccReg::Admin::ServiceUnavailable, Registry::SqlQueryTimeout);
+    BankingInvoicing getBankingInvoicing();
+    Registry::User getUser();
+
+    TID updateRegistrar(in AdminRegistrar registrar_data) raises (ccReg::Admin::UpdateFailed, ccReg::Admin::ObjectNotFound);
+    void setHistory(in boolean history);
+  };
+
+};
+
+#endif

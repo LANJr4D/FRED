@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<enum_whois>
+    <public_request>
+
+        <!-- type:
+            1 - žádost o zaslání auth info
+            2 - žádost o zablokování transferu
+            3 - žádost o odblokování transferu
+            4 - žádost o zablokování update
+            5 - žádost o odblokování update
+        -->
+
+        <type>4</type>
+
+        <!-- handle type:
+            1 - kontakt
+            2 - sada jmenných serverů
+            3 - doména
+        -->
+
+        <handle type="1">pokus.cz</handle>
+        <date>20.05.2008</date>
+        <id>123456789</id>
+        <replymail>hokus@pokus.cz</replymail>
+    </public_request>
+</enum_whois>
